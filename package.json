@@ -1,0 +1,7 @@
+{
+    "type": "module",
+    "dependencies": {
+        "@cruncheevos/cli": "^0.0.8",
+        "dotenv": "^16.4.7"
+    }
+}
