@@ -47,6 +47,10 @@ const singlePlayerDLC = {
     "Depths of Despair": 0x6a,
 }
 
+function stagePointer() {
+    return ($(['AddAddress', 'Mem', '24bit', 0xab9020]))
+}
+
 function inSingleplayerLevel() {
     return ($(['', 'Mem', '32bit', 0xab7aa0, '=', 'Value', '', 0x1e0a]))
 }
@@ -61,6 +65,10 @@ function inSinglePlayerDungeon() {
 
 function inMultiplayerDungeon() {
     return ($(['', 'Mem', '32bit', 0xab7aa0, '=', 'Value', '', 0x1e0b]))
+}
+
+function infectionCheck() {
+    return ($(['', 'Mem', '32bit', 0xd9851c, '=', 'Value', '', 0x00]))
 }
 
 //Logic to clear a standard level (non VS mode)
@@ -80,6 +88,7 @@ function clearLevel(levelID, levelType, singleAllowed, multiAllowed, dlc = false
         ['', 'Delta', '32bit', 0x22f8, '=', 'Value', '', 0],
         ['AddAddress', 'Mem', '24bit', 0xab9020],
         ['', 'Mem', '32bit', 0x22f8, '=', 'Value', '', 7], //Check if level ends
+        //infectionCheck(),
     )
     let i = 1
     if (levelType == 'Dungeon' && singleAllowed == true) {
@@ -98,6 +107,29 @@ function clearLevel(levelID, levelType, singleAllowed, multiAllowed, dlc = false
         logic['alt' + i] = inMultiplayerLevel()
         i++
     }
+    return(logic)
+}
+
+function distanceCovered(distance, operator = '>=', delta = false) {
+    let logic = {}
+    let check = 'Mem'
+    if (delta == true) {
+        check = 'Delta'
+    }
+    logic = $(
+    stagePointer(),
+    ['AddSource', check, 'Float', 0x2e00, '/', 'Value', '', 15],
+    ['', 'Value', '', 0, operator, 'Value', '', distance]
+    )
+    return(logic)
+}
+
+function distanceCheck(distance) {
+    let logic = {}
+    logic = $(
+        distanceCovered(distance, '<', true),
+        distanceCovered(distance, '>=', false),
+    )
     return(logic)
 }
 
@@ -146,5 +178,21 @@ for (const [stage, ID] of Object.entries(singlePlayerDLC)) {
         conditions: clearLevel(ID, "Level", true, false, true)
     })
 }
+
+let marchingcheevos = {"Keeping the Rhythm": 100, "Continueing the March": 500, "The Perfect March": 1000}
+
+for(const [title, dist] of Object.entries(marchingcheevos)) {
+    set.addAchievement({
+        title: title, 
+        points: 0,
+        conditions: $(
+            stagePointer(),
+            ['', 'Mem', '32bit', 0x236c, '=', 'Value', '', 0x28],
+            inSingleplayerLevel(),
+            distanceCheck(dist),
+        )
+    })
+}
+
 
 export default set
