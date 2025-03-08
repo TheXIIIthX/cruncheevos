@@ -27,6 +27,16 @@ const levels = {
     "The Great Gigante King": 0x100,
 }
 
+const multiDungeons = {
+    "Fire Dragon Valo": 0x2a,
+    "Ice Dragon Inosen": 0x52,
+    "Thunder Beast Justi": 0x7a,
+    "Godtree Feisu": 0xa2,
+    "Hyumitto the Baby Dragon": 0xca,
+    "Demon Dorudo": 0xf2,
+    "Black Dragon Libera": 0x011a,
+}
+
 const dlc = {
     "Onslaught of the Cyclopses": 0x24,
     "The Gigantic Teranteth": 0x2e,
@@ -55,19 +65,24 @@ const summons = {
 }
 
 function stagePointer() {
-    return ($(['AddAddress', 'Mem', '24bit', 0xab9020, '&', 'Value', '', 0x1fffffff]))
+    return ($(['AddAddress', 'Mem', '32bit', 0xab9020, '&', 'Value', '', 0x01ffffff]))
 }
 
-function characterPointerInLevel() {
-    return ($(['AddAddress', 'Mem', '24bit', 0xd979d0, '&', 'Value', '', 0x1fffffff]))
+function characterPointer() {
+    let pointer = {}
+    pointer = $(
+        ['AddAddress', 'Mem', '32bit', 0xaabd94, '&', 'Value', '', 0x01ffffff],
+        ['AddAddress', 'Mem', '32bit', 0x50, '&', 'Value', '', 0x01ffffff]
+    )
+    return (pointer)
 }
 
-function equipedSummon(ID) {
+function equippedSummon(ID) {
     let logic = {}
     logic = $(
-        characterPointerInLevel(),
+        characterPointer(),
         ['OrNext', 'Mem', '32bit', 0x9518, '=', 'Value', '', ID[0]], 
-        characterPointerInLevel(), 
+        characterPointer(), 
         ['', 'Mem', '32bit', 0x9518, '=', 'Value', '', ID[1]], 
     )
     return(logic)
@@ -264,6 +279,15 @@ for (const [stage, ID] of Object.entries(dungeons)) {
     })
 }
 
+//Create multi dungeon singleplayer challenge achievements
+for (const [stage, ID] of Object.entries(multiDungeons)) {
+    set.addAchievement({
+        title: stage,
+        points: 0,
+        conditions: clearLevel(ID, "Dungeon", true, false)
+    })
+}
+
 //Create level finish achievements
 for (const [stage, ID] of Object.entries(levels)) {
     set.addAchievement({
@@ -291,8 +315,8 @@ for (const [stage, ID] of Object.entries(singlePlayerDLC)) {
     })
 }
 
+//Create Perfect March Achievements
 let marchingcheevos = {"Keeping the Rhythm": 100, "Continueing the March": 500, "The Perfect March": 1000}
-
 for(const [title, dist] of Object.entries(marchingcheevos)) {
     set.addAchievement({
         title: title, 
@@ -306,15 +330,16 @@ for(const [title, dist] of Object.entries(marchingcheevos)) {
     })
 }
 
+//Create summon leaderboards
 for(const [summon, ID] of Object.entries(summons)) {
     set.addLeaderboard({
         title: summon + "'s Sutra High Score",
-        description: "Get the highest score using " + summon + "'s or Super" + summon + "'s Sutra",
+        description: "Get the highest score using " + summon + "'s or Super " + summon + "'s Sutra",
         lowerIsBetter: false,
         type: 'SCORE',
         conditions: {
             start: 
-                inGameplay($(equipedSummon(ID), command(0x09))),
+                inGameplay($(equippedSummon(ID), command(0x09))),
             cancel: {
                 core: $(['', 'Value', '', 1, '=', 'Value', '', 1]),
                 alt1: surrender(),
