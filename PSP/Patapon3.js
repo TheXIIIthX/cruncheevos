@@ -47,8 +47,39 @@ const singlePlayerDLC = {
     "Depths of Despair": 0x6a,
 }
 
+const summons = {
+    "Yarigami": [0x3f79f, 0x57e3f],
+    "Tategami": [0x445bf, 0x5cc5f],
+    "Soragami": [0x493df, 0x61a7f],
+    "Yamagami": [0x4e1ff, 0x6689f],
+}
+
 function stagePointer() {
-    return ($(['AddAddress', 'Mem', '24bit', 0xab9020]))
+    return ($(['AddAddress', 'Mem', '24bit', 0xab9020, '&', 'Value', '', 0x1fffffff]))
+}
+
+function characterPointerInLevel() {
+    return ($(['AddAddress', 'Mem', '24bit', 0xd979d0, '&', 'Value', '', 0x1fffffff]))
+}
+
+function equipedSummon(ID) {
+    let logic = {}
+    logic = $(
+        characterPointerInLevel(),
+        ['OrNext', 'Mem', '32bit', 0x9518, '=', 'Value', '', ID[0]], 
+        characterPointerInLevel(), 
+        ['', 'Mem', '32bit', 0x9518, '=', 'Value', '', ID[1]], 
+    )
+    return(logic)
+}
+
+function summonScore() {
+    let logic = {}
+    logic = ($(
+        ['AddAddress', 'Mem', '32bit', 0x1fff508, '&', 'Value', '', 0x1fffffff],
+        ['Measured', 'Mem', '32bit', 0xf80052d8],
+    ))
+    return (logic)
 }
 
 function inSingleplayerLevel() {
@@ -67,8 +98,67 @@ function inMultiplayerDungeon() {
     return ($(['', 'Mem', '32bit', 0xab7aa0, '=', 'Value', '', 0x1e0b]))
 }
 
+function inSingleVersus() {
+    return ($(['', 'Mem', '32bit', 0xab7aa0, '=', 'Value', '', 0x1e09]))
+}
+
+function inMultiVersus() {
+    return ($(['', 'Mem', '32bit', 0xab7aa0, '=', 'Value', '', 0x1e04]))
+}
+
+function inGameplay(core) {
+    let modes = [inSingleplayerLevel(), inMultiplayerLevel(), inSinglePlayerDungeon(), inMultiplayerDungeon(), inSingleVersus(), inMultiVersus()];
+    let i = 1;
+    let logic = {};
+    logic['core'] = core
+    for (const mode of modes) {
+        logic['alt' + i] = mode;
+        i++;
+    }
+    return(logic)
+}
+
+function notInGameplay() {
+    let logic = {}
+    logic = $(
+        ['', 'Mem', '32bit', 0xab7aa0, '!=', 'Value', '', 0x1e0a],
+        ['', 'Mem', '32bit', 0xab7aa0, '!=', 'Value', '', 0x1e05],
+        ['', 'Mem', '32bit', 0xab7aa0, '!=', 'Value', '', 0x1e10],
+        ['', 'Mem', '32bit', 0xab7aa0, '!=', 'Value', '', 0x1e0b],
+        ['', 'Mem', '32bit', 0xab7aa0, '!=', 'Value', '', 0x1e09],
+        ['', 'Mem', '32bit', 0xab7aa0, '!=', 'Value', '', 0x1e04],
+    )
+    return(logic)
+}
+
 function infectionCheck() {
     return ($(['', 'Mem', '32bit', 0xd9851c, '=', 'Value', '', 0x00]))
+}
+
+function command(ID) {
+/**
+    ID options
+    0x00 - Pata Pata Pata Pon (Onward)
+    0x01 - Chaka Chaka Pata Pon (Defend)
+    0x02 - Pon Pon Pata Pon (Attack)
+    0x03 - Pon Pon Chaka Chaka (Charge)
+    0x04 - Pon Pata Pon Pata (Retreat)
+    0x05 - Don Don Chaka Chaka (Jump)
+    0x06 - Pata Pon Don Chaka (Party)
+    0x07 - Chaka Pata Chaka Pata (Step Back) (Multiplayer only)
+    0x08 - Pata Pon Pata Pon (Pause) (Singleplayer only)
+    0x09 - Don Dodon Dodon (Summon)
+    0xffffffff - Idle
+*/
+
+    let logic = {}
+    logic = $(
+        stagePointer(),
+        ['', 'Delta', '32bit', 0x2338, '!=', 'Value', '', ID],
+        stagePointer(),
+        ['', 'Mem', '32bit', 0x2338, '=', 'Value', '', ID]
+    )
+    return(logic)
 }
 
 //Logic to clear a standard level (non VS mode)
@@ -108,6 +198,28 @@ function clearLevel(levelID, levelType, singleAllowed, multiAllowed, dlc = false
         i++
     }
     return(logic)
+}
+
+function surrender() {
+    let logic = {}
+    logic = $(
+    stagePointer(),
+    ['', 'Delta', '32bit', 0x22f8, '!=', 'Value', '', 0x05],
+    stagePointer(),
+    ['', 'Mem', '32bit', 0x22f8, '=', 'Value', '', 0x05],
+    )
+    return(logic);
+}
+
+function defeat() {
+    let logic = {}
+    logic = $(
+    stagePointer(),
+    ['', 'Delta', '32bit', 0x22f8, '!=', 'Value', '', 0x08],
+    stagePointer(),
+    ['', 'Mem', '32bit', 0x22f8, '=', 'Value', '', 0x08],
+    )
+    return(logic);
 }
 
 function distanceCovered(distance, operator = '>=', delta = false) {
@@ -194,5 +306,27 @@ for(const [title, dist] of Object.entries(marchingcheevos)) {
     })
 }
 
+for(const [summon, ID] of Object.entries(summons)) {
+    set.addLeaderboard({
+        title: summon + "'s Sutra High Score",
+        description: "Get the highest score using " + summon + "'s or Super" + summon + "'s Sutra",
+        lowerIsBetter: false,
+        type: 'SCORE',
+        conditions: {
+            start: 
+                inGameplay($(equipedSummon(ID), command(0x09))),
+            cancel: {
+                core: $(['', 'Value', '', 1, '=', 'Value', '', 1]),
+                alt1: surrender(),
+                alt2: defeat(),
+            },
+            submit: $(stagePointer(),
+            ['', 'Delta', '32bit', 0x2338, '=', 'Value', '', 0x09],
+            stagePointer(),
+            ['', 'Mem', '32bit', 0x2338, '!=', 'Value', '', 0x09],),
+            value: summonScore()
+        }
+    })
+}
 
 export default set
