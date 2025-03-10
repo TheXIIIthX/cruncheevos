@@ -334,6 +334,25 @@ for (level, ID in levels) {
 }
 */
 
+//Create prologue achievement
+set.addAchievement({
+    title: "The Coming of Almighty",
+    points: 1,
+    type: 'progression',
+    conditions: $(
+        stagePointer(),
+        ['', 'Mem', '32bit', 0x2310, '=', 'Value', '', 0x00], //Check if level is correct
+        stagePointer(),
+        ['', 'Delta', '32bit', 0x22f4, '!=', 'Value', '', 7], 
+        stagePointer(),
+        ['', 'Mem', '32bit', 0x22f4, '=', 'Value', '', 7], //Check if flag gets hit
+        stagePointer(),
+        ['', 'Delta', '32bit', 0x22f8, '=', 'Value', '', 0],
+        stagePointer(),
+        ['', 'Mem', '32bit', 0x22f8, '=', 'Value', '', 7], //Check if level ends
+        ['', 'Mem', '32bit', 0xab7aa0, '=', 'Value', '', 0x1e0b],
+    )
+})
 
 //Create dungeon finish achievements
 for (const [stage, ID] of Object.entries(dungeons)) {
