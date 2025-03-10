@@ -57,6 +57,51 @@ const singlePlayerDLC = {
     "Depths of Despair": 0x6a,
 }
 
+const startingHeroes = {
+    "Yarida": 0x9644,
+    "Taterazay": 0x96c8,
+    "Yumiyacha": 0x974c,
+}
+
+const unlockCharacters = {
+    "Kibadda": 0x97d0,
+    "Piekron": 0x9b6c,
+    "Wooyari": 0x9bf0,
+    "Pyokorider": 0x9c74,
+    "Cannassault": 0x9cf8,
+    "Charibasa": 0x9d7c,
+    "Destrobo": 0x99e0,
+    "Guardira": 0x9e00,
+    "Tondenga": 0x9e84,
+    "Myamsar": 0x9f08,
+    "Bowmunk": 0x9f8c,
+    "Grenburr": 0xa010,
+    "Alosson": 0xa094,
+    "Wondabarappa": 0xa118,
+    "Jamsch": 0xa19c,
+    "Oohoroc": 0xa220,
+    "Pingrek": 0xa2a4,
+    "Cannogabang": 0xa328,
+    "Ton Kibadda": 0xadf0,
+    "Ton Piekron": 0xb18c,
+    "Ton Wooyari": 0xb210,
+    "Ton Pyokorider": 0xb294,
+    "Ton Cannassault": 0xb318,
+    "Ton Charibasa": 0xb39c,
+    "Chin Destrobo": 0xc620,
+    "Chin Guardira": 0xca40,
+    "Chin Tondenga": 0xcac4,
+    "Chin Myamsar": 0xcb48,
+    "Chin Bowmunk": 0xcbcc,
+    "Chin Grenburr": 0xcc50,
+    "Kan Alosson": 0xe2f4,
+    "Kan Wondabarappa": 0xe378,
+    "Kan Jamsch": 0xe3fc,
+    "Kan Oohoroc": 0xe480,
+    "Kan Pingrek": 0xe504,
+    "Kan Cannogabang": 0xe588,
+}
+
 const summons = {
     "Yarigami": [0x3f79f, 0x57e3f],
     "Tategami": [0x445bf, 0x5cc5f],
@@ -75,6 +120,10 @@ function characterPointer() {
         ['AddAddress', 'Mem', '32bit', 0x50, '&', 'Value', '', 0x01ffffff]
     )
     return (pointer)
+}
+
+function loadProtect() {
+    return($(['', 'Mem', '32bit', 0xab7aa0, '!=', 'Value', '', 0x1eec]))
 }
 
 function equippedSummon(ID) {
@@ -260,6 +309,22 @@ function distanceCheck(distance) {
     return(logic)
 }
 
+function trifectaUnlock() {
+    let logic = {};
+    logic['core'] = loadProtect();
+    let i = 1;
+    for(const [character, offset] of Object.entries(startingHeroes)) {
+        logic['alt' + i] = $(
+            characterPointer(),
+            ['', 'Delta', '32bit', offset, '<', 'Value', '', 15],
+            characterPointer(),
+            ['', 'Mem', '32bit', offset, '>=', 'Value', '', 15],
+        )
+        i++
+    }
+    return(logic)
+}
+
 /*
 for (level, ID in levels) {
     set.addAchievement({
@@ -312,6 +377,28 @@ for (const [stage, ID] of Object.entries(singlePlayerDLC)) {
         title: stage,
         points: 0,
         conditions: clearLevel(ID, "Level", true, false, true)
+    })
+}
+
+//Create Trifecta Uberhero unlock achievement
+set.addAchievement({
+    title: "Uberhero Trifecta",
+    points: 0,
+    conditions: trifectaUnlock(),
+})
+
+//Create character unlock achievements
+for(const [title, offset] of Object.entries(unlockCharacters)) {
+    set.addAchievement({
+        title: "Unlock " + title,
+        points: 0,
+        conditions: $(
+        characterPointer(),
+        ['', 'Delta', '32bit', offset, '=', 'Value', '', 1],
+        characterPointer(),
+        ['', 'Mem', '32bit', offset, '!=', 'Value', '', 1],
+        loadProtect(),
+        )
     })
 }
 
