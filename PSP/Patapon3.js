@@ -102,6 +102,60 @@ const unlockCharacters = {
     "Kan Cannogabang": 0xe588,
 }
 
+const uberheroClasses = {
+    "Yarida": 0x9644,
+    "Taterazay": 0x96c8,
+    "Yumiyacha": 0x974c,
+    "Kibadda": 0x97d0,
+    "Piekron": 0x9b6c,
+    "Wooyari": 0x9bf0,
+    "Pyokorider": 0x9c74,
+    "Cannassault": 0x9cf8,
+    "Charibasa": 0x9d7c,
+    "Destrobo": 0x99e0,
+    "Guardira": 0x9e00,
+    "Tondenga": 0x9e84,
+    "Myamsar": 0x9f08,
+    "Bowmunk": 0x9f8c,
+    "Grenburr": 0xa010,
+    "Alosson": 0xa094,
+    "Wondabarappa": 0xa118,
+    "Jamsch": 0xa19c,
+    "Oohoroc": 0xa220,
+    "Pingrek": 0xa2a4,
+    "Cannogabang": 0xa328,
+}
+
+const tonClasses = {
+    "Yarida": 0xac64,
+    "Kibadda": 0xadf0,
+    "Piekron": 0xb18c,
+    "Wooyari": 0xb210,
+    "Pyokorider": 0xb294,
+    "Cannassault": 0xb318,
+    "Charibasa": 0xb39c,
+}
+
+const chinClasses = {
+    "Taterazay": 0xc308,
+    "Destrobo": 0xc620,
+    "Guardira": 0xca40,
+    "Tondenga": 0xcac4,
+    "Myamsar": 0xcb48,
+    "Bowmunk": 0xcbcc,
+    "Grenburr": 0xcc50,
+}
+
+const kanClasses = {
+    "Yumiyacha": 0xd9a8,
+    "Alosson": 0xe2f4,
+    "Wondabarappa": 0xe378,
+    "Jamsch": 0xe3fc,
+    "Oohoroc": 0xe480,
+    "Pingrek": 0xe504,
+    "Cannogabang": 0xe588,
+}
+
 const summons = {
     "Yarigami": [0x3f79f, 0x57e3f],
     "Tategami": [0x445bf, 0x5cc5f],
@@ -325,14 +379,21 @@ function trifectaUnlock() {
     return(logic)
 }
 
-/*
-for (level, ID in levels) {
-    set.addAchievement({
-        title: level,
-        conditions: $(clearLevel(ID)),
-    })
+function levelCheck(hero, level) {
+    let logic = {}
+    logic['core'] = loadProtect();
+    let i = 1;
+    for(const [character, offset] of Object.entries(hero)) {
+        logic['alt' + i] = $(
+            characterPointer(),
+            ['', 'Delta', '32bit', offset, '<', 'Value', '', level],
+            characterPointer(),
+            ['', 'Mem', '32bit', offset, '>=', 'Value', '', level],
+        )
+        i++
+    }
+    return(logic)
 }
-*/
 
 //Create prologue achievement
 set.addAchievement({
@@ -419,6 +480,25 @@ for(const [title, offset] of Object.entries(unlockCharacters)) {
         loadProtect(),
         )
     })
+}
+
+//Create leveling achievements
+const heroes = {"Uberhero": uberheroClasses, "Ton": tonClasses, "Chin": chinClasses, "Kan": kanClasses}
+let minLevel = [15, 25, 32]
+console.log(minLevel)
+for (const [name, classet] of Object.entries(heroes)) {
+    if (name != "Uberhero") {
+        minLevel = [15, 25]
+    }
+    for (var level of minLevel) {
+        console.log(level)
+        set.addAchievement({
+            title: "Levelgrind" + name + " " + level,
+            description: "Reach level " + level + " with " + name,
+            points: 0,
+            conditions: levelCheck(classet, level),
+        })
+    }
 }
 
 //Create Perfect March Achievements
