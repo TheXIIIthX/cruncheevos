@@ -200,6 +200,10 @@ function summonScore() {
     return (logic)
 }
 
+function gameState(state) {
+    return ($(['', 'Mem', '32bit', 0xab7aa0, '=', 'Value', '', state]))
+}
+
 function inSingleplayerLevel() {
     return ($(['', 'Mem', '32bit', 0xab7aa0, '=', 'Value', '', 0x1e0a]))
 }
@@ -485,13 +489,11 @@ for(const [title, offset] of Object.entries(unlockCharacters)) {
 //Create leveling achievements
 const heroes = {"Uberhero": uberheroClasses, "Ton": tonClasses, "Chin": chinClasses, "Kan": kanClasses}
 let minLevel = [15, 25, 32]
-console.log(minLevel)
 for (const [name, classet] of Object.entries(heroes)) {
     if (name != "Uberhero") {
         minLevel = [15, 25]
     }
     for (var level of minLevel) {
-        console.log(level)
         set.addAchievement({
             title: "Levelgrind" + name + " " + level,
             description: "Reach level " + level + " with " + name,
@@ -499,6 +501,22 @@ for (const [name, classet] of Object.entries(heroes)) {
             conditions: levelCheck(classet, level),
         })
     }
+}
+
+//Create blacksmith achievements
+let blacksmithLevels = [1, 2, 3]
+for (var blacksmithLevel of blacksmithLevels) {
+    set.addAchievement({
+        title: "Master blacksmith " + blacksmithLevel,
+        points: 0,
+        conditions: $(
+            characterPointer(),
+            ['', 'Delta', '32bit', 0x29728, '=', 'Value', '', blacksmithLevel - 1],
+            characterPointer(),
+            ['', 'Mem', '32bit', 0x29728, '=', 'Value', '', blacksmithLevel],
+            loadProtect(),
+        )
+    })
 }
 
 //Create Perfect March Achievements
