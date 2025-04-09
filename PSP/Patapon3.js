@@ -57,6 +57,37 @@ const singlePlayerDLC = {
     "Depths of Despair": 0x6a,
 }
 
+const arena = {
+    "Will the Angry Wolf See a Full Moon?": 0x17,
+    "Anything for a Rare Item": 0x8f,
+}
+
+const race = {
+    "Ephemeral Dreams Dashed": 0x3f,
+    "A Horse's Pride": 0xb7,
+}
+
+const range = {
+    "Total Ultrasonic Air Defence!": 0x67,
+    "What He Fights For": 0xdf,
+}
+
+const endArena = {
+    "The Galland, if Merciless, Knight": 0x18,
+    "Victory! Treasures for All!": 0x90,
+    "Heroes Never Rest": 0x107,
+}
+
+const endRace = {
+    "The Great Race for Pride": 0x40,
+    "Erupting Shockwaves of Destruction": 0xb8,
+}
+
+const endRange = {
+    "Two Versions of Justice": 0x68,
+    "Slogging on the Job": 0xe0,
+}
+
 const startingHeroes = {
     "Yarida": 0x9644,
     "Taterazay": 0x96c8,
@@ -302,6 +333,9 @@ function summonEnd() {
 //Logic to clear a standard level (non VS mode)
 function clearLevel(levelID, levelType, singleAllowed, multiAllowed, dlc = false) {
     let levelPointer = 0x2310;
+    let levelEnd = 7;
+    if (levelType == "Arena" || levelType == "Race")
+        levelEnd = 2;
     if (dlc == true)
         levelPointer = 0x236c;
     let logic = {}
@@ -315,24 +349,31 @@ function clearLevel(levelID, levelType, singleAllowed, multiAllowed, dlc = false
         ['AddAddress', 'Mem', '24bit', 0xab9020],
         ['', 'Delta', '32bit', 0x22f8, '=', 'Value', '', 0],
         ['AddAddress', 'Mem', '24bit', 0xab9020],
-        ['', 'Mem', '32bit', 0x22f8, '=', 'Value', '', 7], //Check if level ends
-        //infectionCheck(),
+        ['', 'Mem', '32bit', 0x22f8, '=', 'Value', '', levelEnd], //Check if level ends
     )
     let i = 1
     if (levelType == 'Dungeon' && singleAllowed == true) {
         logic['alt' + i] = inSinglePlayerDungeon()
         i++
     }
-    else if (levelType == 'Level' && singleAllowed == true) {
+    else if ((levelType == 'Level' || levelType == 'Race') && singleAllowed == true) {
         logic['alt' + i] = inSingleplayerLevel()
+        i++
+    }
+    else if(levelType == 'Arena' && singleAllowed == true) {
+        logic['alt' + i] = inSingleVersus()
         i++
     }
     if (levelType == 'Dungeon' && multiAllowed == true) {
         logic['alt' + i] = inMultiplayerDungeon()
         i++
     }
-    else if(levelType == 'Level' && multiAllowed == true) {
+    else if((levelType == 'Level' || levelType == 'Race') && multiAllowed == true) {
         logic['alt' + i] = inMultiplayerLevel()
+        i++
+    }
+    else if(levelType == 'Arena' && multiAllowed == true) {
+        logic['alt' + i] = inMultiVersus()
         i++
     }
     return(logic)
@@ -479,6 +520,101 @@ for (const [stage, ID] of Object.entries(singlePlayerDLC)) {
         conditions: clearLevel(ID, "Level", true, false, true)
     })
 }
+
+//Create arena achievements
+//No level cap
+for (const [stage, ID] of Object.entries(endArena)) {
+    set.addAchievement({
+        title: stage,
+        points: 0,
+        description: "Finish " + stage,
+        conditions: {
+            core: $(
+                ['OrNext', 'Mem', '32bit', 0xab7aa0, '=', 'Value', '', 0x1e09],
+                ['', 'Mem', '32bit', 0xab7aa0, '=', 'Value', '', 0x1e04],
+                ['AddAddress', 'Mem', '24bit', 0xab9020],
+                ['', 'Mem', '32bit', 0x2310, '=', 'Value', '', ID], //Check if level is correct
+            ),
+            alt1: $(
+                ['AddAddress', 'Mem', '24bit', 0xab9020],
+                ['', 'Delta', '32bit', 0x22f4, '!=', 'Value', '', 2], 
+                ['AddAddress', 'Mem', '24bit', 0xab9020],
+                ['', 'Mem', '32bit', 0x22f4, '=', 'Value', '', 2], //Check if flag gets hit
+                ['AddAddress', 'Mem', '24bit', 0xab9020],
+                ['', 'Delta', '32bit', 0x22f8, '=', 'Value', '', 0],
+                ['AddAddress', 'Mem', '24bit', 0xab9020],
+                ['', 'Mem', '32bit', 0x22f8, '=', 'Value', '', 2], //Check if level ends
+            ),
+            alt2: $(
+                ['AddAddress', 'Mem', '24bit', 0xab9020],
+                ['', 'Delta', '32bit', 0x22f4, '!=', 'Value', '', 4], 
+                ['AddAddress', 'Mem', '24bit', 0xab9020],
+                ['', 'Mem', '32bit', 0x22f4, '=', 'Value', '', 4], //Check if flag gets hit
+                ['AddAddress', 'Mem', '24bit', 0xab9020],
+                ['', 'Mem', '32bit', 0x22f8, '=', 'Value', '', 0],
+            ),
+        }
+    })
+}
+
+//Level cap
+
+//Capture the flag
+
+//Create racing achievements
+//No level cap
+for(const [stage, ID] of Object.entries(endRace)) {
+    set.addAchievement({
+        title: stage,
+        points: 0,
+        description: "Finish " + stage,
+        conditions: clearLevel(ID, "Race", true, true)
+    })
+}
+
+//Level cap
+
+//Timed challenge
+
+//Create missile range achievements
+//No level cap
+for (const [stage, ID] of Object.entries(endRange)) {
+    set.addAchievement({
+        title: stage,
+        points: 0,
+        description: "Finish " + stage,
+        conditions: {
+            core: $(
+                ['OrNext', 'Mem', '32bit', 0xab7aa0, '=', 'Value', '', 0x1e09],
+                ['', 'Mem', '32bit', 0xab7aa0, '=', 'Value', '', 0x1e04],
+                ['AddAddress', 'Mem', '24bit', 0xab9020],
+                ['', 'Mem', '32bit', 0x2310, '=', 'Value', '', ID], //Check if level is correct
+            ),
+            alt1: $(
+                ['AddAddress', 'Mem', '24bit', 0xab9020],
+                ['', 'Delta', '32bit', 0x22f4, '!=', 'Value', '', 2], 
+                ['AddAddress', 'Mem', '24bit', 0xab9020],
+                ['', 'Mem', '32bit', 0x22f4, '=', 'Value', '', 2], //Check if flag gets hit
+                ['AddAddress', 'Mem', '24bit', 0xab9020],
+                ['', 'Delta', '32bit', 0x22f8, '=', 'Value', '', 0],
+                ['AddAddress', 'Mem', '24bit', 0xab9020],
+                ['', 'Mem', '32bit', 0x22f8, '=', 'Value', '', 2], //Check if level ends
+            ),
+            alt2: $(
+                ['AddAddress', 'Mem', '24bit', 0xab9020],
+                ['', 'Delta', '32bit', 0x22f4, '!=', 'Value', '', 4], 
+                ['AddAddress', 'Mem', '24bit', 0xab9020],
+                ['', 'Mem', '32bit', 0x22f4, '=', 'Value', '', 4], //Check if flag gets hit
+                ['AddAddress', 'Mem', '24bit', 0xab9020],
+                ['', 'Mem', '32bit', 0x22f8, '=', 'Value', '', 0],
+            ),
+        }
+    })
+}
+
+//Level cap
+
+//No base damage
 
 //Create Trifecta Uberhero unlock achievement
 set.addAchievement({
