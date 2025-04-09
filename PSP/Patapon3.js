@@ -585,8 +585,8 @@ for (const [stage, ID] of Object.entries(endRange)) {
         description: "Finish " + stage,
         conditions: {
             core: $(
-                ['OrNext', 'Mem', '32bit', 0xab7aa0, '=', 'Value', '', 0x1e09],
-                ['', 'Mem', '32bit', 0xab7aa0, '=', 'Value', '', 0x1e04],
+                ['OrNext', 'Mem', '32bit', 0xab7aa0, '=', 'Value', '', 0x1e0a],
+                ['', 'Mem', '32bit', 0xab7aa0, '=', 'Value', '', 0x1e05],
                 ['AddAddress', 'Mem', '24bit', 0xab9020],
                 ['', 'Mem', '32bit', 0x2310, '=', 'Value', '', ID], //Check if level is correct
             ),
