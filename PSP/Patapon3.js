@@ -156,6 +156,11 @@ const kanClasses = {
     "Cannogabang": 0xe588,
 }
 
+const singleplayerSummons = {
+    "Yarigami": [0x3f79f, 0x57e3f],
+    "Tategami": [0x445bf, 0x5cc5f],
+}
+
 const summons = {
     "Yarigami": [0x3f79f, 0x57e3f],
     "Tategami": [0x445bf, 0x5cc5f],
@@ -279,6 +284,17 @@ function command(ID) {
         ['', 'Delta', '32bit', 0x2338, '!=', 'Value', '', ID],
         stagePointer(),
         ['', 'Mem', '32bit', 0x2338, '=', 'Value', '', ID]
+    )
+    return(logic)
+}
+
+function summonEnd() {
+    let logic = {}
+    logic = $(
+        stagePointer(),
+        ['', 'Delta', '32bit', 0x2338, '=', 'Value', '', 0x09],
+        stagePointer(),
+        ['', 'Mem', '32bit', 0x2338, '!=', 'Value', '', 0x09]
     )
     return(logic)
 }
@@ -531,6 +547,17 @@ for(const [title, dist] of Object.entries(marchingcheevos)) {
             inSingleplayerLevel(),
             distanceCheck(dist),
         )
+    })
+}
+
+//Create summon achievements
+for(const [summon, ID] of Object.entries(singleplayerSummons)) {
+    set.addAchievement({
+        title: summon + "'s pride",
+        points: 0,
+        description: "Earn 1.000.000.000 or more points using " + summon + "'s or Super " + summon + "'s Sutra",
+        conditions: 
+            inGameplay($(equippedSummon(ID), summonEnd(0x09), ['AddAddress', 'Mem', '32bit', 0x1fff508, '&', 'Value', '', 0x1fffffff], ['', 'Mem', '32bit', 0xf80052d8, '>=', 'Value', '', 1000000000],)),
     })
 }
 
