@@ -708,9 +708,7 @@ for(const [summon, ID] of Object.entries(summons)) {
             start: 
                 inGameplay($(equippedSummon(ID), command(0x09))),
             cancel: {
-                core: $(['', 'Value', '', 1, '=', 'Value', '', 1]),
-                alt1: surrender(),
-                alt2: defeat(),
+                core: $(['', 'Delta', '32bit', 0xab7aa0, '!=', 'Mem', '32bit', 0xab7aa0])
             },
             submit: $(stagePointer(),
             ['', 'Delta', '32bit', 0x2338, '=', 'Value', '', 0x09],
