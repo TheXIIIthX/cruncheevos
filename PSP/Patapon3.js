@@ -1,4 +1,4 @@
-import { AchievementSet, define as $ } from '@cruncheevos/core'
+import { AchievementSet, define as $, orNext } from '@cruncheevos/core'
 const set = new AchievementSet({ gameId: 3507, title: 'Patapon 3' })
 
 const dungeons = {
@@ -306,53 +306,44 @@ function gameState(state) {
     return ($(['', 'Mem', '32bit', 0xab7aa0, '=', 'Value', '', state]))
 }
 
-function inSingleplayerLevel() {
-    return ($(['', 'Mem', '32bit', 0xab7aa0, '=', 'Value', '', 0x1e0a]))
+function inSingleplayerLevel(flag = '') {
+    return ($([flag, 'Mem', '32bit', 0xab7aa0, '=', 'Value', '', 0x1e0a]))
 }
 
-function inMultiplayerLevel() {
-    return ($(['', 'Mem', '32bit', 0xab7aa0, '=', 'Value', '', 0x1e05]))
+function inMultiplayerLevel(flag = '') {
+    return ($([flag, 'Mem', '32bit', 0xab7aa0, '=', 'Value', '', 0x1e05]))
 }
 
-function inSinglePlayerDungeon() {
-    return ($(['', 'Mem', '32bit', 0xab7aa0, '=', 'Value', '', 0x1e10]))
+function inSinglePlayerDungeon(flag = '') {
+    return ($([flag, 'Mem', '32bit', 0xab7aa0, '=', 'Value', '', 0x1e10]))
 }
 
-function inMultiplayerDungeon() {
-    return ($(['', 'Mem', '32bit', 0xab7aa0, '=', 'Value', '', 0x1e0b]))
+function inMultiplayerDungeon(flag = '') {
+    return ($([flag, 'Mem', '32bit', 0xab7aa0, '=', 'Value', '', 0x1e0b]))
 }
 
-function inSingleVersus() {
-    return ($(['', 'Mem', '32bit', 0xab7aa0, '=', 'Value', '', 0x1e09]))
+function inSingleVersus(flag = '') {
+    return ($([flag, 'Mem', '32bit', 0xab7aa0, '=', 'Value', '', 0x1e09]))
 }
 
-function inMultiVersus() {
-    return ($(['', 'Mem', '32bit', 0xab7aa0, '=', 'Value', '', 0x1e04]))
+function inMultiVersus(flag = '') {
+    return ($([flag, 'Mem', '32bit', 0xab7aa0, '=', 'Value', '', 0x1e04]))
 }
 
-function inGameplay(core) {
-    let modes = [inSingleplayerLevel(), inMultiplayerLevel(), inSinglePlayerDungeon(), inMultiplayerDungeon(), inSingleVersus(), inMultiVersus()];
-    let i = 1;
-    let logic = {};
-    logic['core'] = core
-    for (const mode of modes) {
-        logic['alt' + i] = mode;
-        i++;
-    }
-    return(logic)
+function inLevel() {
+    return ($(inSingleplayerLevel("OrNext"), inMultiplayerLevel()))
 }
 
-function notInGameplay() {
-    let logic = {}
-    logic = $(
-        ['', 'Mem', '32bit', 0xab7aa0, '!=', 'Value', '', 0x1e0a],
-        ['', 'Mem', '32bit', 0xab7aa0, '!=', 'Value', '', 0x1e05],
-        ['', 'Mem', '32bit', 0xab7aa0, '!=', 'Value', '', 0x1e10],
-        ['', 'Mem', '32bit', 0xab7aa0, '!=', 'Value', '', 0x1e0b],
-        ['', 'Mem', '32bit', 0xab7aa0, '!=', 'Value', '', 0x1e09],
-        ['', 'Mem', '32bit', 0xab7aa0, '!=', 'Value', '', 0x1e04],
-    )
-    return(logic)
+function inDungeon() {
+    return ($(inSinglePlayerDungeon("OrNext"), inMultiplayerDungeon()))
+}
+
+function inVersus() {
+    return ($(inSingleVersus("OrNext"), inMultiVersus()))
+}
+
+function inGameplay() {
+    return($(inSingleplayerLevel("OrNext"), inMultiplayerLevel("OrNext"), inSinglePlayerDungeon("OrNext"), inMultiplayerDungeon("OrNext"), inSingleVersus("OrNext"), inMultiVersus()))
 }
 
 function infectionCheck() {
@@ -394,6 +385,25 @@ function summonEnd() {
         ['', 'Mem', '32bit', 0x2338, '!=', 'Value', '', 0x09]
     )
     return(logic)
+}
+
+function checkLevel(levelID, dlc = false) {
+    let levelPointer = 0x2310;
+    if (dlc == true)
+        levelPointer = 0x236c;
+    return($(
+        stagePointer(),
+        ['', 'Mem', '32bit', levelPointer, '=', 'Value', '', levelID], //Check if level is correct
+    ))
+}
+
+function finishLevel(flag = 2) {
+    return($(
+        stagePointer(),
+        ['', 'Delta', '32bit', 0x22f4, '!=', 'Value', '', flag], 
+        stagePointer(),
+        ['', 'Mem', '32bit', 0x22f4, '=', 'Value', '', flag], //Check if flag gets hit
+    ))
 }
 
 //Logic to clear a standard level (non VS mode)
@@ -528,16 +538,8 @@ set.addAchievement({
     points: 1,
     type: 'progression',
     conditions: $(
-        stagePointer(),
-        ['', 'Mem', '32bit', 0x2310, '=', 'Value', '', 0x00], //Check if level is correct
-        stagePointer(),
-        ['', 'Delta', '32bit', 0x22f4, '!=', 'Value', '', 7], 
-        stagePointer(),
-        ['', 'Mem', '32bit', 0x22f4, '=', 'Value', '', 7], //Check if flag gets hit
-        stagePointer(),
-        ['', 'Delta', '32bit', 0x22f8, '=', 'Value', '', 0],
-        stagePointer(),
-        ['', 'Mem', '32bit', 0x22f8, '=', 'Value', '', 7], //Check if level ends
+        checkLevel(0x00),
+        finishLevel(7),
         ['', 'Mem', '32bit', 0xab7aa0, '=', 'Value', '', 0x1e0b],
     )
 })
@@ -547,7 +549,11 @@ for (const [stage, ID] of Object.entries(dungeons)) {
     set.addAchievement({
         title: stage,
         points: 0,
-        conditions: clearLevel(ID, "Dungeon", true, true)
+        conditions: $(
+            checkLevel(ID),
+            finishLevel(),
+            inDungeon(),
+        )
     })
 }
 
@@ -556,7 +562,11 @@ for (const [stage, ID] of Object.entries(multiDungeons)) {
     set.addAchievement({
         title: stage,
         points: 0,
-        conditions: clearLevel(ID, "Dungeon", true, false)
+        conditions: $(
+            checkLevel(ID),
+            finishLevel(), 
+            inSinglePlayerDungeon(),
+        )
     })
 }
 
@@ -565,7 +575,11 @@ for (const [stage, ID] of Object.entries(levels)) {
     set.addAchievement({
         title: stage,
         points: 0,
-        conditions: clearLevel(ID, "Level", true, true)
+        conditions: $(
+            checkLevel(ID),
+            finishLevel(),
+            inLevel(),
+        )
     })
 }
 
@@ -574,7 +588,11 @@ for (const [stage, ID] of Object.entries(dlc)) {
     set.addAchievement({
         title: stage,
         points: 0,
-        conditions: clearLevel(ID, "Level", true, true, true)
+        conditions: $(
+            checkLevel(ID, true),
+            finishLevel(),
+            inLevel(),
+        )
     })
 }
 
@@ -583,7 +601,11 @@ for (const [stage, ID] of Object.entries(singlePlayerDLC)) {
     set.addAchievement({
         title: stage,
         points: 0,
-        conditions: clearLevel(ID, "Level", true, false, true)
+        conditions: $(
+            checkLevel(ID, true),
+            finishLevel(),
+            inSingleplayerLevel(),
+        )
     })
 }
 
@@ -598,28 +620,14 @@ for (const [stage, ID] of Object.entries(endArena)) {
         description: "Finish " + stage,
         conditions: {
             core: $(
-                ['OrNext', 'Mem', '32bit', 0xab7aa0, '=', 'Value', '', 0x1e09],
-                ['', 'Mem', '32bit', 0xab7aa0, '=', 'Value', '', 0x1e04],
-                stagePointer(),
-                ['', 'Mem', '32bit', 0x2310, '=', 'Value', '', ID], //Check if level is correct
+                checkLevel(ID),
+                inVersus(),
             ),
             alt1: $(
-                stagePointer(),
-                ['', 'Delta', '32bit', 0x22f4, '!=', 'Value', '', 2], 
-                stagePointer(),
-                ['', 'Mem', '32bit', 0x22f4, '=', 'Value', '', 2], //Check if flag gets hit
-                stagePointer(),
-                ['', 'Delta', '32bit', 0x22f8, '=', 'Value', '', 0],
-                stagePointer(),
-                ['', 'Mem', '32bit', 0x22f8, '=', 'Value', '', 2], //Check if level ends
+                finishLevel(2),
             ),
             alt2: $(
-                stagePointer(),
-                ['', 'Delta', '32bit', 0x22f4, '!=', 'Value', '', 4], 
-                stagePointer(),
-                ['', 'Mem', '32bit', 0x22f4, '=', 'Value', '', 4], //Check if flag gets hit
-                stagePointer(),
-                ['', 'Mem', '32bit', 0x22f8, '=', 'Value', '', 0],
+                finishLevel(4)
             ),
         }
     })
@@ -637,7 +645,11 @@ for(const [stage, ID] of Object.entries(endRace)) {
         title: stage,
         points: 0,
         description: "Finish " + stage,
-        conditions: clearLevel(ID, "Race", true, true)
+        conditions: $(
+            checkLevel(ID),
+            finishLevel(),
+            inLevel(),
+        )
     })
 }
 
@@ -655,30 +667,16 @@ for (const [stage, ID] of Object.entries(endRange)) {
         description: "Finish " + stage,
         conditions: {
             core: $(
-                ['OrNext', 'Mem', '32bit', 0xab7aa0, '=', 'Value', '', 0x1e0a],
-                ['', 'Mem', '32bit', 0xab7aa0, '=', 'Value', '', 0x1e05],
-                stagePointer(),
-                ['', 'Mem', '32bit', 0x2310, '=', 'Value', '', ID], //Check if level is correct
+                checkLevel(ID),
+                inVersus(),
             ),
             alt1: $(
-                stagePointer(),
-                ['', 'Delta', '32bit', 0x22f4, '!=', 'Value', '', 2], 
-                stagePointer(),
-                ['', 'Mem', '32bit', 0x22f4, '=', 'Value', '', 2], //Check if flag gets hit
-                stagePointer(),
-                ['', 'Delta', '32bit', 0x22f8, '=', 'Value', '', 0],
-                stagePointer(),
-                ['', 'Mem', '32bit', 0x22f8, '=', 'Value', '', 2], //Check if level ends
+                finishLevel(2),
             ),
             alt2: $(
-                stagePointer(),
-                ['', 'Delta', '32bit', 0x22f4, '!=', 'Value', '', 4], 
-                stagePointer(),
-                ['', 'Mem', '32bit', 0x22f4, '=', 'Value', '', 4], //Check if flag gets hit
-                stagePointer(),
-                ['', 'Mem', '32bit', 0x22f8, '=', 'Value', '', 0],
+                finishLevel(4),
             ),
-        }
+        }  
     })
 }
 
@@ -818,8 +816,12 @@ for(const [summon, ID] of Object.entries(singleplayerSummons)) {
         title: summon + "'s pride",
         points: 0,
         description: "Earn 1.000.000.000 or more points using " + summon + "'s or Super " + summon + "'s Sutra",
-        conditions: 
-            inGameplay($(equippedSummon(ID), summonEnd(0x09), ['AddAddress', 'Mem', '32bit', 0x1fff508, '&', 'Value', '', 0x1fffffff], ['', 'Mem', '32bit', 0xf80052d8, '>=', 'Value', '', 1000000000],)),
+        conditions: $(
+            inGameplay(),
+            equippedSummon(ID), 
+            summonEnd(0x09), 
+            ['AddAddress', 'Mem', '32bit', 0x1fff508, '&', 'Value', '', 0x1fffffff], 
+            ['', 'Mem', '32bit', 0xf80052d8, '>=', 'Value', '', 1000000000],)
     })
 }
 
@@ -831,8 +833,10 @@ for(const [summon, ID] of Object.entries(summons)) {
         lowerIsBetter: false,
         type: 'SCORE',
         conditions: {
-            start: 
-                inGameplay($(equippedSummon(ID), command(0x09))),
+            start: $(
+                inGameplay(),
+                equippedSummon(ID), 
+                command(0x09)),
             cancel: {
                 core: $(['', 'Delta', '32bit', 0xab7aa0, '!=', 'Mem', '32bit', 0xab7aa0])
             },
