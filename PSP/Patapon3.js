@@ -340,15 +340,15 @@ function clearLevel(levelID, levelType, singleAllowed, multiAllowed, dlc = false
         levelPointer = 0x236c;
     let logic = {}
     logic['core'] = $(
-        ['AddAddress', 'Mem', '24bit', 0xab9020],
+        ['AddAddress', 'Mem', '32bit', 0xab9020, '&', 'Value', '', 0x1fffffff],
         ['', 'Mem', '32bit', levelPointer, '=', 'Value', '', levelID], //Check if level is correct
-        ['AddAddress', 'Mem', '24bit', 0xab9020],
+        ['AddAddress', 'Mem', '32bit', 0xab9020, '&', 'Value', '', 0x1fffffff],
         ['', 'Delta', '32bit', 0x22f4, '!=', 'Value', '', 2], 
-        ['AddAddress', 'Mem', '24bit', 0xab9020],
+        ['AddAddress', 'Mem', '32bit', 0xab9020, '&', 'Value', '', 0x1fffffff],
         ['', 'Mem', '32bit', 0x22f4, '=', 'Value', '', 2], //Check if flag gets hit
-        ['AddAddress', 'Mem', '24bit', 0xab9020],
+        ['AddAddress', 'Mem', '32bit', 0xab9020, '&', 'Value', '', 0x1fffffff],
         ['', 'Delta', '32bit', 0x22f8, '=', 'Value', '', 0],
-        ['AddAddress', 'Mem', '24bit', 0xab9020],
+        ['AddAddress', 'Mem', '32bit', 0xab9020, '&', 'Value', '', 0x1fffffff],
         ['', 'Mem', '32bit', 0x22f8, '=', 'Value', '', levelEnd], //Check if level ends
     )
     let i = 1
@@ -532,25 +532,25 @@ for (const [stage, ID] of Object.entries(endArena)) {
             core: $(
                 ['OrNext', 'Mem', '32bit', 0xab7aa0, '=', 'Value', '', 0x1e09],
                 ['', 'Mem', '32bit', 0xab7aa0, '=', 'Value', '', 0x1e04],
-                ['AddAddress', 'Mem', '24bit', 0xab9020],
+                ['AddAddress', 'Mem', '32bit', 0xab9020, '&', 'Value', '', 0x1fffffff],
                 ['', 'Mem', '32bit', 0x2310, '=', 'Value', '', ID], //Check if level is correct
             ),
             alt1: $(
-                ['AddAddress', 'Mem', '24bit', 0xab9020],
+                ['AddAddress', 'Mem', '32bit', 0xab9020, '&', 'Value', '', 0x1fffffff],
                 ['', 'Delta', '32bit', 0x22f4, '!=', 'Value', '', 2], 
-                ['AddAddress', 'Mem', '24bit', 0xab9020],
+                ['AddAddress', 'Mem', '32bit', 0xab9020, '&', 'Value', '', 0x1fffffff],
                 ['', 'Mem', '32bit', 0x22f4, '=', 'Value', '', 2], //Check if flag gets hit
-                ['AddAddress', 'Mem', '24bit', 0xab9020],
+                ['AddAddress', 'Mem', '32bit', 0xab9020, '&', 'Value', '', 0x1fffffff],
                 ['', 'Delta', '32bit', 0x22f8, '=', 'Value', '', 0],
-                ['AddAddress', 'Mem', '24bit', 0xab9020],
+                ['AddAddress', 'Mem', '32bit', 0xab9020, '&', 'Value', '', 0x1fffffff],
                 ['', 'Mem', '32bit', 0x22f8, '=', 'Value', '', 2], //Check if level ends
             ),
             alt2: $(
-                ['AddAddress', 'Mem', '24bit', 0xab9020],
+                ['AddAddress', 'Mem', '32bit', 0xab9020, '&', 'Value', '', 0x1fffffff],
                 ['', 'Delta', '32bit', 0x22f4, '!=', 'Value', '', 4], 
-                ['AddAddress', 'Mem', '24bit', 0xab9020],
+                ['AddAddress', 'Mem', '32bit', 0xab9020, '&', 'Value', '', 0x1fffffff],
                 ['', 'Mem', '32bit', 0x22f4, '=', 'Value', '', 4], //Check if flag gets hit
-                ['AddAddress', 'Mem', '24bit', 0xab9020],
+                ['AddAddress', 'Mem', '32bit', 0xab9020, '&', 'Value', '', 0x1fffffff],
                 ['', 'Mem', '32bit', 0x22f8, '=', 'Value', '', 0],
             ),
         }
@@ -587,25 +587,25 @@ for (const [stage, ID] of Object.entries(endRange)) {
             core: $(
                 ['OrNext', 'Mem', '32bit', 0xab7aa0, '=', 'Value', '', 0x1e0a],
                 ['', 'Mem', '32bit', 0xab7aa0, '=', 'Value', '', 0x1e05],
-                ['AddAddress', 'Mem', '24bit', 0xab9020],
+                ['AddAddress', 'Mem', '32bit', 0xab9020, '&', 'Value', '', 0x1fffffff],
                 ['', 'Mem', '32bit', 0x2310, '=', 'Value', '', ID], //Check if level is correct
             ),
             alt1: $(
-                ['AddAddress', 'Mem', '24bit', 0xab9020],
+                ['AddAddress', 'Mem', '32bit', 0xab9020, '&', 'Value', '', 0x1fffffff],
                 ['', 'Delta', '32bit', 0x22f4, '!=', 'Value', '', 2], 
-                ['AddAddress', 'Mem', '24bit', 0xab9020],
+                ['AddAddress', 'Mem', '32bit', 0xab9020, '&', 'Value', '', 0x1fffffff],
                 ['', 'Mem', '32bit', 0x22f4, '=', 'Value', '', 2], //Check if flag gets hit
-                ['AddAddress', 'Mem', '24bit', 0xab9020],
+                ['AddAddress', 'Mem', '32bit', 0xab9020, '&', 'Value', '', 0x1fffffff],
                 ['', 'Delta', '32bit', 0x22f8, '=', 'Value', '', 0],
-                ['AddAddress', 'Mem', '24bit', 0xab9020],
+                ['AddAddress', 'Mem', '32bit', 0xab9020, '&', 'Value', '', 0x1fffffff],
                 ['', 'Mem', '32bit', 0x22f8, '=', 'Value', '', 2], //Check if level ends
             ),
             alt2: $(
-                ['AddAddress', 'Mem', '24bit', 0xab9020],
+                ['AddAddress', 'Mem', '32bit', 0xab9020, '&', 'Value', '', 0x1fffffff],
                 ['', 'Delta', '32bit', 0x22f4, '!=', 'Value', '', 4], 
-                ['AddAddress', 'Mem', '24bit', 0xab9020],
+                ['AddAddress', 'Mem', '32bit', 0xab9020, '&', 'Value', '', 0x1fffffff],
                 ['', 'Mem', '32bit', 0x22f4, '=', 'Value', '', 4], //Check if flag gets hit
-                ['AddAddress', 'Mem', '24bit', 0xab9020],
+                ['AddAddress', 'Mem', '32bit', 0xab9020, '&', 'Value', '', 0x1fffffff],
                 ['', 'Mem', '32bit', 0x22f8, '=', 'Value', '', 0],
             ),
         }
@@ -654,6 +654,127 @@ for (const [name, classet] of Object.entries(heroes)) {
         })
     }
 }
+
+//Create class skill achievements
+//Max 1 level offsets
+let class1offsets = {
+    "Thunderific": 0xa270,
+    "Hellfire": 0xa274,
+    "Nova Nova": 0xa278,
+    "Venomist": 0xa27c,
+    "KanThunderific": 0xe4d0,
+    "KanHellfire": 0xe4d4,
+    "KanNovaNova": 0xe4d8,
+    "KanVenomist": 0xe4dc,
+}
+
+//Max 4 levels offsets
+let class4offsets = {
+    "Yarida": 0x9688,
+    "Kibadda": 0x9814,
+    "Destrobo": 0x9a24,
+    "Piekron": 0x9bb0,
+    "Pyokorider": 0x9cb8,
+    "Cannassault": 0x9d3c,
+    "Charibasa": 0x9dc0,
+    "Guardira": 0x9e44,
+    "Tondenga": 0x9ec8,
+    "Myamsar": 0x9f4c,
+    "Bowmunk": 0x9fd0,
+    "Alosson": 0xa0d8,
+    "Wondabarappa": 0xa15c,
+    "Jamsch": 0xa1e0,
+    "TonYarida": 0xaca8,
+    "TonKibadda": 0xae34,
+    "TonPiekron": 0xb1d0,
+    "TonPyokorider": 0xb2d8,
+    "TonCannassault": 0xb35c,
+    "TonCharibasa": 0xb3e0,
+    "ChinDestrobo": 0xc664,
+    "ChinGuardira": 0xca84,
+    "ChinTondenga": 0xcb08,
+    "ChinMyamsar": 0xcb8c,
+    "ChinBowmunk": 0xcc10,
+    "KanAlosson": 0xe338,
+    "KanWondabarappa": 0xe3bc,
+    "KanJamsch": 0xe440,
+}
+
+//Max 5 levels offsets
+let class5offsets = {
+    "Taterazay": 0x970c,
+    "Yumiyacha": 0x9790,
+    "Wooyari": 0x9c34,
+    "Grenburr": 0xa054,
+    "Singe": 0xa264,
+    "Volcano": 0xa268,
+    "FlashCrackBoom": 0xa26c,
+    "Pingrek": 0xa2e8,
+    "Cannogabang": 0xa36c,
+    "TonWooyari": 0xb254,
+    "ChinTaterazay": 0xc34c,
+    "ChinGrenburr": 0xcc94,
+    "KanYumiyacha": 0xd9f0,
+    "KanSinge": 0xe4c4,
+    "KanVolcano": 0xe4c8,
+    "KanFlashCrackBoom": 0xe4cc,
+    "KanPingrek": 0xe548,
+    "KanCannogabang": 0xe5cc,
+}
+
+function classSkillCheck(offset, treshold = 1.0) {
+    return($(
+        characterPointer(),
+        ['', 'Delta', 'Float', offset, '<', 'Float', '', treshold],
+        characterPointer(),
+        ['', 'Mem', 'Float', offset, '>=', 'Float', '', treshold],
+    ))
+}
+
+function classSkillBuilder(oneskill = false) {
+    let logic = {}
+    logic['core'] = loadProtect();
+    let i = 1
+    let level1 = 1.0
+    let level4 = 4.0
+    let level5 = 5.0
+    if (oneskill == true) {
+        level1 = 1.0
+        level4 = 1.0
+        level5 = 1.0
+    }
+    for (const [character, offset] of Object.entries(class4offsets)) {
+        logic['alt' + i] = classSkillCheck(offset, level4)
+        i++
+    }
+    for (const [character, offset] of Object.entries(class5offsets)) {
+        logic['alt' + i] = classSkillCheck(offset, level5)
+        i++
+    }
+    if (oneskill == true) {
+        for (const [character, offset] of Object.entries(class1offsets)) {
+            logic['alt' + i] = classSkillCheck(offset, level1)
+            i++
+        }
+    }
+    return(logic)
+}
+
+//Master 1 class skill
+set.addAchievement({
+    title: "Skilled warrior",
+    points: 2,
+    description: "Master a class skill",
+    conditions: classSkillBuilder(true)
+})
+
+//Master all class skills of class
+set.addAchievement({
+    title: "Master warrior",
+    points: 10,
+    description: "Master all class skills for a single character class",
+    conditions: classSkillBuilder()
+})
 
 //Create blacksmith achievements
 let blacksmithLevels = [1, 2, 3]
