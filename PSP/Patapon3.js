@@ -58,18 +58,18 @@ const singlePlayerDLC = {
 }
 
 const arena = {
-    "Will the Angry Wolf See a Full Moon?": 0x17,
-    "Anything for a Rare Item": 0x8f,
+    "Will the Angry Wolf See a Full Moon?": [0x17, 5],
+    "Anything for a Rare Item": [0x8f, 17],
 }
 
 const race = {
-    "Ephemeral Dreams Dashed": 0x3f,
-    "A Horse's Pride": 0xb7,
+    "Ephemeral Dreams Dashed": [0x3f, 9],
+    "A Horse's Pride": [0xb7, 21],
 }
 
 const range = {
-    "Total Ultrasonic Air Defence!": 0x67,
-    "What He Fights For": 0xdf,
+    "Total Ultrasonic Air Defence!": [0x67, 13],
+    "What He Fights For": [0xdf, 25],
 }
 
 const endArena = {
@@ -185,6 +185,72 @@ const kanClasses = {
     "Oohoroc": 0xe480,
     "Pingrek": 0xe504,
     "Cannogabang": 0xe588,
+}
+
+//Max 1 level offsets class skills
+let class1offsets = {
+    "Thunderific": 0xa270,
+    "Hellfire": 0xa274,
+    "Nova Nova": 0xa278,
+    "Venomist": 0xa27c,
+    "KanThunderific": 0xe4d0,
+    "KanHellfire": 0xe4d4,
+    "KanNovaNova": 0xe4d8,
+    "KanVenomist": 0xe4dc,
+}
+
+//Max 4 levels offsets class skills
+let class4offsets = {
+    "Yarida": 0x9688,
+    "Kibadda": 0x9814,
+    "Destrobo": 0x9a24,
+    "Piekron": 0x9bb0,
+    "Pyokorider": 0x9cb8,
+    "Cannassault": 0x9d3c,
+    "Charibasa": 0x9dc0,
+    "Guardira": 0x9e44,
+    "Tondenga": 0x9ec8,
+    "Myamsar": 0x9f4c,
+    "Bowmunk": 0x9fd0,
+    "Alosson": 0xa0d8,
+    "Wondabarappa": 0xa15c,
+    "Jamsch": 0xa1e0,
+    "TonYarida": 0xaca8,
+    "TonKibadda": 0xae34,
+    "TonPiekron": 0xb1d0,
+    "TonPyokorider": 0xb2d8,
+    "TonCannassault": 0xb35c,
+    "TonCharibasa": 0xb3e0,
+    "ChinDestrobo": 0xc664,
+    "ChinGuardira": 0xca84,
+    "ChinTondenga": 0xcb08,
+    "ChinMyamsar": 0xcb8c,
+    "ChinBowmunk": 0xcc10,
+    "KanAlosson": 0xe338,
+    "KanWondabarappa": 0xe3bc,
+    "KanJamsch": 0xe440,
+}
+
+//Max 5 levels offsets class skills
+let class5offsets = {
+    "Taterazay": 0x970c,
+    "Yumiyacha": 0x9790,
+    "Wooyari": 0x9c34,
+    "Grenburr": 0xa054,
+    "Singe": 0xa264,
+    "Volcano": 0xa268,
+    "FlashCrackBoom": 0xa26c,
+    "Pingrek": 0xa2e8,
+    "Cannogabang": 0xa36c,
+    "TonWooyari": 0xb254,
+    "ChinTaterazay": 0xc34c,
+    "ChinGrenburr": 0xcc94,
+    "KanYumiyacha": 0xd9f0,
+    "KanSinge": 0xe4c4,
+    "KanVolcano": 0xe4c8,
+    "KanFlashCrackBoom": 0xe4cc,
+    "KanPingrek": 0xe548,
+    "KanCannogabang": 0xe5cc,
 }
 
 const singleplayerSummons = {
@@ -340,15 +406,15 @@ function clearLevel(levelID, levelType, singleAllowed, multiAllowed, dlc = false
         levelPointer = 0x236c;
     let logic = {}
     logic['core'] = $(
-        ['AddAddress', 'Mem', '32bit', 0xab9020, '&', 'Value', '', 0x1fffffff],
+        stagePointer(),
         ['', 'Mem', '32bit', levelPointer, '=', 'Value', '', levelID], //Check if level is correct
-        ['AddAddress', 'Mem', '32bit', 0xab9020, '&', 'Value', '', 0x1fffffff],
+        stagePointer(),
         ['', 'Delta', '32bit', 0x22f4, '!=', 'Value', '', 2], 
-        ['AddAddress', 'Mem', '32bit', 0xab9020, '&', 'Value', '', 0x1fffffff],
+        stagePointer(),
         ['', 'Mem', '32bit', 0x22f4, '=', 'Value', '', 2], //Check if flag gets hit
-        ['AddAddress', 'Mem', '32bit', 0xab9020, '&', 'Value', '', 0x1fffffff],
+        stagePointer(),
         ['', 'Delta', '32bit', 0x22f8, '=', 'Value', '', 0],
-        ['AddAddress', 'Mem', '32bit', 0xab9020, '&', 'Value', '', 0x1fffffff],
+        stagePointer(),
         ['', 'Mem', '32bit', 0x22f8, '=', 'Value', '', levelEnd], //Check if level ends
     )
     let i = 1
@@ -522,6 +588,8 @@ for (const [stage, ID] of Object.entries(singlePlayerDLC)) {
 }
 
 //Create arena achievements
+//Level cap
+
 //No level cap
 for (const [stage, ID] of Object.entries(endArena)) {
     set.addAchievement({
@@ -532,36 +600,37 @@ for (const [stage, ID] of Object.entries(endArena)) {
             core: $(
                 ['OrNext', 'Mem', '32bit', 0xab7aa0, '=', 'Value', '', 0x1e09],
                 ['', 'Mem', '32bit', 0xab7aa0, '=', 'Value', '', 0x1e04],
-                ['AddAddress', 'Mem', '32bit', 0xab9020, '&', 'Value', '', 0x1fffffff],
+                stagePointer(),
                 ['', 'Mem', '32bit', 0x2310, '=', 'Value', '', ID], //Check if level is correct
             ),
             alt1: $(
-                ['AddAddress', 'Mem', '32bit', 0xab9020, '&', 'Value', '', 0x1fffffff],
+                stagePointer(),
                 ['', 'Delta', '32bit', 0x22f4, '!=', 'Value', '', 2], 
-                ['AddAddress', 'Mem', '32bit', 0xab9020, '&', 'Value', '', 0x1fffffff],
+                stagePointer(),
                 ['', 'Mem', '32bit', 0x22f4, '=', 'Value', '', 2], //Check if flag gets hit
-                ['AddAddress', 'Mem', '32bit', 0xab9020, '&', 'Value', '', 0x1fffffff],
+                stagePointer(),
                 ['', 'Delta', '32bit', 0x22f8, '=', 'Value', '', 0],
-                ['AddAddress', 'Mem', '32bit', 0xab9020, '&', 'Value', '', 0x1fffffff],
+                stagePointer(),
                 ['', 'Mem', '32bit', 0x22f8, '=', 'Value', '', 2], //Check if level ends
             ),
             alt2: $(
-                ['AddAddress', 'Mem', '32bit', 0xab9020, '&', 'Value', '', 0x1fffffff],
+                stagePointer(),
                 ['', 'Delta', '32bit', 0x22f4, '!=', 'Value', '', 4], 
-                ['AddAddress', 'Mem', '32bit', 0xab9020, '&', 'Value', '', 0x1fffffff],
+                stagePointer(),
                 ['', 'Mem', '32bit', 0x22f4, '=', 'Value', '', 4], //Check if flag gets hit
-                ['AddAddress', 'Mem', '32bit', 0xab9020, '&', 'Value', '', 0x1fffffff],
+                stagePointer(),
                 ['', 'Mem', '32bit', 0x22f8, '=', 'Value', '', 0],
             ),
         }
     })
 }
 
-//Level cap
-
 //Capture the flag
 
 //Create racing achievements
+//Level cap
+
+
 //No level cap
 for(const [stage, ID] of Object.entries(endRace)) {
     set.addAchievement({
@@ -572,11 +641,12 @@ for(const [stage, ID] of Object.entries(endRace)) {
     })
 }
 
-//Level cap
-
 //Timed challenge
 
 //Create missile range achievements
+//Level cap
+
+
 //No level cap
 for (const [stage, ID] of Object.entries(endRange)) {
     set.addAchievement({
@@ -587,32 +657,30 @@ for (const [stage, ID] of Object.entries(endRange)) {
             core: $(
                 ['OrNext', 'Mem', '32bit', 0xab7aa0, '=', 'Value', '', 0x1e0a],
                 ['', 'Mem', '32bit', 0xab7aa0, '=', 'Value', '', 0x1e05],
-                ['AddAddress', 'Mem', '32bit', 0xab9020, '&', 'Value', '', 0x1fffffff],
+                stagePointer(),
                 ['', 'Mem', '32bit', 0x2310, '=', 'Value', '', ID], //Check if level is correct
             ),
             alt1: $(
-                ['AddAddress', 'Mem', '32bit', 0xab9020, '&', 'Value', '', 0x1fffffff],
+                stagePointer(),
                 ['', 'Delta', '32bit', 0x22f4, '!=', 'Value', '', 2], 
-                ['AddAddress', 'Mem', '32bit', 0xab9020, '&', 'Value', '', 0x1fffffff],
+                stagePointer(),
                 ['', 'Mem', '32bit', 0x22f4, '=', 'Value', '', 2], //Check if flag gets hit
-                ['AddAddress', 'Mem', '32bit', 0xab9020, '&', 'Value', '', 0x1fffffff],
+                stagePointer(),
                 ['', 'Delta', '32bit', 0x22f8, '=', 'Value', '', 0],
-                ['AddAddress', 'Mem', '32bit', 0xab9020, '&', 'Value', '', 0x1fffffff],
+                stagePointer(),
                 ['', 'Mem', '32bit', 0x22f8, '=', 'Value', '', 2], //Check if level ends
             ),
             alt2: $(
-                ['AddAddress', 'Mem', '32bit', 0xab9020, '&', 'Value', '', 0x1fffffff],
+                stagePointer(),
                 ['', 'Delta', '32bit', 0x22f4, '!=', 'Value', '', 4], 
-                ['AddAddress', 'Mem', '32bit', 0xab9020, '&', 'Value', '', 0x1fffffff],
+                stagePointer(),
                 ['', 'Mem', '32bit', 0x22f4, '=', 'Value', '', 4], //Check if flag gets hit
-                ['AddAddress', 'Mem', '32bit', 0xab9020, '&', 'Value', '', 0x1fffffff],
+                stagePointer(),
                 ['', 'Mem', '32bit', 0x22f8, '=', 'Value', '', 0],
             ),
         }
     })
 }
-
-//Level cap
 
 //No base damage
 
@@ -656,71 +724,6 @@ for (const [name, classet] of Object.entries(heroes)) {
 }
 
 //Create class skill achievements
-//Max 1 level offsets
-let class1offsets = {
-    "Thunderific": 0xa270,
-    "Hellfire": 0xa274,
-    "Nova Nova": 0xa278,
-    "Venomist": 0xa27c,
-    "KanThunderific": 0xe4d0,
-    "KanHellfire": 0xe4d4,
-    "KanNovaNova": 0xe4d8,
-    "KanVenomist": 0xe4dc,
-}
-
-//Max 4 levels offsets
-let class4offsets = {
-    "Yarida": 0x9688,
-    "Kibadda": 0x9814,
-    "Destrobo": 0x9a24,
-    "Piekron": 0x9bb0,
-    "Pyokorider": 0x9cb8,
-    "Cannassault": 0x9d3c,
-    "Charibasa": 0x9dc0,
-    "Guardira": 0x9e44,
-    "Tondenga": 0x9ec8,
-    "Myamsar": 0x9f4c,
-    "Bowmunk": 0x9fd0,
-    "Alosson": 0xa0d8,
-    "Wondabarappa": 0xa15c,
-    "Jamsch": 0xa1e0,
-    "TonYarida": 0xaca8,
-    "TonKibadda": 0xae34,
-    "TonPiekron": 0xb1d0,
-    "TonPyokorider": 0xb2d8,
-    "TonCannassault": 0xb35c,
-    "TonCharibasa": 0xb3e0,
-    "ChinDestrobo": 0xc664,
-    "ChinGuardira": 0xca84,
-    "ChinTondenga": 0xcb08,
-    "ChinMyamsar": 0xcb8c,
-    "ChinBowmunk": 0xcc10,
-    "KanAlosson": 0xe338,
-    "KanWondabarappa": 0xe3bc,
-    "KanJamsch": 0xe440,
-}
-
-//Max 5 levels offsets
-let class5offsets = {
-    "Taterazay": 0x970c,
-    "Yumiyacha": 0x9790,
-    "Wooyari": 0x9c34,
-    "Grenburr": 0xa054,
-    "Singe": 0xa264,
-    "Volcano": 0xa268,
-    "FlashCrackBoom": 0xa26c,
-    "Pingrek": 0xa2e8,
-    "Cannogabang": 0xa36c,
-    "TonWooyari": 0xb254,
-    "ChinTaterazay": 0xc34c,
-    "ChinGrenburr": 0xcc94,
-    "KanYumiyacha": 0xd9f0,
-    "KanSinge": 0xe4c4,
-    "KanVolcano": 0xe4c8,
-    "KanFlashCrackBoom": 0xe4cc,
-    "KanPingrek": 0xe548,
-    "KanCannogabang": 0xe5cc,
-}
 
 function classSkillCheck(offset, treshold = 1.0) {
     return($(
@@ -775,6 +778,8 @@ set.addAchievement({
     description: "Master all class skills for a single character class",
     conditions: classSkillBuilder()
 })
+
+//Create equipment achievements
 
 //Create blacksmith achievements
 let blacksmithLevels = [1, 2, 3]
