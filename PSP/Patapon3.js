@@ -187,8 +187,52 @@ const kanClasses = {
     "Cannogabang": 0xe588,
 }
 
+const classLevels = {
+    "Yarida": 0x9644,
+    "Taterazay": 0x96c8,
+    "Yumiyacha": 0x974c,
+    "Kibadda": 0x97d0,
+    "Destrobo": 0x99e0,
+    "Piekron": 0x9b6c,
+    "Wooyari": 0x9bf0,
+    "Pyokorider": 0x9c74,
+    "Cannassault": 0x9cf8,
+    "Charibasa": 0x9d7c,
+    "Guardira": 0x9e00,
+    "Tondenga": 0x9e84,
+    "Myamsar": 0x9f08,
+    "Bowmunk": 0x9f8c,
+    "Grenburr": 0xa010,
+    "Alosson": 0xa094,
+    "Wondabarappa": 0xa118,
+    "Jamsch": 0xa19c,
+    "Oohoroc": 0xa220,
+    "Pingrek": 0xa2a4,
+    "Cannogabang": 0xa328,
+    "TYarida": 0xac64,
+    "TKibadda": 0xadf0,
+    "TPiekron": 0xb18c,
+    "TWooyari": 0xb210,
+    "TPyokorider": 0xb294,
+    "TCannassault": 0xb318,
+    "TCharibasa": 0xb39c,
+    "CTaterazay": 0xc308,
+    "CGuardira": 0xca40,
+    "CTondenga": 0xcac4,
+    "CMyamsar": 0xcb48,
+    "CBowmunk": 0xcbcc,
+    "CGrenburr": 0xcc50,
+    "KYumiyacha": 0xd9ac,
+    "KAlosson": 0xe2f4,
+    "KWondabarappa": 0xe378,
+    "KJamsch": 0xe3fc,
+    "KOohoroc": 0xe480,
+    "KPingrek": 0xe504,
+    "KCannogabang": 0xe588,
+}
+
 //Max 1 level offsets class skills
-let class1offsets = {
+const class1offsets = {
     "Thunderific": 0xa270,
     "Hellfire": 0xa274,
     "Nova Nova": 0xa278,
@@ -200,7 +244,7 @@ let class1offsets = {
 }
 
 //Max 4 levels offsets class skills
-let class4offsets = {
+const class4offsets = {
     "Yarida": 0x9688,
     "Kibadda": 0x9814,
     "Destrobo": 0x9a24,
@@ -232,7 +276,7 @@ let class4offsets = {
 }
 
 //Max 5 levels offsets class skills
-let class5offsets = {
+const class5offsets = {
     "Taterazay": 0x970c,
     "Yumiyacha": 0x9790,
     "Wooyari": 0x9c34,
@@ -406,55 +450,6 @@ function finishLevel(flag = 2) {
     ))
 }
 
-//Logic to clear a standard level (non VS mode)
-function clearLevel(levelID, levelType, singleAllowed, multiAllowed, dlc = false) {
-    let levelPointer = 0x2310;
-    let levelEnd = 7;
-    if (levelType == "Arena" || levelType == "Race")
-        levelEnd = 2;
-    if (dlc == true)
-        levelPointer = 0x236c;
-    let logic = {}
-    logic['core'] = $(
-        stagePointer(),
-        ['', 'Mem', '32bit', levelPointer, '=', 'Value', '', levelID], //Check if level is correct
-        stagePointer(),
-        ['', 'Delta', '32bit', 0x22f4, '!=', 'Value', '', 2], 
-        stagePointer(),
-        ['', 'Mem', '32bit', 0x22f4, '=', 'Value', '', 2], //Check if flag gets hit
-        stagePointer(),
-        ['', 'Delta', '32bit', 0x22f8, '=', 'Value', '', 0],
-        stagePointer(),
-        ['', 'Mem', '32bit', 0x22f8, '=', 'Value', '', levelEnd], //Check if level ends
-    )
-    let i = 1
-    if (levelType == 'Dungeon' && singleAllowed == true) {
-        logic['alt' + i] = inSinglePlayerDungeon()
-        i++
-    }
-    else if ((levelType == 'Level' || levelType == 'Race') && singleAllowed == true) {
-        logic['alt' + i] = inSingleplayerLevel()
-        i++
-    }
-    else if(levelType == 'Arena' && singleAllowed == true) {
-        logic['alt' + i] = inSingleVersus()
-        i++
-    }
-    if (levelType == 'Dungeon' && multiAllowed == true) {
-        logic['alt' + i] = inMultiplayerDungeon()
-        i++
-    }
-    else if((levelType == 'Level' || levelType == 'Race') && multiAllowed == true) {
-        logic['alt' + i] = inMultiplayerLevel()
-        i++
-    }
-    else if(levelType == 'Arena' && multiAllowed == true) {
-        logic['alt' + i] = inMultiVersus()
-        i++
-    }
-    return(logic)
-}
-
 function surrender() {
     let logic = {}
     logic = $(
@@ -529,6 +524,63 @@ function levelCheck(hero, level) {
         )
         i++
     }
+    return(logic)
+}
+
+function characterLevelCheck(ID, level) {
+    return($(['', 'Mem', '32bit', ID, '<=', 'Value', '', level]))
+}
+
+function maxLevel(level) {
+    let array = []
+    let logic = {}
+    for (const [character, offset] of Object.entries(classLevels)) {
+        array.push($(characterLevelCheck(offset, level)))
+    }
+    logic = $(
+        array[0],
+        array[1],
+        array[2],
+        array[3],
+        array[4],
+        array[5],
+        array[6],
+        array[7],
+        array[8],
+        array[9],
+        array[10],
+        array[11],
+        array[12],
+        array[13],
+        array[14],
+        array[15],
+        array[16],
+        array[17],
+        array[18],
+        array[19],
+        array[20],
+        array[21],
+        array[22],
+        array[23],
+        array[24],
+        array[25],
+        array[26],
+        array[27],
+        array[28],
+        array[29],
+        array[30],
+        array[31],
+        array[32],
+        array[33],
+        array[34],
+        array[35],
+        array[36],
+        array[37],
+        array[38],
+        array[39],
+        array[40],
+        array[41],
+    )
     return(logic)
 }
 
@@ -611,6 +663,28 @@ for (const [stage, ID] of Object.entries(singlePlayerDLC)) {
 
 //Create arena achievements
 //Level cap
+for (const [stage, ID] of Object.entries(arena)) {
+    let logic
+    set.addAchievement({
+        title: stage,
+        points: 0,
+        conditions: {
+            core:
+                $(
+                    checkLevel(ID[0]),
+                    inVersus(),
+                    maxLevel(ID[1]),
+                ),
+            alt1:
+                $(
+                    finishLevel(2),
+                ),
+            alt2: $(
+                finishLevel(4),
+            ),
+        }
+    })
+}
 
 //No level cap
 for (const [stage, ID] of Object.entries(endArena)) {
