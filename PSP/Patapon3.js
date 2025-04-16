@@ -1,4 +1,4 @@
-import { AchievementSet, define as $, orNext } from '@cruncheevos/core'
+import { AchievementSet, define as $, orNext, andNext, trigger, once, resetIf } from '@cruncheevos/core'
 const set = new AchievementSet({ gameId: 3507, title: 'Patapon 3' })
 
 const dungeons = {
@@ -358,8 +358,14 @@ function inMultiplayerLevel(flag = '') {
     return ($([flag, 'Mem', '32bit', 0xab7aa0, '=', 'Value', '', 0x1e05]))
 }
 
-function inSinglePlayerDungeon(flag = '') {
-    return ($([flag, 'Mem', '32bit', 0xab7aa0, '=', 'Value', '', 0x1e10]))
+function inSinglePlayerDungeon(flag = '', hits = 0) {
+    if (hits != 0) {
+        return ($(
+            ['AndNext', 'Delta', '32bit', 0xab7aa0, '!=', 'Value', '', 0x1e10],
+            [flag, 'Mem', '32bit', 0xab7aa0, '=', 'Value', '', 0x1e10, hits]
+        ))
+    }
+    return ($([flag, 'Mem', '32bit', 0xab7aa0, '=', 'Value', '', 0x1e10,]))
 }
 
 function inMultiplayerDungeon(flag = '') {
@@ -394,7 +400,7 @@ function infectionCheck() {
     return ($(['', 'Mem', '32bit', 0xd9851c, '=', 'Value', '', 0x00]))
 }
 
-function command(ID) {
+function command(ID, flag = '') {
 /**
     ID options
     0x00 - Pata Pata Pata Pon (Onward)
@@ -408,16 +414,13 @@ function command(ID) {
     0x08 - Pata Pon Pata Pon (Pause) (Singleplayer only)
     0x09 - Don Dodon Dodon (Summon)
     0xffffffff - Idle
-*/
-
-    let logic = {}
-    logic = $(
+*/ 
+    return($(
         stagePointer(),
-        ['', 'Delta', '32bit', 0x2338, '!=', 'Value', '', ID],
+        ['AndNext', 'Delta', '32bit', 0x2338, '!=', 'Value', '', ID],
         stagePointer(),
-        ['', 'Mem', '32bit', 0x2338, '=', 'Value', '', ID]
-    )
-    return(logic)
+        [flag, 'Mem', '32bit', 0x2338, '=', 'Value', '', ID]
+    ))
 }
 
 function summonEnd() {
@@ -431,13 +434,13 @@ function summonEnd() {
     return(logic)
 }
 
-function checkLevel(levelID, dlc = false) {
+function checkLevel(levelID, dlc = false, flag = '') {
     let levelPointer = 0x2310;
     if (dlc == true)
         levelPointer = 0x236c;
     return($(
         stagePointer(),
-        ['', 'Mem', '32bit', levelPointer, '=', 'Value', '', levelID], //Check if level is correct
+        [flag, 'Mem', '32bit', levelPointer, '=', 'Value', '', levelID], //Check if level is correct
     ))
 }
 
@@ -532,55 +535,10 @@ function characterLevelCheck(ID, level) {
 }
 
 function maxLevel(level) {
-    let array = []
-    let logic = {}
+    let logic = []
     for (const [character, offset] of Object.entries(classLevels)) {
-        array.push($(characterLevelCheck(offset, level)))
+        logic.push($(characterPointer(), characterLevelCheck(offset, level)))
     }
-    logic = $(
-        array[0],
-        array[1],
-        array[2],
-        array[3],
-        array[4],
-        array[5],
-        array[6],
-        array[7],
-        array[8],
-        array[9],
-        array[10],
-        array[11],
-        array[12],
-        array[13],
-        array[14],
-        array[15],
-        array[16],
-        array[17],
-        array[18],
-        array[19],
-        array[20],
-        array[21],
-        array[22],
-        array[23],
-        array[24],
-        array[25],
-        array[26],
-        array[27],
-        array[28],
-        array[29],
-        array[30],
-        array[31],
-        array[32],
-        array[33],
-        array[34],
-        array[35],
-        array[36],
-        array[37],
-        array[38],
-        array[39],
-        array[40],
-        array[41],
-    )
     return(logic)
 }
 
@@ -608,6 +566,20 @@ for (const [stage, ID] of Object.entries(dungeons)) {
         )
     })
 }
+
+//Tomb of Tolerance challenge
+set.addAchievement({
+    title: "Trap Filled Tomb",
+    points: 10,
+    conditions: $(
+        checkLevel(0x110, false, 'OrNext'),
+        checkLevel(0x111),
+        inSinglePlayerDungeon('', 1),
+        trigger(finishLevel(5)),
+        command(0x05, 'ResetIf'),
+        ['ResetIf', 'Mem', '32bit', 0xab7aa0, '!=', 'Value', '', 0x1e10],
+    )
+})
 
 //Create multi dungeon singleplayer challenge achievements
 for (const [stage, ID] of Object.entries(multiDungeons)) {
@@ -643,7 +615,7 @@ for (const [stage, ID] of Object.entries(dlc)) {
         conditions: $(
             checkLevel(ID, true),
             finishLevel(),
-            inLevel(),
+            inSingleplayerLevel(),
         )
     })
 }
@@ -664,16 +636,57 @@ for (const [stage, ID] of Object.entries(singlePlayerDLC)) {
 //Create arena achievements
 //Level cap
 for (const [stage, ID] of Object.entries(arena)) {
-    let logic
     set.addAchievement({
         title: stage,
         points: 0,
+        type: 'missable',
         conditions: {
             core:
                 $(
                     checkLevel(ID[0]),
-                    inVersus(),
-                    maxLevel(ID[1]),
+                    inSingleVersus(),
+                    maxLevel(ID[1])[0],
+                    maxLevel(ID[1])[1],
+                    maxLevel(ID[1])[2],
+                    maxLevel(ID[1])[3],
+                    maxLevel(ID[1])[4],
+                    maxLevel(ID[1])[5],
+                    maxLevel(ID[1])[6],
+                    maxLevel(ID[1])[7],
+                    maxLevel(ID[1])[8],
+                    maxLevel(ID[1])[9],
+                    maxLevel(ID[1])[10],
+                    maxLevel(ID[1])[11],
+                    maxLevel(ID[1])[12],
+                    maxLevel(ID[1])[13],
+                    maxLevel(ID[1])[14],
+                    maxLevel(ID[1])[15],
+                    maxLevel(ID[1])[16],
+                    maxLevel(ID[1])[17],
+                    maxLevel(ID[1])[18],
+                    maxLevel(ID[1])[19],
+                    maxLevel(ID[1])[20],
+                    maxLevel(ID[1])[21],
+                    maxLevel(ID[1])[22],
+                    maxLevel(ID[1])[23],
+                    maxLevel(ID[1])[24],
+                    maxLevel(ID[1])[25],
+                    maxLevel(ID[1])[26],
+                    maxLevel(ID[1])[27],
+                    maxLevel(ID[1])[28],
+                    maxLevel(ID[1])[29],
+                    maxLevel(ID[1])[30],
+                    maxLevel(ID[1])[31],
+                    maxLevel(ID[1])[32],
+                    maxLevel(ID[1])[33],
+                    maxLevel(ID[1])[34],
+                    maxLevel(ID[1])[35],
+                    maxLevel(ID[1])[36],
+                    maxLevel(ID[1])[37],
+                    maxLevel(ID[1])[38],
+                    maxLevel(ID[1])[39],
+                    maxLevel(ID[1])[40],
+                    maxLevel(ID[1])[41],
                 ),
             alt1:
                 $(
@@ -708,10 +721,91 @@ for (const [stage, ID] of Object.entries(endArena)) {
 }
 
 //Capture the flag
+for (const [stage, ID] of Object.entries(arena)) {
+    set.addAchievement({
+        title: stage + " flag victory",
+        points: 0,
+        type: 'missable',
+        description: "Finish " + stage,
+        conditions: $(
+                checkLevel(ID[0]),
+                inSingleVersus(),
+                finishLevel(2),
+        )
+    })
+}
+
+for (const [stage, ID] of Object.entries(endArena)) {
+    set.addAchievement({
+        title: stage + " flag victory",
+        points: 0,
+        description: "Finish " + stage,
+        conditions: $(
+                checkLevel(ID),
+                inSingleVersus(),
+                finishLevel(2),
+        )
+    })
+}
 
 //Create racing achievements
 //Level cap
-
+for (const [stage, ID] of Object.entries(race)) {
+    set.addAchievement({
+        title: stage,
+        points: 0,
+        type: 'missable',
+        conditions: 
+                $(
+                    checkLevel(ID[0]),
+                    finishLevel(),
+                    inSingleplayerLevel(),
+                    maxLevel(ID[1])[0],
+                    maxLevel(ID[1])[1],
+                    maxLevel(ID[1])[2],
+                    maxLevel(ID[1])[3],
+                    maxLevel(ID[1])[4],
+                    maxLevel(ID[1])[5],
+                    maxLevel(ID[1])[6],
+                    maxLevel(ID[1])[7],
+                    maxLevel(ID[1])[8],
+                    maxLevel(ID[1])[9],
+                    maxLevel(ID[1])[10],
+                    maxLevel(ID[1])[11],
+                    maxLevel(ID[1])[12],
+                    maxLevel(ID[1])[13],
+                    maxLevel(ID[1])[14],
+                    maxLevel(ID[1])[15],
+                    maxLevel(ID[1])[16],
+                    maxLevel(ID[1])[17],
+                    maxLevel(ID[1])[18],
+                    maxLevel(ID[1])[19],
+                    maxLevel(ID[1])[20],
+                    maxLevel(ID[1])[21],
+                    maxLevel(ID[1])[22],
+                    maxLevel(ID[1])[23],
+                    maxLevel(ID[1])[24],
+                    maxLevel(ID[1])[25],
+                    maxLevel(ID[1])[26],
+                    maxLevel(ID[1])[27],
+                    maxLevel(ID[1])[28],
+                    maxLevel(ID[1])[29],
+                    maxLevel(ID[1])[30],
+                    maxLevel(ID[1])[31],
+                    maxLevel(ID[1])[32],
+                    maxLevel(ID[1])[33],
+                    maxLevel(ID[1])[34],
+                    maxLevel(ID[1])[35],
+                    maxLevel(ID[1])[36],
+                    maxLevel(ID[1])[37],
+                    maxLevel(ID[1])[38],
+                    maxLevel(ID[1])[39],
+                    maxLevel(ID[1])[40],
+                    maxLevel(ID[1])[41],
+                ),
+        
+    })
+}
 
 //No level cap
 for(const [stage, ID] of Object.entries(endRace)) {
@@ -731,7 +825,69 @@ for(const [stage, ID] of Object.entries(endRace)) {
 
 //Create missile range achievements
 //Level cap
-
+for (const [stage, ID] of Object.entries(range)) {
+    set.addAchievement({
+        title: stage,
+        points: 0,
+        type: 'missable',
+        conditions: {
+            core:
+                $(
+                    checkLevel(ID[0]),
+                    inSingleVersus(),
+                    maxLevel(ID[1])[0],
+                    maxLevel(ID[1])[1],
+                    maxLevel(ID[1])[2],
+                    maxLevel(ID[1])[3],
+                    maxLevel(ID[1])[4],
+                    maxLevel(ID[1])[5],
+                    maxLevel(ID[1])[6],
+                    maxLevel(ID[1])[7],
+                    maxLevel(ID[1])[8],
+                    maxLevel(ID[1])[9],
+                    maxLevel(ID[1])[10],
+                    maxLevel(ID[1])[11],
+                    maxLevel(ID[1])[12],
+                    maxLevel(ID[1])[13],
+                    maxLevel(ID[1])[14],
+                    maxLevel(ID[1])[15],
+                    maxLevel(ID[1])[16],
+                    maxLevel(ID[1])[17],
+                    maxLevel(ID[1])[18],
+                    maxLevel(ID[1])[19],
+                    maxLevel(ID[1])[20],
+                    maxLevel(ID[1])[21],
+                    maxLevel(ID[1])[22],
+                    maxLevel(ID[1])[23],
+                    maxLevel(ID[1])[24],
+                    maxLevel(ID[1])[25],
+                    maxLevel(ID[1])[26],
+                    maxLevel(ID[1])[27],
+                    maxLevel(ID[1])[28],
+                    maxLevel(ID[1])[29],
+                    maxLevel(ID[1])[30],
+                    maxLevel(ID[1])[31],
+                    maxLevel(ID[1])[32],
+                    maxLevel(ID[1])[33],
+                    maxLevel(ID[1])[34],
+                    maxLevel(ID[1])[35],
+                    maxLevel(ID[1])[36],
+                    maxLevel(ID[1])[37],
+                    maxLevel(ID[1])[38],
+                    maxLevel(ID[1])[39],
+                    maxLevel(ID[1])[40],
+                    maxLevel(ID[1])[41],
+                ),
+            alt1:
+                $(
+                    finishLevel(2),
+                ),
+            alt2: $(
+                finishLevel(4),
+            ),
+        }
+    })
+}
 
 //No level cap
 for (const [stage, ID] of Object.entries(endRange)) {
