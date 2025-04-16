@@ -952,7 +952,6 @@ for (const [name, classet] of Object.entries(heroes)) {
 }
 
 //Create class skill achievements
-
 function classSkillCheck(offset, treshold = 1.0) {
     return($(
         characterPointer(),
@@ -1008,6 +1007,256 @@ set.addAchievement({
 })
 
 //Create equipment achievements
+//Unique
+
+//Super unique
+
+//Equipment sets
+//2 piece
+set.addAchievement({
+    title: "2 piece set",
+    points: 5,
+    description: "Equip your Uberhero with a 2 piece equipment set consisting of unique and super unique pieces of equipment",
+    conditions: {
+        core: $(
+            loadProtect(),
+            characterPointer(),
+            ['OrNext', 'Delta', '16bit', 0xf2cc, '!=', 'Mem', '16bit', 0xf2cc],
+            characterPointer(),
+            ['OrNext', 'Delta', '16bit', 0xf2e4, '!=', 'Mem', '16bit', 0xf2e4],
+            characterPointer(),
+            ['', 'Delta', '16bit', 0xf2f0, '!=', 'Mem', '16bit', 0xf2f0],
+        ),
+        alt1: $(
+            characterPointer(),
+            ['', 'Mem', '16bit', 0xf2cc, '=', 'Value', '', 0xc5],
+            characterPointer(),
+            ['', 'Mem', '16bit', 0xf2e4, '=', 'Value', '', 0x289],
+        ),
+        alt2: $(
+            characterPointer(),
+            ['', 'Mem', '16bit', 0xf2cc, '=', 'Value', '', 0xda],
+            characterPointer(),
+            ['', 'Mem', '16bit', 0xf2e4, '=', 'Value', '', 0x28a],
+        ),
+        alt3: $(
+            characterPointer(),
+            ['', 'Mem', '16bit', 0xf2e4, '=', 'Value', '', 0x28c],
+            characterPointer(),
+            ['', 'Mem', '16bit', 0xf2f0, '=', 'Value', '', 0x2bf],
+        ),
+        alt4: $(
+            characterPointer(),
+            ['', 'Mem', '16bit', 0xf2cc, '=', 'Value', '', 0x163],
+            characterPointer(),
+            ['', 'Mem', '16bit', 0xf2e4, '=', 'Value', '', 0x28b],
+        ),
+        alt5: $(
+            characterPointer(),
+            ['', 'Mem', '16bit', 0xf2cc, '=', 'Value', '', 0x1cc],
+            characterPointer(),
+            ['', 'Mem', '16bit', 0xf2e4, '=', 'Value', '', 0x28c],
+        ),
+        alt6: $(
+            characterPointer(),
+            ['', 'Mem', '16bit', 0xf2cc, '=', 'Value', '', 0x1b7],
+            characterPointer(),
+            ['', 'Mem', '16bit', 0xf2e4, '=', 'Value', '', 0x28b],
+        ),
+        alt7: $(
+            characterPointer(),
+            ['', 'Mem', '16bit', 0xf2cc, '=', 'Value', '', 0x14e],
+            characterPointer(),
+            ['', 'Mem', '16bit', 0xf2e4, '=', 'Value', '', 0x28c],
+        ),
+        alt8: $(
+            characterPointer(),
+            ['', 'Mem', '16bit', 0xf2cc, '=', 'Value', '', 0x1a2],
+            characterPointer(),
+            ['', 'Mem', '16bit', 0xf2e4, '=', 'Value', '', 0x289],
+        ),
+        alt9: $(
+            characterPointer(),
+            ['', 'Mem', '16bit', 0xf2cc, '=', 'Value', '', 0x249],
+            characterPointer(),
+            ['', 'Mem', '16bit', 0xf2f0, '=', 'Value', '', 0x2ff],
+        ),
+        alt10: $(
+            characterPointer(),
+            ['', 'Mem', '16bit', 0xf2cc, '=', 'Value', '', 0x26d],
+            characterPointer(),
+            ['', 'Mem', '16bit', 0xf2e4, '=', 'Value', '', 0x28b],
+        )
+    }
+})
+
+//3 piece
+set.addAchievement({
+    title: "3 piece set",
+    points: 5,
+    description: "Equip your Uberhero with a 3 piece equipment set consisting of unique and super unique pieces of equipment",
+    conditions: {
+        core: $(
+            loadProtect(),
+            characterPointer(),
+            ['OrNext', 'Delta', '16bit', 0xf2cc, '!=', 'Mem', '16bit', 0xf2cc],
+            characterPointer(),
+            ['OrNext', 'Delta', '16bit', 0xf2d8, '!=', 'Mem', '16bit', 0xf2d8],
+            characterPointer(),
+            ['OrNext', 'Delta', '16bit', 0xf2e4, '!=', 'Mem', '16bit', 0xf2e4],
+            characterPointer(),
+            ['OrNext', 'Delta', '16bit', 0xf2f0, '!=', 'Mem', '16bit', 0xf2f0],
+            characterPointer(),
+            ['', 'Delta', '16bit', 0xf2fc, '!=', 'Mem', '16bit', 0xf2fc],
+        ),
+        alt1: $(
+            characterPointer(),
+            ['', 'Mem', '16bit', 0xf2cc, '=', 'Value', '', 0x12c],
+            characterPointer(),
+            ['', 'Mem', '16bit', 0xf2e4, '=', 'Value', '', 0x288],
+            characterPointer(),
+            ['', 'Mem', '16bit', 0xf2f0, '=', 'Value', '', 0x2a8],
+        ),
+        alt2: $(
+            characterPointer(),
+            ['', 'Mem', '16bit', 0xf2cc, '=', 'Value', '', 0xf8],
+            characterPointer(),
+            ['', 'Mem', '16bit', 0xf2e4, '=', 'Value', '', 0x28b],
+            characterPointer(),
+            ['', 'Mem', '16bit', 0xf2fc, '=', 'Value', '', 0x329],
+        ),
+        alt3: $(
+            characterPointer(),
+            ['', 'Mem', '16bit', 0xf2cc, '=', 'Value', '', 0x178],
+            characterPointer(),
+            ['', 'Mem', '16bit', 0xf2e4, '=', 'Value', '', 0x28a],
+            characterPointer(),
+            ['', 'Mem', '16bit', 0xf2fc, '=', 'Value', '', 0x348],
+        ),
+        alt4: $(
+            characterPointer(),
+            ['', 'Mem', '16bit', 0xf2cc, '=', 'Value', '', 0x91],
+            characterPointer(),
+            ['', 'Mem', '16bit', 0xf2e4, '=', 'Value', '', 0x288],
+            characterPointer(),
+            ['', 'Mem', '16bit', 0xf2f0, '=', 'Value', '', 0x2aa],
+        ),
+        alt5: $(
+            characterPointer(),
+            ['', 'Mem', '16bit', 0xf2cc, '=', 'Value', '', 0x115],
+            characterPointer(),
+            ['', 'Mem', '16bit', 0xf2d8, '=', 'Value', '', 0x115],
+            characterPointer(),
+            ['', 'Mem', '16bit', 0xf2e4, '=', 'Value', '', 0x28a],
+        ),
+        alt6: $(
+            characterPointer(),
+            ['', 'Mem', '16bit', 0xf2cc, '=', 'Value', '', 0x118],
+            characterPointer(),
+            ['', 'Mem', '16bit', 0xf2d8, '=', 'Value', '', 0x118],
+            characterPointer(),
+            ['', 'Mem', '16bit', 0xf2e4, '=', 'Value', '', 0x289],
+        ),
+        alt7: $(
+            characterPointer(),
+            ['', 'Mem', '16bit', 0xf2cc, '=', 'Value', '', 0x1f6],
+            characterPointer(),
+            ['', 'Mem', '16bit', 0xf2e4, '=', 'Value', '', 0x288],
+            characterPointer(),
+            ['', 'Mem', '16bit', 0xf2f0, '=', 'Value', '', 0x2ea],
+        ),
+        alt8: $(
+            characterPointer(),
+            ['', 'Mem', '16bit', 0xf2cc, '=', 'Value', '', 0x20b],
+            characterPointer(),
+            ['', 'Mem', '16bit', 0xf2e4, '=', 'Value', '', 0x28b],
+            characterPointer(),
+            ['', 'Mem', '16bit', 0xf2f0, '=', 'Value', '', 0x2e9],
+        ),
+        alt9: $(
+            characterPointer(),
+            ['', 'Mem', '16bit', 0xf2cc, '=', 'Value', '', 0x1e1],
+            characterPointer(),
+            ['', 'Mem', '16bit', 0xf2e4, '=', 'Value', '', 0x288],
+            characterPointer(),
+            ['', 'Mem', '16bit', 0xf2f0, '=', 'Value', '', 0x2e8],
+        ),
+        alt10: $(
+            characterPointer(),
+            ['', 'Mem', '16bit', 0xf2cc, '=', 'Value', '', 0x22a],
+            characterPointer(),
+            ['', 'Mem', '16bit', 0xf2e4, '=', 'Value', '', 0x28c],
+            characterPointer(),
+            ['', 'Mem', '16bit', 0xf2f0, '=', 'Value', '', 0x2ff],
+        )
+    }
+})
+
+//4 piece set
+set.addAchievement({
+    title: "4 piece set",
+    points: 10,
+    description: "Equip your Uberhero with a 3 piece equipment set consisting of unique and super unique pieces of equipment",
+    conditions: {
+        core: $(
+            loadProtect(),
+            characterPointer(),
+            ['OrNext', 'Delta', '16bit', 0xf2cc, '!=', 'Mem', '16bit', 0xf2cc],
+            characterPointer(),
+            ['OrNext', 'Delta', '16bit', 0xf2d8, '!=', 'Mem', '16bit', 0xf2d8],
+            characterPointer(),
+            ['OrNext', 'Delta', '16bit', 0xf2e4, '!=', 'Mem', '16bit', 0xf2e4],
+            characterPointer(),
+            ['OrNext', 'Delta', '16bit', 0xf2f0, '!=', 'Mem', '16bit', 0xf2f0],
+            characterPointer(),
+            ['', 'Delta', '16bit', 0xf2fc, '!=', 'Mem', '16bit', 0xf2fc],
+        ),
+        alt1: $(
+            characterPointer(),
+            ['', 'Mem', '16bit', 0xf2cc, '=', 'Value', '', 0xf5],
+            characterPointer(),
+            ['', 'Mem', '16bit', 0xf2e4, '=', 'Value', '', 0x28a],
+            characterPointer(),
+            ['', 'Mem', '16bit', 0xf2f0, '=', 'Value', '', 0x2a9],
+            characterPointer(),
+            ['', 'Mem', '16bit', 0xf2fc, '=', 'Value', '', 0x313],
+        ),
+        alt2: $(
+            characterPointer(),
+            ['', 'Mem', '16bit', 0xf2cc, '=', 'Value', '', 0xf7],
+            characterPointer(),
+            ['', 'Mem', '16bit', 0xf2e4, '=', 'Value', '', 0x289],
+            characterPointer(),
+            ['', 'Mem', '16bit', 0xf2f0, '=', 'Value', '', 0x2a7],
+            characterPointer(),
+            ['', 'Mem', '16bit', 0xf2fc, '=', 'Value', '', 0x347],
+        ),
+        alt3: $(
+            characterPointer(),
+            ['', 'Mem', '16bit', 0xf2cc, '=', 'Value', '', 0x18d],
+            characterPointer(),
+            ['', 'Mem', '16bit', 0xf2e4, '=', 'Value', '', 0x289],
+            characterPointer(),
+            ['', 'Mem', '16bit', 0xf2f0, '=', 'Value', '', 0x2aa],
+            characterPointer(),
+            ['', 'Mem', '16bit', 0xf2fc, '=', 'Value', '', 0x2d5],
+        ),
+        alt4: $(
+            characterPointer(),
+            ['OrNext', 'Mem', '16bit', 0xf2cc, '=', 'Value', '', 0xa6],
+            characterPointer(),
+            ['', 'Mem', '16bit', 0xf2cc, '=', 'Value', '', 0x139],
+            characterPointer(),
+            ['OrNext', 'Mem', '16bit', 0xf2d8, '=', 'Value', '', 0xa6],
+            characterPointer(),
+            ['', 'Mem', '16bit', 0xf2d8, '=', 'Value', '', 0x139],
+            characterPointer(),
+            ['', 'Mem', '16bit', 0xf2e4, '=', 'Value', '', 0x28b],
+            characterPointer(),
+            ['', 'Mem', '16bit', 0xf2f0, '=', 'Value', '', 0x2d3],
+        )
+    }
+})
 
 //Create blacksmith achievements
 let blacksmithLevels = [1, 2, 3]
