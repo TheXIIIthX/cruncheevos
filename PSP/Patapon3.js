@@ -1,4 +1,4 @@
-import { AchievementSet, define as $, orNext, andNext, trigger, once, resetIf } from '@cruncheevos/core'
+import { AchievementSet, define as $, orNext, andNext, trigger, once, resetIf, RichPresence } from '@cruncheevos/core'
 const set = new AchievementSet({ gameId: 3507, title: 'Patapon 3' })
 
 const dungeons = {
@@ -350,6 +350,29 @@ function gameState(state) {
     return ($(['', 'Mem', '32bit', 0xab7aa0, '=', 'Value', '', state]))
 }
 
+function multiplayerOnly() {
+    return ($(['', 'Mem', 'Bit0', 0xab95b4, '=', 'Value', '', 1]))
+}
+
+function soloPlay() {
+    return($(
+        multiplayerOnly(),
+        characterPointer(),
+        ['', 'Mem', 'Bit0', 0x2b4e8, '=', 'Value', '', 0],
+        characterPointer(),
+        ['', 'Mem', 'Bit0', 0x2b528, '=', 'Value', '', 0],
+        characterPointer(),
+        ['', 'Mem', 'Bit0', 0x2b568, '=', 'Value', '', 0],
+    ))
+}
+
+function singleplayerOnly() {
+    return ($(
+        ['OrNext', 'Mem', 'Bit0', 0xab95b4, '=', 'Value', '', 0],
+        soloPlay(),
+    ))
+}
+
 function inSingleplayerLevel(flag = '') {
     return ($([flag, 'Mem', '32bit', 0xab7aa0, '=', 'Value', '', 0x1e0a]))
 }
@@ -589,7 +612,8 @@ for (const [stage, ID] of Object.entries(multiDungeons)) {
         conditions: $(
             checkLevel(ID),
             finishLevel(), 
-            inSinglePlayerDungeon(),
+            inDungeon(),
+            singleplayerOnly(),
         )
     })
 }
@@ -615,7 +639,8 @@ for (const [stage, ID] of Object.entries(dlc)) {
         conditions: $(
             checkLevel(ID, true),
             finishLevel(),
-            inSingleplayerLevel(),
+            inLevel(),
+            singleplayerOnly(),
         )
     })
 }
@@ -628,7 +653,8 @@ for (const [stage, ID] of Object.entries(singlePlayerDLC)) {
         conditions: $(
             checkLevel(ID, true),
             finishLevel(),
-            inSingleplayerLevel(),
+            inLevel(),
+            singleplayerOnly(),
         )
     })
 }
@@ -644,7 +670,8 @@ for (const [stage, ID] of Object.entries(arena)) {
             core:
                 $(
                     checkLevel(ID[0]),
-                    inSingleVersus(),
+                    inVersus(),
+                    singleplayerOnly(),
                     maxLevel(ID[1])[0],
                     maxLevel(ID[1])[1],
                     maxLevel(ID[1])[2],
@@ -729,7 +756,8 @@ for (const [stage, ID] of Object.entries(arena)) {
         description: "Finish " + stage,
         conditions: $(
                 checkLevel(ID[0]),
-                inSingleVersus(),
+                inVersus(),
+                singleplayerOnly(),
                 finishLevel(2),
         )
     })
@@ -742,7 +770,8 @@ for (const [stage, ID] of Object.entries(endArena)) {
         description: "Finish " + stage,
         conditions: $(
                 checkLevel(ID),
-                inSingleVersus(),
+                inVersus(),
+                singleplayerOnly(),
                 finishLevel(2),
         )
     })
@@ -759,7 +788,8 @@ for (const [stage, ID] of Object.entries(race)) {
                 $(
                     checkLevel(ID[0]),
                     finishLevel(),
-                    inSingleplayerLevel(),
+                    inLevel(),
+                    singleplayerOnly(),
                     maxLevel(ID[1])[0],
                     maxLevel(ID[1])[1],
                     maxLevel(ID[1])[2],
@@ -834,7 +864,8 @@ for (const [stage, ID] of Object.entries(range)) {
             core:
                 $(
                     checkLevel(ID[0]),
-                    inSingleVersus(),
+                    inVersus(),
+                    singleplayerOnly(),
                     maxLevel(ID[1])[0],
                     maxLevel(ID[1])[1],
                     maxLevel(ID[1])[2],
@@ -1283,7 +1314,8 @@ for(const [title, dist] of Object.entries(marchingcheevos)) {
         conditions: $(
             stagePointer(),
             ['', 'Mem', '32bit', 0x236c, '=', 'Value', '', 0x28],
-            inSingleplayerLevel(),
+            inLevel(),
+            singleplayerOnly(),
             distanceCheck(dist),
         )
     })
@@ -1327,5 +1359,8 @@ for(const [summon, ID] of Object.entries(summons)) {
         }
     })
 }
+
+
+
 
 export default set
