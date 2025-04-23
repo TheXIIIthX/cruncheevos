@@ -467,12 +467,12 @@ function checkLevel(levelID, dlc = false, flag = '') {
     ))
 }
 
-function finishLevel(flag = 2) {
+function finishLevel(levelEnd = 2, flag = '') {
     return($(
         stagePointer(),
-        ['', 'Delta', '32bit', 0x22f4, '!=', 'Value', '', flag], 
+        [flag, 'Delta', '32bit', 0x22f4, '!=', 'Value', '', levelEnd], 
         stagePointer(),
-        ['', 'Mem', '32bit', 0x22f4, '=', 'Value', '', flag], //Check if flag gets hit
+        [flag, 'Mem', '32bit', 0x22f4, '=', 'Value', '', levelEnd], //Check if flag gets hit
     ))
 }
 
@@ -947,20 +947,22 @@ for (const [stage, ID] of Object.entries(endRange)) {
 set.addAchievement({
     title: "Battle Penguin",
     points: 10,
-    description: "Finish a level playing as solo Pingrek",
+    description: "Finish a level outside of the Patapon Training Grounds with solo Pingrek",
     conditions: {
         core: $(
                 soloPlay(),
                 characterPointer(),
                 ['', 'Mem', '32bit', 0xf280, '=', 'Value', '', 26],
+                stagePointer(),
+                ['', 'Mem', '32bit', 0x236c, '!=', 'Value', '', 40],
             ),
         alt1: $(
-            inMultiplayerLevel(),
-            finishLevel(),
+            trigger(inMultiplayerLevel()),
+            finishLevel(2, 'Trigger'),
         ),
         alt2: $(
-            inMultiVersus(),
-            finishLevel(4),
+            trigger(inMultiVersus()),
+            finishLevel(4, 'Trigger'),
         ),
     }
 })
