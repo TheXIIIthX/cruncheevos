@@ -943,6 +943,28 @@ for (const [stage, ID] of Object.entries(endRange)) {
 
 //No base damage
 
+//Create solo Pingrek achievement
+set.addAchievement({
+    title: "Battle Penguin",
+    points: 10,
+    description: "Finish a level playing as solo Pingrek",
+    conditions: {
+        core: $(
+                soloPlay(),
+                characterPointer(),
+                ['', 'Mem', '32bit', 0xf280, '=', 'Value', '', 26],
+            ),
+        alt1: $(
+            inMultiplayerLevel(),
+            finishLevel(),
+        ),
+        alt2: $(
+            inMultiVersus(),
+            finishLevel(4),
+        ),
+    }
+})
+
 //Create Trifecta Uberhero unlock achievement
 set.addAchievement({
     title: "Uberhero Trifecta",
