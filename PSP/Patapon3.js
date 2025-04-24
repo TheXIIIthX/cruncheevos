@@ -309,6 +309,162 @@ const summons = {
     "Yamagami": [0x4e1ff, 0x6689f],
 }
 
+const uniqueWeapons = {
+    "Flangil": 0x8d,
+    "Drigonlay": 0x8e,
+    "Tsuyugiri": 0xa4,
+    "Murapata": 0xa5,
+    "Gesundbeit": 0xc1,
+    "Yumspar": 0xc2,
+    "Goldora": 0xd8,
+    "Pointidon": 0xd9,
+    "Romulus' Halberd": 0xf5,
+    "Incensar": 0xf6,
+    "Deathwringer": 0x114,
+    "Great Golem Arm": 0x115,
+    "Crablessa": 0x12b,
+    "Heltopay's Kiss": 0x137,
+    "Excalipon": 0x14c,
+    "Quagar": 0x14d,
+    "Mono Hoshibo": 0x161,
+    "Onigiri's Greatblade": 0x162,
+    "Hilkinga's Chillaxe": 0x176,
+    "Susurapon": 0x177,
+    "Genmaru": 0x18b,
+    "Mjollnir": 0x18c,
+    "Bow of Apollopon": 0x1a0,
+    "Yamibashiri": 0x1a1,
+    "Crossbow of Faible": 0x1b5,
+    "The Machinator": 0x1ca,
+    "Healixir Horn": 0x1df,
+    "Dragonap Horn": 0x1e0,
+    "Horn of Homugai": 0x1f4,
+    "Horns of Hamlin": 0x209,
+    "Thunderstorm Staff": 0x226,
+    "Firefighter Sceptre": 0x245,
+    "Defrost Sceptre": 0x246,
+    "Bonkadonk Cannon": 0x254,
+    "Euryalus": 0x260,
+    "Hoirenho": 0x26c,
+    "Demonic Dark Claw": 0x377,
+    "Gardsormr Ice Claw": 0x378,
+    "Quickflash Scythe": 0x38c,
+    "Deathsoul Scythe": 0x38d,
+}
+
+const uniqueWeaponsSlot2 = {
+    "Tsuyugiri": 0xa4,
+    "Murapata": 0xa5,
+    "Deathwringer": 0x114,
+    "Great Golem Arm": 0x115,
+    "Crablessa": 0x12b,
+    "Heltopay's Kiss": 0x137,
+    "Demonic Dark Claw": 0x377,
+    "Gardsormr Ice Claw": 0x378,
+}
+
+const uniqueHelms = {
+    "Tahla Helm": 0x288,
+    "Bunny Head": 0x289,
+    "Shubaba Gale Kabuto": 0x3ea, 
+}
+
+const uniqueArmor = {
+    "Stinger Shield": 0x2a7,
+    "Galapagoth Shield": 0x2a8,
+    "Aegis": 0x2be,
+    "Tokoyomamori": 0x2bf,
+    "Frayola's Spaulders": 0x2d3,
+    "Lonestars": 0x2d4,
+    "Cape of Ulysses": 0x2e8,
+    "Freja's Cape": 0x2e9,
+    "Alarium Stompers": 0x2fd,
+    "Moonwalkers": 0x2fe,
+    "Sibericus the Frosty": 0x312,
+    "Bullgam the Bully": 0x313,
+    "Deep Impact": 0x327,
+    "The Silencer": 0x344,
+    "Ruemelter": 0x345,
+}
+
+const superUniqueWeapons = {
+    "Fendus": 0x8f,
+    "Castram": 0x90,
+    "The Butcher": 0x91,
+    "Blade of Astria": 0xa6,
+    "Palkyria's Flight": 0xc3,
+    "Dokaknel's Fang": 0xc4,
+    "Poseipon's Trident": 0xc5,
+    "Super Cedar Log": 0xda,
+    "Gugnir": 0xf7,
+    "Battachin": 0xf8,
+    "Murakumon": 0xf9,
+    "Piringar Zingar": 0x116,
+    "Chosan's Arm": 0x117,
+    "Natura's Touch": 0x118,
+    "Feisho": 0x12c,
+    "Goliamon's Shiv": 0x138,
+    "Holymadda Shiv": 0x139,
+    "Serberker": 0x14e,
+    "Murasamune": 0x163,
+    "Axe of Hanboon": 0x178,
+    "Thor": 0x18d,
+    "Raijinpon's Bow": 0x1a2,
+    "Krakabom Crossbow": 0x1b6,
+    "Yoichiro": 0x1b7,
+    "Illiamtel's Overture": 0x1cb,
+    "Teskatori Shooter": 0x1cc,
+    "Sonic Demonslayer": 0x1e1,
+    "Megaslayer": 0x1f5,
+    "Great Howl": 0x1f6,
+    "Siren's Song": 0x20a,
+    "Spriggan's Song": 0x20b,
+    "Flamesea Staff": 0x227,
+    "Holymist Staff": 0x228,
+    "Darkvenom Staff": 0x229,
+    "Jewelsword Staff": 0x22a,
+    "Antivenom Sceptre": 0x247,
+    "Sleepless Sceptre": 0x248,
+    "Maelstrom Sceptre": 0x249,
+    "Lullablight": 0x255,
+    "Dreadmare": 0x261,
+    "Ichigeki": 0x26d,
+    "Bengal Tiger Claw": 0x379,
+    "Great God Scythe": 0x38e,
+}
+
+const superUniqueWeaponsSlot2 = {
+    "Blade of Astria": 0xa6,
+    "Piringar Zingar": 0x116,
+    "Chosan's Arm": 0x117,
+    "Natura's Touch": 0x118,
+    "Feisho": 0x12c,
+    "Goliamon's Shiv": 0x138,
+    "Holymadda Shiv": 0x139,
+    "Bengal Tiger Claw": 0x379,
+}
+
+const superUniqueHelms = {
+    "Tebenos Helm": 0x28a,
+    "Samurai Head": 0x28b,
+    "Marumenko Helm": 0x28c,
+}
+
+const superUniqueArmor = {
+    "Octagon Shield": 0x2a9,
+    "Alldemonium Shield": 0x2aa,
+    "Fireblessed Shield": 0x2ab,
+    "Bacteon Greatshield": 0x2c0,
+    "Crono Riggers": 0x2d5,
+    "Vamp Cloak": 0x2ea,
+    "Lilith Shoes": 0x2ff,
+    "Ponbiscuit": 0x314,
+    "Kotenho the King": 0x328,
+    "Ponteo the Victorious": 0x329,
+    "Silver Murzephone": 0x346,
+    "Deedsarus Helltank": 0x348,
+}
+
 function stagePointer() {
     return ($(['AddAddress', 'Mem', '32bit', 0xab9020, '&', 'Value', '', 0x01ffffff]))
 }
@@ -627,7 +783,7 @@ set.addAchievement({
 set.addAchievement({
     title: "Trap Filled Tomb",
     points: 10,
-    description: "Finish the first level of the mission Archfiend of Tolerance or the mission Eternal Archfiends and the Other Vessel without jumping or pausing the game",
+    description: "Finish the first floor of the mission Archfiend of Tolerance or the mission Eternal Archfiends and the Other Vessel without jumping or pausing the game",
     conditions: {
     core: 
         $(
@@ -1111,9 +1267,133 @@ set.addAchievement({
 })
 
 //Create equipment achievements
+function uberheroEquipCheck(equipment, slot, level = 0) {
+    if (level != 0) {
+        return(
+            $(
+                characterPointer(),
+                ['', 'Mem', '16bit', slot, '=', 'Value', '', equipment],
+                characterPointer(),
+                ['', 'Mem', '16bit', slot + 2, '>=', 'Value', '', level]
+            )
+        )
+    }
+    return(
+        $(
+            characterPointer(),
+            ['', 'Mem', '16bit', slot, '=', 'Value', '', equipment],
+        )
+    )
+}
+
+function uniqueGenerate(level = 0) {
+    let logic = {}
+    logic['core'] = $(
+        loadProtect(),
+        characterPointer(),
+        ['OrNext', 'Delta', '16bit', 0xf2cc, '!=', 'Mem', '16bit', 0xf2cc],
+        characterPointer(),
+        ['OrNext', 'Delta', '16bit', 0xf2d8, '!=', 'Mem', '16bit', 0xf2d8],
+        characterPointer(),
+        ['OrNext', 'Delta', '16bit', 0xf2e4, '!=', 'Mem', '16bit', 0xf2e4],
+        characterPointer(),
+        ['OrNext', 'Delta', '16bit', 0xf2f0, '!=', 'Mem', '16bit', 0xf2f0],
+        characterPointer(),
+        ['', 'Delta', '16bit', 0xf2fc, '!=', 'Mem', '16bit', 0xf2fc],
+    );
+    let i = 1
+    for (const [equip, ID] of Object.entries(uniqueWeapons)) {
+        logic['alt' + i] = uberheroEquipCheck(ID, 0xf2cc, level)
+        i++
+    }
+    for (const [equip, ID] of Object.entries(uniqueWeaponsSlot2)) {
+        logic['alt' + i] = uberheroEquipCheck(ID, 0xf2d8, level)
+        i++
+    }
+    for (const [equip, ID] of Object.entries(uniqueHelms)) {
+        logic['alt' + i] = uberheroEquipCheck(ID, 0xf2e4, level)
+        i++
+    }
+    for (const [equip, ID] of Object.entries(uniqueArmor)) {
+        logic['alt' + i] = uberheroEquipCheck(ID, 0xf2f0, level)
+        i++
+    }
+    for (const [equip, ID] of Object.entries(uniqueArmor)) {
+        logic['alt' + i] = uberheroEquipCheck(ID, 0xf2fe, level)
+        i++
+    }
+    return(logic)
+}
+
 //Unique
+set.addAchievement({
+    title: "Unique Weaponry",
+    points: 2,
+    description: "Obtain and equip the Uberhero with a unique piece of equipment",
+    conditions: uniqueGenerate(),
+})
+
+set.addAchievement({
+    title: "Superior Unique Weaponry",
+    points: 5,
+    description: "Obtain and equip the Uberhero with a unique piece of equipment level 10 or higher",
+    conditions: uniqueGenerate(10),
+})
+
+function superUniqueGenerate(level = 0) {
+    let logic = {}
+    logic['core'] = $(
+        loadProtect(),
+        characterPointer(),
+        ['OrNext', 'Delta', '16bit', 0xf2cc, '!=', 'Mem', '16bit', 0xf2cc],
+        characterPointer(),
+        ['OrNext', 'Delta', '16bit', 0xf2d8, '!=', 'Mem', '16bit', 0xf2d8],
+        characterPointer(),
+        ['OrNext', 'Delta', '16bit', 0xf2e4, '!=', 'Mem', '16bit', 0xf2e4],
+        characterPointer(),
+        ['OrNext', 'Delta', '16bit', 0xf2f0, '!=', 'Mem', '16bit', 0xf2f0],
+        characterPointer(),
+        ['', 'Delta', '16bit', 0xf2fc, '!=', 'Mem', '16bit', 0xf2fc],
+    );
+    let i = 1
+    for (const [equip, ID] of Object.entries(superUniqueWeapons)) {
+        logic['alt' + i] = uberheroEquipCheck(ID, 0xf2cc, level)
+        i++
+    }
+    for (const [equip, ID] of Object.entries(superUniqueWeaponsSlot2)) {
+        logic['alt' + i] = uberheroEquipCheck(ID, 0xf2d8, level)
+        i++
+    }
+    for (const [equip, ID] of Object.entries(superUniqueHelms)) {
+        logic['alt' + i] = uberheroEquipCheck(ID, 0xf2e4, level)
+        i++
+    }
+    for (const [equip, ID] of Object.entries(superUniqueArmor)) {
+        logic['alt' + i] = uberheroEquipCheck(ID, 0xf2f0, level)
+        i++
+    }
+    for (const [equip, ID] of Object.entries(superUniqueArmor)) {
+        logic['alt' + i] = uberheroEquipCheck(ID, 0xf2fe, level)
+        i++
+    }
+    return(logic)
+}
 
 //Super unique
+
+set.addAchievement({
+    title: "Super Unique Weaponry",
+    points: 2,
+    description: "Obtain and equip the Uberhero with a super unique piece of equipment",
+    conditions: superUniqueGenerate(),
+})
+
+set.addAchievement({
+    title: "Superior Super Unique Weaponry",
+    points: 5,
+    description: "Obtain and equip the Uberhero with a super unique piece of equipment level 10 or higher",
+    conditions: superUniqueGenerate(10),
+})
 
 //Equipment sets
 //2 piece
