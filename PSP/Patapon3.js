@@ -368,9 +368,12 @@ function soloPlay() {
 
 function singleplayerOnly() {
     return ($(
-        ['OrNext', 'Mem', 'Bit0', 0xab95b4, '=', 'Value', '', 0],
-        soloPlay(),
-    ))
+        characterPointer(),
+        ['', 'Mem', 'Bit0', 0x2b4e8, '=', 'Value', '', 0],
+        characterPointer(),
+        ['', 'Mem', 'Bit0', 0x2b528, '=', 'Value', '', 0],
+        characterPointer(),
+        ['', 'Mem', 'Bit0', 0x2b568, '=', 'Value', '', 0],    ))
 }
 
 function inSingleplayerLevel(flag = '') {
@@ -590,18 +593,64 @@ for (const [stage, ID] of Object.entries(dungeons)) {
     })
 }
 
+//Accursed Dodonga challenge
+set.addAchievement({
+    title: "I Would Prefer a Treasure Chest",
+    points: 5,
+    type: 'missable',
+    description: "Slay the Accursed Dodonga without summoning or pausing in the dungeon",
+    conditions: {
+        core: 
+            $(
+                checkLevel(32),
+                singleplayerOnly(),
+                trigger(finishLevel()),
+                command(0x09, 'ResetIf'),
+                ['AndNext', 'Mem', '32bit', 0xab7aa0, '!=', 'Value', '', 0x1e0b],
+                ['ResetIf', 'Mem', '32bit', 0xab7aa0, '!=', 'Value', '', 0x1e10],
+            ),
+        alt1: $(
+            ['AndNext', 'Delta', '32bit', 0xab7aa0, '!=', 'Value', '', 0x1e0c],
+            ['AndNext', 'Delta', '32bit', 0xab7aa0, '!=', 'Value', '', 0x1e0d],
+            ['AndNext', 'Delta', '32bit', 0xab7aa0, '!=', 'Value', '', 0x1e10],
+            ['', 'Mem', '32bit', 0xab7aa0, '=', 'Value', '', 0x1e10, 1],
+        ),
+        alt2: $(
+            ['AndNext', 'Delta', '32bit', 0xab7aa0, '!=', 'Value', '', 0x1e07],
+            ['AndNext', 'Delta', '32bit', 0xab7aa0, '!=', 'Value', '', 0x1e0b],
+            ['', 'Mem', '32bit', 0xab7aa0, '=', 'Value', '', 0x1e0b, 1],
+        )
+        }
+})
+
 //Tomb of Tolerance challenge
 set.addAchievement({
     title: "Trap Filled Tomb",
     points: 10,
-    conditions: $(
-        checkLevel(0x110, false, 'OrNext'),
-        checkLevel(0x111),
-        inSinglePlayerDungeon('', 1),
-        trigger(finishLevel(5)),
-        command(0x05, 'ResetIf'),
-        ['ResetIf', 'Mem', '32bit', 0xab7aa0, '!=', 'Value', '', 0x1e10],
+    description: "Finish the first level of the mission Archfiend of Tolerance or the mission Eternal Archfiends and the Other Vessel without jumping or pausing the game",
+    conditions: {
+    core: 
+        $(
+            checkLevel(0x110, false, 'OrNext'),
+            checkLevel(0x111),
+            singleplayerOnly(),
+            trigger(finishLevel(5)),
+            command(0x05, 'ResetIf'),
+            ['AndNext', 'Mem', '32bit', 0xab7aa0, '!=', 'Value', '', 0x1e0b],
+            ['ResetIf', 'Mem', '32bit', 0xab7aa0, '!=', 'Value', '', 0x1e10],
+        ),
+    alt1: $(
+        ['AndNext', 'Delta', '32bit', 0xab7aa0, '!=', 'Value', '', 0x1e0c],
+        ['AndNext', 'Delta', '32bit', 0xab7aa0, '!=', 'Value', '', 0x1e0d],
+        ['AndNext', 'Delta', '32bit', 0xab7aa0, '!=', 'Value', '', 0x1e10],
+        ['', 'Mem', '32bit', 0xab7aa0, '=', 'Value', '', 0x1e10, 1],
+    ),
+    alt2: $(
+        ['AndNext', 'Delta', '32bit', 0xab7aa0, '!=', 'Value', '', 0x1e07],
+        ['AndNext', 'Delta', '32bit', 0xab7aa0, '!=', 'Value', '', 0x1e0b],
+        ['', 'Mem', '32bit', 0xab7aa0, '=', 'Value', '', 0x1e0b, 1],
     )
+    }
 })
 
 //Create multi dungeon singleplayer challenge achievements
