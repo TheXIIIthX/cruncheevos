@@ -1164,6 +1164,21 @@ function obtainKey() {
     ))
 }
 
+//Patapon song achievement
+set.addAchievement({
+    title: "Leisurely Lullaby",
+    points: 5,
+    description: "Obtain the Patapon song",
+    conditions: $(
+        loadProtect(),
+        checkLevel(0x01),
+        characterPointer(),
+        ['', 'Delta', 'Bit0', 0x1755, '=', 'Value', '', 0],
+        characterPointer(),
+        ['', 'Mem', 'Bit0', 0x1755, '=', 'Value', '', 1],
+    )
+})
+
 //Key collection achievements
 for (const [stage, ID] of Object.entries(keyLevels)) {
     set.addAchievement({
@@ -1176,6 +1191,36 @@ for (const [stage, ID] of Object.entries(keyLevels)) {
         )
     })
 }
+
+//Obtain summon achievements
+set.addAchievement({
+    title: "Sutra of Power",
+    points: 5,
+    description: "Obtain Yarigami's Sutra from Shakapon",
+    conditions: $(
+        loadProtect(),
+        checkLevel(0x129),
+        characterPointer(),
+        ['', 'Delta', 'Bit0', 0x75, '=', 'Value', '', 0],
+        characterPointer(),
+        ['', 'Mem', 'Bit0', 0x75, '=', 'Value', '', 1],
+    )
+})
+
+set.addAchievement({
+    title: "Sutra of Defence",
+    points: 5,
+    description: "Obtain Tategami's Sutra from Gold Hoshipon",
+    type: "missable",
+    conditions: $(
+        loadProtect(),
+        checkLevel(0xd4),
+        characterPointer(),
+        ['', 'Delta', 'Bit0', 0x75, '=', 'Value', '', 0],
+        characterPointer(),
+        ['', 'Mem', 'Bit0', 0x75, '=', 'Value', '', 1],
+    )
+})
 
 //Create solo Pingrek achievement
 set.addAchievement({
