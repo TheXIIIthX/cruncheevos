@@ -57,6 +57,15 @@ const singlePlayerDLC = {
     "Depths of Despair": 0x6a,
 }
 
+const keyLevels = {
+    "Advance! Attack!": 0x01,
+    "Defence Practice": 0x02,
+    "Attack and Dodge Practice": 0x03,
+    "March and Jump Practice": 0x04,
+    "Mechanical Monstrosities": 0x71,
+    "Volcano King of the Labyrinth": 0xc1,
+}
+
 const arena = {
     "Will the Angry Wolf See a Full Moon?": [0x17, 5],
     "Anything for a Rare Item": [0x8f, 17],
@@ -178,7 +187,7 @@ const chinClasses = {
 }
 
 const kanClasses = {
-    "Yumiyacha": 0xd9a8,
+    "Yumiyacha": 0xd9ac,
     "Alosson": 0xe2f4,
     "Wondabarappa": 0xe378,
     "Jamsch": 0xe3fc,
@@ -1147,6 +1156,26 @@ for (const [stage, ID] of Object.entries(endRange)) {
 }
 
 //No base damage
+
+function obtainKey() {
+    return($(
+        characterPointer(),
+        ['', 'Delta', '16bit', 0x14e, '<', 'Mem', '16bit', 0x14e],
+    ))
+}
+
+//Key collection achievements
+for (const [stage, ID] of Object.entries(keyLevels)) {
+    set.addAchievement({
+        title: "Key of " + stage,
+        points: 5,
+        description: "Obtain the key in " + stage,
+        conditions: $(
+            checkLevel(ID),
+            obtainKey(),
+        )
+    })
+}
 
 //Create solo Pingrek achievement
 set.addAchievement({
