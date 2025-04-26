@@ -478,6 +478,10 @@ function stagePointer() {
     return ($(['AddAddress', 'Mem', '32bit', 0xab9020, '&', 'Value', '', 0x01ffffff]))
 }
 
+function stageDataPointer() {
+    return ($(['AddAddress', 'Mem', '32bit', 0xab9518, '&', 'Value', '', 0x01ffffff]))
+}
+
 function characterPointer() {
     let pointer = {}
     pointer = $(
@@ -886,48 +890,7 @@ for (const [stage, ID] of Object.entries(arena)) {
                     checkLevel(ID[0]),
                     inVersus(),
                     singleplayerOnly(),
-                    maxLevel(ID[1])[0],
-                    maxLevel(ID[1])[1],
-                    maxLevel(ID[1])[2],
-                    maxLevel(ID[1])[3],
-                    maxLevel(ID[1])[4],
-                    maxLevel(ID[1])[5],
-                    maxLevel(ID[1])[6],
-                    maxLevel(ID[1])[7],
-                    maxLevel(ID[1])[8],
-                    maxLevel(ID[1])[9],
-                    maxLevel(ID[1])[10],
-                    maxLevel(ID[1])[11],
-                    maxLevel(ID[1])[12],
-                    maxLevel(ID[1])[13],
-                    maxLevel(ID[1])[14],
-                    maxLevel(ID[1])[15],
-                    maxLevel(ID[1])[16],
-                    maxLevel(ID[1])[17],
-                    maxLevel(ID[1])[18],
-                    maxLevel(ID[1])[19],
-                    maxLevel(ID[1])[20],
-                    maxLevel(ID[1])[21],
-                    maxLevel(ID[1])[22],
-                    maxLevel(ID[1])[23],
-                    maxLevel(ID[1])[24],
-                    maxLevel(ID[1])[25],
-                    maxLevel(ID[1])[26],
-                    maxLevel(ID[1])[27],
-                    maxLevel(ID[1])[28],
-                    maxLevel(ID[1])[29],
-                    maxLevel(ID[1])[30],
-                    maxLevel(ID[1])[31],
-                    maxLevel(ID[1])[32],
-                    maxLevel(ID[1])[33],
-                    maxLevel(ID[1])[34],
-                    maxLevel(ID[1])[35],
-                    maxLevel(ID[1])[36],
-                    maxLevel(ID[1])[37],
-                    maxLevel(ID[1])[38],
-                    maxLevel(ID[1])[39],
-                    maxLevel(ID[1])[40],
-                    maxLevel(ID[1])[41],
+                    ...maxLevel(ID[1]),
                 ),
             alt1:
                 $(
@@ -1004,48 +967,7 @@ for (const [stage, ID] of Object.entries(race)) {
                     finishLevel(),
                     inLevel(),
                     singleplayerOnly(),
-                    maxLevel(ID[1])[0],
-                    maxLevel(ID[1])[1],
-                    maxLevel(ID[1])[2],
-                    maxLevel(ID[1])[3],
-                    maxLevel(ID[1])[4],
-                    maxLevel(ID[1])[5],
-                    maxLevel(ID[1])[6],
-                    maxLevel(ID[1])[7],
-                    maxLevel(ID[1])[8],
-                    maxLevel(ID[1])[9],
-                    maxLevel(ID[1])[10],
-                    maxLevel(ID[1])[11],
-                    maxLevel(ID[1])[12],
-                    maxLevel(ID[1])[13],
-                    maxLevel(ID[1])[14],
-                    maxLevel(ID[1])[15],
-                    maxLevel(ID[1])[16],
-                    maxLevel(ID[1])[17],
-                    maxLevel(ID[1])[18],
-                    maxLevel(ID[1])[19],
-                    maxLevel(ID[1])[20],
-                    maxLevel(ID[1])[21],
-                    maxLevel(ID[1])[22],
-                    maxLevel(ID[1])[23],
-                    maxLevel(ID[1])[24],
-                    maxLevel(ID[1])[25],
-                    maxLevel(ID[1])[26],
-                    maxLevel(ID[1])[27],
-                    maxLevel(ID[1])[28],
-                    maxLevel(ID[1])[29],
-                    maxLevel(ID[1])[30],
-                    maxLevel(ID[1])[31],
-                    maxLevel(ID[1])[32],
-                    maxLevel(ID[1])[33],
-                    maxLevel(ID[1])[34],
-                    maxLevel(ID[1])[35],
-                    maxLevel(ID[1])[36],
-                    maxLevel(ID[1])[37],
-                    maxLevel(ID[1])[38],
-                    maxLevel(ID[1])[39],
-                    maxLevel(ID[1])[40],
-                    maxLevel(ID[1])[41],
+                    ...maxLevel(ID[1]),
                 ),
         
     })
@@ -1078,50 +1000,9 @@ for (const [stage, ID] of Object.entries(range)) {
             core:
                 $(
                     checkLevel(ID[0]),
-                    inVersus(),
+                    inLevel(),
                     singleplayerOnly(),
-                    maxLevel(ID[1])[0],
-                    maxLevel(ID[1])[1],
-                    maxLevel(ID[1])[2],
-                    maxLevel(ID[1])[3],
-                    maxLevel(ID[1])[4],
-                    maxLevel(ID[1])[5],
-                    maxLevel(ID[1])[6],
-                    maxLevel(ID[1])[7],
-                    maxLevel(ID[1])[8],
-                    maxLevel(ID[1])[9],
-                    maxLevel(ID[1])[10],
-                    maxLevel(ID[1])[11],
-                    maxLevel(ID[1])[12],
-                    maxLevel(ID[1])[13],
-                    maxLevel(ID[1])[14],
-                    maxLevel(ID[1])[15],
-                    maxLevel(ID[1])[16],
-                    maxLevel(ID[1])[17],
-                    maxLevel(ID[1])[18],
-                    maxLevel(ID[1])[19],
-                    maxLevel(ID[1])[20],
-                    maxLevel(ID[1])[21],
-                    maxLevel(ID[1])[22],
-                    maxLevel(ID[1])[23],
-                    maxLevel(ID[1])[24],
-                    maxLevel(ID[1])[25],
-                    maxLevel(ID[1])[26],
-                    maxLevel(ID[1])[27],
-                    maxLevel(ID[1])[28],
-                    maxLevel(ID[1])[29],
-                    maxLevel(ID[1])[30],
-                    maxLevel(ID[1])[31],
-                    maxLevel(ID[1])[32],
-                    maxLevel(ID[1])[33],
-                    maxLevel(ID[1])[34],
-                    maxLevel(ID[1])[35],
-                    maxLevel(ID[1])[36],
-                    maxLevel(ID[1])[37],
-                    maxLevel(ID[1])[38],
-                    maxLevel(ID[1])[39],
-                    maxLevel(ID[1])[40],
-                    maxLevel(ID[1])[41],
+                    ...maxLevel(ID[1]),
                 ),
             alt1:
                 $(
@@ -1143,7 +1024,7 @@ for (const [stage, ID] of Object.entries(endRange)) {
         conditions: {
             core: $(
                 checkLevel(ID),
-                inVersus(),
+                inLevel(),
             ),
             alt1: $(
                 finishLevel(2),
@@ -1155,7 +1036,50 @@ for (const [stage, ID] of Object.entries(endRange)) {
     })
 }
 
-//No base damage
+//Destroy enemy base
+set.addAchievement({
+    title: "Total Ultrasonic Air Defence Shut Down!",
+    points: 10,
+    type: "missable",
+    conditions: $(
+        checkLevel(0x67),
+        inLevel(),
+        finishLevel(2),
+        ...maxLevel(13),
+    )
+})
+
+set.addAchievement({
+    title: "Overwhelming the Defence",
+    points: 10,
+    type: "missable",
+    conditions: $(
+        checkLevel(0xdf),
+        inLevel(),
+        finishLevel(2),
+        ...maxLevel(25),
+    )
+})
+
+set.addAchievement({
+    title: "The Third Version of Justice",
+    points: 10,
+    conditions: $(
+            checkLevel(0x68),
+            inLevel(),
+            finishLevel(2),
+        ),
+})
+
+set.addAchievement({
+    title: "No More Slogging on the Job",
+    points: 10,
+    conditions: $(
+            checkLevel(0xe0),
+            inLevel(),
+            finishLevel(2),
+        ),
+})
 
 function obtainKey() {
     return($(
