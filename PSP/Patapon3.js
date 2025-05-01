@@ -375,7 +375,6 @@ const uniqueWeaponsSlot2 = {
 const uniqueHelms = {
     "Tahla Helm": 0x288,
     "Bunny Head": 0x289,
-    "Shubaba Gale Kabuto": 0x3ea, 
 }
 
 const uniqueArmor = {
@@ -737,6 +736,21 @@ function maxLevel(level) {
     return(logic)
 }
 
+//Create Patapon 2 savedata import achievement
+set.addAchievement({
+    title: "The Return of Almighty",
+    points: 1,
+    conditions: $(
+        ['', 'Mem', '32bit', 0xab7aa0, '=', 'Value', '', 0x1ed7],
+        stagePointer(),
+        ['AddAddress', 'Mem', '32bit', 0x1bc, '&', 'Value', '', 0x1ffffff],
+        ['', 'Delta', 'Bit0', 0x1e8, '=', 'Value', '', 0],
+        stagePointer(),
+        ['AddAddress', 'Mem', '32bit', 0x1bc, '&', 'Value', '', 0x1ffffff],
+        ['', 'Mem', 'Bit0', 0x1e8, '=', 'Value', '', 1],
+    )
+})
+
 //Create prologue achievement
 set.addAchievement({
     title: "The Coming of Almighty",
@@ -790,6 +804,36 @@ set.addAchievement({
             ['', 'Mem', '32bit', 0xab7aa0, '=', 'Value', '', 0x1e0b, 1],
         )
         }
+})
+
+//Evilmass of Adamance challenge
+set.addAchievement({
+    title: "Brave the Guillotine",
+    points: 10,
+    description: "Finish the first floor of the mission Archfiend of Adamance or the mission What Lurks Beyond the Guillotine without retreating or pausing the game",
+    conditions: {
+    core: 
+        $(
+            checkLevel(0xe8, false, 'OrNext'),
+            checkLevel(0xe9),
+            singleplayerOnly(),
+            trigger(finishLevel(5)),
+            command(0x04, 'ResetIf'),
+            ['AndNext', 'Mem', '32bit', 0xab7aa0, '!=', 'Value', '', 0x1e0b],
+            ['ResetIf', 'Mem', '32bit', 0xab7aa0, '!=', 'Value', '', 0x1e10],
+        ),
+    alt1: $(
+        ['AndNext', 'Delta', '32bit', 0xab7aa0, '!=', 'Value', '', 0x1e0c],
+        ['AndNext', 'Delta', '32bit', 0xab7aa0, '!=', 'Value', '', 0x1e0d],
+        ['AndNext', 'Delta', '32bit', 0xab7aa0, '!=', 'Value', '', 0x1e10],
+        ['', 'Mem', '32bit', 0xab7aa0, '=', 'Value', '', 0x1e10, 1],
+    ),
+    alt2: $(
+        ['AndNext', 'Delta', '32bit', 0xab7aa0, '!=', 'Value', '', 0x1e07],
+        ['AndNext', 'Delta', '32bit', 0xab7aa0, '!=', 'Value', '', 0x1e0b],
+        ['', 'Mem', '32bit', 0xab7aa0, '=', 'Value', '', 0x1e0b, 1],
+    )
+    }
 })
 
 //Tomb of Tolerance challenge
@@ -1058,7 +1102,7 @@ set.addAchievement({
         inLevel(),
         finishLevel(2),
         ...maxLevel(25),
-    )
+    ),
 })
 
 set.addAchievement({
@@ -1327,14 +1371,14 @@ function uniqueGenerate(level = 0) {
 set.addAchievement({
     title: "Unique Weaponry",
     points: 2,
-    description: "Obtain and equip the Uberhero with a unique piece of equipment",
+    description: "Obtain and equip the Uberhero with a unique piece of equipment except DLC equipment and the Shubaba Gale Kabuto",
     conditions: uniqueGenerate(),
 })
 
 set.addAchievement({
     title: "Superior Unique Weaponry",
     points: 5,
-    description: "Obtain and equip the Uberhero with a unique piece of equipment level 10 or higher",
+    description: "Obtain and equip the Uberhero with a unique piece of equipment level 10 or higher DLC equipment and the Shubaba Gale Kabuto",
     conditions: uniqueGenerate(10),
 })
 
