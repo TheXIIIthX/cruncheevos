@@ -725,7 +725,7 @@ function characterLevelCheck(character, ID, offset, level, flag = '') {
 function maxLevel(level) {
     let logic = []
     let TCK
-    let iterations = classLevels.length
+    let intervals = [6, 13, 20]
     let flag = 'OrNext'
     let i = 0
     for (const [character, data] of Object.entries(classLevels)) {
@@ -741,7 +741,7 @@ function maxLevel(level) {
         else {
             return
         }
-        if (i == classLevels.length - 1) {
+        if (intervals.includes(i)) {
             logic.push($(characterLevelCheck(TCK, data[0], data[1], level, '')))
         }
         else {
@@ -1738,7 +1738,7 @@ for(const [summon, ID] of Object.entries(summons)) {
     })
 }
 
-//Create distance travelled leaderboards
+//Create distance travelled leaderboard
 set.addLeaderboard({
     title: "Perfect Marching Challenge maximum distance",
     description: "March the furthest distance in the Perfect Marching Challenge",
