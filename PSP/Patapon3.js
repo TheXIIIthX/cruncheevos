@@ -645,6 +645,15 @@ function finishLevel(levelEnd = 2, flag = '') {
     ))
 }
 
+function priorFinishLevel(levelEnd = 2, flag = '') {
+    return($(
+        stagePointer(),
+        [flag, 'Prior', '32bit', 0x22f4, '!=', 'Value', '', levelEnd], 
+        stagePointer(),
+        [flag, 'Mem', '32bit', 0x22f4, '=', 'Value', '', levelEnd], //Check if flag gets hit
+    ))
+}
+
 function resetNoVictory() {
     return($(
         stagePointer(),
@@ -675,6 +684,10 @@ function distanceCheck(distance) {
         distanceCovered(distance, '>=', false),
     )
     return(logic)
+}
+
+function timeLimit(time) {
+    return($(['', 'Delta', '32bit', 0x01ffd694, '=', 'Value', '', 0xffffffff], ['', 'Mem', '32bit', 0x01ffd694, '<=', 'Value', '', time]))
 }
 
 function trifectaUnlock() {
@@ -1016,6 +1029,67 @@ for(const [stage, ID] of Object.entries(endRace)) {
 }
 
 //Timed challenge
+//Level cap
+set.addAchievement({
+    title: "Dashing Dreams in Record Time",
+    points: 0,
+    conditions: {
+    core: $(
+        checkLevel(0x3f),
+        priorFinishLevel(),
+        timeLimit(180),
+        uberheroLevelCheck(9),
+    ),
+    alt1: $(
+        singleplayerCheck(),
+        ...maxLevel(9),
+    ),
+    alt2: $(
+        soloPlay(),
+    ),
+}
+})
+
+set.addAchievement({
+    title: "Outracing Ponteo the Victorious",
+    points: 0,
+    conditions: {
+    core: $(
+        checkLevel(0xb7),
+        priorFinishLevel(),
+        timeLimit(180),
+        uberheroLevelCheck(21),
+    ),
+    alt1: $(
+        singleplayerCheck(),
+        ...maxLevel(21),
+    ),
+    alt2: $(
+        soloPlay(),
+    ),
+}
+})
+
+//No cap
+set.addAchievement({
+    title: "The Greatest Race for Pride",
+    points: 0,
+    conditions: $(
+        checkLevel(0x40),
+        priorFinishLevel(),
+        timeLimit(180),
+    )
+})
+
+set.addAchievement({
+    title: "Teamwork Works Faster than a Cannon",
+    points: 0,
+    conditions: $(
+        checkLevel(0xb8),
+        priorFinishLevel(),
+        timeLimit(180),
+    )
+})
 
 //Create missile range achievements
 //Missable
