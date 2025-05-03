@@ -1,4 +1,5 @@
 import { AchievementSet, define as $, orNext, andNext, trigger, once, resetIf, RichPresence } from '@cruncheevos/core'
+import { invertObject } from '@cruncheevos/core/util'
 const set = new AchievementSet({ gameId: 3507, title: 'Patapon 3' })
 
 const dungeons = {
@@ -197,47 +198,27 @@ const kanClasses = {
 }
 
 const classLevels = {
-    "Yarida": 0x9644,
-    "Taterazay": 0x96c8,
-    "Yumiyacha": 0x974c,
-    "Kibadda": 0x97d0,
-    "Destrobo": 0x99e0,
-    "Piekron": 0x9b6c,
-    "Wooyari": 0x9bf0,
-    "Pyokorider": 0x9c74,
-    "Cannassault": 0x9cf8,
-    "Charibasa": 0x9d7c,
-    "Guardira": 0x9e00,
-    "Tondenga": 0x9e84,
-    "Myamsar": 0x9f08,
-    "Bowmunk": 0x9f8c,
-    "Grenburr": 0xa010,
-    "Alosson": 0xa094,
-    "Wondabarappa": 0xa118,
-    "Jamsch": 0xa19c,
-    "Oohoroc": 0xa220,
-    "Pingrek": 0xa2a4,
-    "Cannogabang": 0xa328,
-    "TYarida": 0xac64,
-    "TKibadda": 0xadf0,
-    "TPiekron": 0xb18c,
-    "TWooyari": 0xb210,
-    "TPyokorider": 0xb294,
-    "TCannassault": 0xb318,
-    "TCharibasa": 0xb39c,
-    "CTaterazay": 0xc308,
-    "CGuardira": 0xca40,
-    "CTondenga": 0xcac4,
-    "CMyamsar": 0xcb48,
-    "CBowmunk": 0xcbcc,
-    "CGrenburr": 0xcc50,
-    "KYumiyacha": 0xd9ac,
-    "KAlosson": 0xe2f4,
-    "KWondabarappa": 0xe378,
-    "KJamsch": 0xe3fc,
-    "KOohoroc": 0xe480,
-    "KPingrek": 0xe504,
-    "KCannogabang": 0xe588,
+    "TYarida": [0x2, 0xac64],
+    "TKibadda": [0x5, 0xadf0],
+    "TPiekron": [0xc, 0xb18c],
+    "TWooyari": [0xd, 0xb210],
+    "TPyokorider": [0xe, 0xb294],
+    "TCannassault": [0xf, 0xb318],
+    "TCharibasa": [0x10, 0xb39c],
+    "CTaterazay": [0x3, 0xc308],
+    "CDestrobo": [0x9, 0xc620],
+    "CGuardira": [0x11, 0xca40],
+    "CTondenga": [0x12, 0xcac4],
+    "CMyamsar": [0x13, 0xcb48],
+    "CBowmunk": [0x14, 0xcbcc],
+    "CGrenburr": [0x15, 0xcc50],
+    "KYumiyacha": [0x4, 0xd9ac],
+    "KAlosson": [0x16, 0xe2f4],
+    "KWondabarappa": [0x17, 0xe378],
+    "KJamsch": [0x18, 0xe3fc],
+    "KOohoroc": [0x19, 0xe480],
+    "KPingrek": [0x1a, 0xe504],
+    "KCannogabang": [0x1b, 0xe588],
 }
 
 //Max 1 level offsets class skills
@@ -518,6 +499,10 @@ function gameState(state) {
     return ($(['', 'Mem', '32bit', 0xab7aa0, '=', 'Value', '', state]))
 }
 
+function singleplayerCheck() {
+    return ($(['', 'Mem', 'Bit0', 0xab95b4, '=', 'Value', '', 0]))
+}
+
 function multiplayerOnly() {
     return ($(['', 'Mem', 'Bit0', 0xab95b4, '=', 'Value', '', 1]))
 }
@@ -584,6 +569,10 @@ function inDungeon() {
 
 function inVersus() {
     return ($(inSingleVersus("OrNext"), inMultiVersus()))
+}
+
+function inRange() {
+    return ($(inSingleVersus("OrNext"), inMultiVersus("OrNext"), inSingleplayerLevel("OrNext"), inMultiplayerLevel()))
 }
 
 function inGameplay() {
@@ -724,14 +713,45 @@ function levelCheck(hero, level) {
     return(logic)
 }
 
-function characterLevelCheck(ID, level) {
-    return($(['', 'Mem', '32bit', ID, '<=', 'Value', '', level]))
+function uberheroLevelCheck(level) {
+    return($(characterPointer(), ['', 'Mem', '32bit', 0xf294, '<=', 'Value', '', level]))
+}
+
+function characterLevelCheck(character, ID, offset, level, flag = '') {
+    return($(
+        characterPointer(),
+        ['AndNext', 'Mem', '32bit', character, '=', 'Value', '', ID],
+        characterPointer(),
+        [flag, 'Mem', '32bit', offset, '<=', 'Value', '', level],
+    ))
 }
 
 function maxLevel(level) {
     let logic = []
-    for (const [character, offset] of Object.entries(classLevels)) {
-        logic.push($(characterPointer(), characterLevelCheck(offset, level)))
+    let TCK
+    let iterations = classLevels.length
+    let flag = 'OrNext'
+    let i = 0
+    for (const [character, data] of Object.entries(classLevels)) {
+        if (character.charAt(0) == "T") {
+            TCK = 0xab40
+        }
+        else if (character.charAt(0) == "C") {
+            TCK = 0xc160
+        }
+        else if (character.charAt(0) == "K") {
+            TCK = 0xd780
+        }
+        else {
+            return
+        }
+        if (i == classLevels.length - 1) {
+            logic.push($(characterLevelCheck(TCK, data[0], data[1], level, '')))
+        }
+        else {
+            logic.push($(characterLevelCheck(TCK, data[0], data[1], level, flag)))
+        }
+        i++
     }
     return(logic)
 }
@@ -922,7 +942,7 @@ for (const [stage, ID] of Object.entries(singlePlayerDLC)) {
 }
 
 //Create arena achievements
-//Level cap
+//Missable
 for (const [stage, ID] of Object.entries(arena)) {
     set.addAchievement({
         title: stage,
@@ -933,13 +953,10 @@ for (const [stage, ID] of Object.entries(arena)) {
                 $(
                     checkLevel(ID[0]),
                     inVersus(),
-                    singleplayerOnly(),
-                    ...maxLevel(ID[1]),
                 ),
-            alt1:
-                $(
-                    finishLevel(2),
-                ),
+            alt1: $(
+                finishLevel(2),
+            ),
             alt2: $(
                 finishLevel(4),
             ),
@@ -947,7 +964,7 @@ for (const [stage, ID] of Object.entries(arena)) {
     })
 }
 
-//No level cap
+//Non missable
 for (const [stage, ID] of Object.entries(endArena)) {
     set.addAchievement({
         title: stage,
@@ -962,28 +979,39 @@ for (const [stage, ID] of Object.entries(endArena)) {
                 finishLevel(2),
             ),
             alt2: $(
-                finishLevel(4)
+                finishLevel(4),
             ),
         }
     })
 }
 
 //Capture the flag
+//Level cap
 for (const [stage, ID] of Object.entries(arena)) {
     set.addAchievement({
         title: stage + " flag victory",
         points: 0,
         type: 'missable',
-        description: "Finish " + stage,
-        conditions: $(
-                checkLevel(ID[0]),
+        description: "Finish " + stage + " by capturing the flag with all troops below level " + ID[1],
+        conditions: {
+            core: $(
                 inVersus(),
-                singleplayerOnly(),
+                checkLevel(ID[0]),
                 finishLevel(2),
-        )
+                uberheroLevelCheck(ID[1]),
+        ),
+        alt1: $(
+            singleplayerCheck(),
+            ...maxLevel(ID[1]),
+        ),
+        alt2: $(
+            soloPlay(),
+        ),
+        }
     })
 }
 
+//Non level cap
 for (const [stage, ID] of Object.entries(endArena)) {
     set.addAchievement({
         title: stage + " flag victory",
@@ -999,25 +1027,24 @@ for (const [stage, ID] of Object.entries(endArena)) {
 }
 
 //Create racing achievements
-//Level cap
+//Missable
 for (const [stage, ID] of Object.entries(race)) {
     set.addAchievement({
         title: stage,
         points: 0,
         type: 'missable',
-        conditions: 
+        conditions: {
+            core:
                 $(
                     checkLevel(ID[0]),
                     finishLevel(),
                     inLevel(),
-                    singleplayerOnly(),
-                    ...maxLevel(ID[1]),
                 ),
-        
+            }
     })
 }
 
-//No level cap
+//Non missable
 for(const [stage, ID] of Object.entries(endRace)) {
     set.addAchievement({
         title: stage,
@@ -1034,7 +1061,7 @@ for(const [stage, ID] of Object.entries(endRace)) {
 //Timed challenge
 
 //Create missile range achievements
-//Level cap
+//Missable
 for (const [stage, ID] of Object.entries(range)) {
     set.addAchievement({
         title: stage,
@@ -1044,14 +1071,11 @@ for (const [stage, ID] of Object.entries(range)) {
             core:
                 $(
                     checkLevel(ID[0]),
-                    inLevel(),
-                    singleplayerOnly(),
-                    ...maxLevel(ID[1]),
+                    inRange(),
                 ),
-            alt1:
-                $(
-                    finishLevel(2),
-                ),
+            alt1: $(
+                finishLevel(2),
+            ),
             alt2: $(
                 finishLevel(4),
             ),
@@ -1059,7 +1083,7 @@ for (const [stage, ID] of Object.entries(range)) {
     })
 }
 
-//No level cap
+//Non missable
 for (const [stage, ID] of Object.entries(endRange)) {
     set.addAchievement({
         title: stage,
@@ -1068,7 +1092,7 @@ for (const [stage, ID] of Object.entries(endRange)) {
         conditions: {
             core: $(
                 checkLevel(ID),
-                inLevel(),
+                inRange(),
             ),
             alt1: $(
                 finishLevel(2),
@@ -1087,8 +1111,9 @@ set.addAchievement({
     type: "missable",
     conditions: $(
         checkLevel(0x67),
-        inLevel(),
+        inRange(),
         finishLevel(2),
+        uberheroLevelCheck(13),
         ...maxLevel(13),
     )
 })
@@ -1099,8 +1124,9 @@ set.addAchievement({
     type: "missable",
     conditions: $(
         checkLevel(0xdf),
-        inLevel(),
+        inRange(),
         finishLevel(2),
+        uberheroLevelCheck(25),
         ...maxLevel(25),
     ),
 })
@@ -1110,7 +1136,7 @@ set.addAchievement({
     points: 10,
     conditions: $(
             checkLevel(0x68),
-            inLevel(),
+            inRange(),
             finishLevel(2),
         ),
 })
@@ -1120,7 +1146,7 @@ set.addAchievement({
     points: 10,
     conditions: $(
             checkLevel(0xe0),
-            inLevel(),
+            inRange(),
             finishLevel(2),
         ),
 })
