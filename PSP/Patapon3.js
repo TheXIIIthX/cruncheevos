@@ -1075,6 +1075,7 @@ set.addAchievement({
     title: "The Greatest Race for Pride",
     points: 0,
     conditions: $(
+        singleplayerOnly(),
         checkLevel(0x40),
         priorFinishLevel(),
         timeLimit(180),
@@ -1085,6 +1086,7 @@ set.addAchievement({
     title: "Teamwork Works Faster than a Cannon",
     points: 0,
     conditions: $(
+        singleplayerOnly(),
         checkLevel(0xb8),
         priorFinishLevel(),
         timeLimit(180),
