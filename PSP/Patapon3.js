@@ -1138,36 +1138,55 @@ for (const [stage, ID] of Object.entries(endRange)) {
 }
 
 //Destroy enemy base
+//Level cap
 set.addAchievement({
     title: "Total Ultrasonic Air Defence Shut Down!",
     points: 10,
     type: "missable",
-    conditions: $(
+    conditions: {
+    core: $(
         checkLevel(0x67),
         inRange(),
         finishLevel(2),
         uberheroLevelCheck(13),
+    ),
+    alt1: $(
+        singleplayerCheck(),
         ...maxLevel(13),
-    )
+    ),
+    alt2: $(
+        soloPlay(),
+    ),
+}
 })
 
 set.addAchievement({
     title: "Overwhelming the Defence",
     points: 10,
     type: "missable",
-    conditions: $(
+    conditions: {
+    core: $(
         checkLevel(0xdf),
         inRange(),
         finishLevel(2),
         uberheroLevelCheck(25),
+    ),
+    alt1: $(
+        singleplayerCheck(),
         ...maxLevel(25),
     ),
+    alt2: $(
+        soloPlay(),
+    ),
+}
 })
 
+//Non level cap
 set.addAchievement({
     title: "The Third Version of Justice",
     points: 10,
     conditions: $(
+            singleplayerOnly(),
             checkLevel(0x68),
             inRange(),
             finishLevel(2),
@@ -1178,6 +1197,7 @@ set.addAchievement({
     title: "No More Slogging on the Job",
     points: 10,
     conditions: $(
+            singleplayerOnly(),
             checkLevel(0xe0),
             inRange(),
             finishLevel(2),
