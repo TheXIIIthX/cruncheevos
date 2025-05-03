@@ -579,8 +579,17 @@ function inGameplay() {
     return($(inSingleplayerLevel("OrNext"), inMultiplayerLevel("OrNext"), inSinglePlayerDungeon("OrNext"), inMultiplayerDungeon("OrNext"), inSingleVersus("OrNext"), inMultiVersus()))
 }
 
-function infectionCheck() {
-    return ($(['', 'Mem', '32bit', 0xd9851c, '=', 'Value', '', 0x00]))
+function newLevel(hits = 0) {
+    let flag = ''
+    if (hits == 1) {
+        flag = 'AndNext'
+    }
+    return($(
+        stagePointer(),
+        [flag, 'Delta', '32bit', 0x22f8, '=', 'Value', '', 0xffffffff], 
+        stagePointer(),
+        ['', 'Mem', '32bit', 0x22f8, '!=', 'Value', '', 0xffffffff, hits],
+    ))
 }
 
 function command(ID, flag = '') {
@@ -636,26 +645,13 @@ function finishLevel(levelEnd = 2, flag = '') {
     ))
 }
 
-function surrender() {
-    let logic = {}
-    logic = $(
-    stagePointer(),
-    ['', 'Delta', '32bit', 0x22f8, '!=', 'Value', '', 0x05],
-    stagePointer(),
-    ['', 'Mem', '32bit', 0x22f8, '=', 'Value', '', 0x05],
-    )
-    return(logic);
-}
-
-function defeat() {
-    let logic = {}
-    logic = $(
-    stagePointer(),
-    ['', 'Delta', '32bit', 0x22f8, '!=', 'Value', '', 0x08],
-    stagePointer(),
-    ['', 'Mem', '32bit', 0x22f8, '=', 'Value', '', 0x08],
-    )
-    return(logic);
+function resetNoVictory() {
+    return($(
+        stagePointer(),
+        ['AndNext', 'Mem', '32bit', 0x22f8, '!=', 'Value', '', 0x00],
+        stagePointer(),
+        ['ResetIf', 'Mem', '32bit', 0x22f8, '!=', 'Value', '', 0x07],
+    ))
 }
 
 function distanceCovered(distance, operator = '>=', delta = false) {
@@ -801,89 +797,50 @@ set.addAchievement({
     title: "I Would Prefer a Treasure Chest",
     points: 5,
     type: 'missable',
-    description: "Slay the Accursed Dodonga without summoning or pausing in the dungeon",
-    conditions: {
-        core: 
+    description: "Slay the Accursed Dodonga without summoning",
+    conditions: 
             $(
                 checkLevel(32),
                 singleplayerOnly(),
+                newLevel(1),
                 trigger(finishLevel()),
                 command(0x09, 'ResetIf'),
-                ['AndNext', 'Mem', '32bit', 0xab7aa0, '!=', 'Value', '', 0x1e0b],
-                ['ResetIf', 'Mem', '32bit', 0xab7aa0, '!=', 'Value', '', 0x1e10],
+                resetNoVictory(),
             ),
-        alt1: $(
-            ['AndNext', 'Delta', '32bit', 0xab7aa0, '!=', 'Value', '', 0x1e0c],
-            ['AndNext', 'Delta', '32bit', 0xab7aa0, '!=', 'Value', '', 0x1e0d],
-            ['AndNext', 'Delta', '32bit', 0xab7aa0, '!=', 'Value', '', 0x1e10],
-            ['', 'Mem', '32bit', 0xab7aa0, '=', 'Value', '', 0x1e10, 1],
-        ),
-        alt2: $(
-            ['AndNext', 'Delta', '32bit', 0xab7aa0, '!=', 'Value', '', 0x1e07],
-            ['AndNext', 'Delta', '32bit', 0xab7aa0, '!=', 'Value', '', 0x1e0b],
-            ['', 'Mem', '32bit', 0xab7aa0, '=', 'Value', '', 0x1e0b, 1],
-        )
-        }
 })
 
 //Evilmass of Adamance challenge
 set.addAchievement({
     title: "Brave the Guillotine",
     points: 10,
-    description: "Finish the first floor of the mission Archfiend of Adamance or the mission What Lurks Beyond the Guillotine without retreating or pausing the game",
-    conditions: {
-    core: 
+    description: "Finish the first floor of the mission Archfiend of Adamance or the mission What Lurks Beyond the Guillotine without retreating",
+    conditions: 
         $(
             checkLevel(0xe8, false, 'OrNext'),
             checkLevel(0xe9),
             singleplayerOnly(),
+            newLevel(1),
             trigger(finishLevel(5)),
             command(0x04, 'ResetIf'),
-            ['AndNext', 'Mem', '32bit', 0xab7aa0, '!=', 'Value', '', 0x1e0b],
-            ['ResetIf', 'Mem', '32bit', 0xab7aa0, '!=', 'Value', '', 0x1e10],
-        ),
-    alt1: $(
-        ['AndNext', 'Delta', '32bit', 0xab7aa0, '!=', 'Value', '', 0x1e0c],
-        ['AndNext', 'Delta', '32bit', 0xab7aa0, '!=', 'Value', '', 0x1e0d],
-        ['AndNext', 'Delta', '32bit', 0xab7aa0, '!=', 'Value', '', 0x1e10],
-        ['', 'Mem', '32bit', 0xab7aa0, '=', 'Value', '', 0x1e10, 1],
-    ),
-    alt2: $(
-        ['AndNext', 'Delta', '32bit', 0xab7aa0, '!=', 'Value', '', 0x1e07],
-        ['AndNext', 'Delta', '32bit', 0xab7aa0, '!=', 'Value', '', 0x1e0b],
-        ['', 'Mem', '32bit', 0xab7aa0, '=', 'Value', '', 0x1e0b, 1],
-    )
-    }
+            resetNoVictory(),
+        )
 })
 
 //Tomb of Tolerance challenge
 set.addAchievement({
     title: "Trap Filled Tomb",
     points: 10,
-    description: "Finish the first floor of the mission Archfiend of Tolerance or the mission Eternal Archfiends and the Other Vessel without jumping or pausing the game",
-    conditions: {
-    core: 
+    description: "Finish the first floor of the mission Archfiend of Tolerance or the mission Eternal Archfiends and the Other Vessel without jumping",
+    conditions: 
         $(
             checkLevel(0x110, false, 'OrNext'),
             checkLevel(0x111),
             singleplayerOnly(),
+            newLevel(1),
             trigger(finishLevel(5)),
             command(0x05, 'ResetIf'),
-            ['AndNext', 'Mem', '32bit', 0xab7aa0, '!=', 'Value', '', 0x1e0b],
-            ['ResetIf', 'Mem', '32bit', 0xab7aa0, '!=', 'Value', '', 0x1e10],
-        ),
-    alt1: $(
-        ['AndNext', 'Delta', '32bit', 0xab7aa0, '!=', 'Value', '', 0x1e0c],
-        ['AndNext', 'Delta', '32bit', 0xab7aa0, '!=', 'Value', '', 0x1e0d],
-        ['AndNext', 'Delta', '32bit', 0xab7aa0, '!=', 'Value', '', 0x1e10],
-        ['', 'Mem', '32bit', 0xab7aa0, '=', 'Value', '', 0x1e10, 1],
-    ),
-    alt2: $(
-        ['AndNext', 'Delta', '32bit', 0xab7aa0, '!=', 'Value', '', 0x1e07],
-        ['AndNext', 'Delta', '32bit', 0xab7aa0, '!=', 'Value', '', 0x1e0b],
-        ['', 'Mem', '32bit', 0xab7aa0, '=', 'Value', '', 0x1e0b, 1],
-    )
-    }
+            resetNoVictory(),
+        )
 })
 
 //Create multi dungeon singleplayer challenge achievements
@@ -1781,7 +1738,55 @@ for(const [summon, ID] of Object.entries(summons)) {
     })
 }
 
-
+//Create distance travelled leaderboards
+set.addLeaderboard({
+    title: "Perfect Marching Challenge maximum distance",
+    description: "March the furthest distance in the Perfect Marching Challenge",
+    lowerIsBetter: false,
+    type: 'VALUE',
+    conditions: {
+        start: $(
+            checkLevel(0x28, true),
+            ['', 'Mem', '32bit', 0xab7aa0, '=', 'Value', '', 0x1e0a],
+            newLevel(),
+        ),
+        cancel: $(
+            stagePointer(),
+            ['', 'Mem', '32bit', 0x22f8, '!=', 'Value', '', 0],
+            stagePointer(),
+            ['', 'Mem', '32bit', 0x22f8, '!=', 'Value', '', 5],
+            stagePointer(),
+            ['', 'Mem', '32bit', 0x22f8, '!=', 'Value', '', 7],
+            stagePointer(),
+            ['', 'Mem', '32bit', 0x22f8, '!=', 'Value', '', 8],
+        ),
+        submit: {
+            core: $(['', 'Value', '', 1, '=', 'Value', '', 1],),
+            alt1: $(
+                    stagePointer(),
+                    ['', 'Delta', '32bit', 0x22f8, '!=', 'Value', '', 5], 
+                    stagePointer(),
+                    ['', 'Mem', '32bit', 0x22f8, '=', 'Value', '', 5],
+                ),
+            alt2: $(
+                stagePointer(),
+                ['', 'Delta', '32bit', 0x22f8, '!=', 'Value', '', 7], 
+                stagePointer(),
+                ['', 'Mem', '32bit', 0x22f8, '=', 'Value', '', 7],
+            ),
+            alt3: $(
+                stagePointer(),
+                ['', 'Delta', '32bit', 0x22f8, '!=', 'Value', '', 8], 
+                stagePointer(),
+                ['', 'Mem', '32bit', 0x22f8, '=', 'Value', '', 8],
+            ),
+        },
+        value: $(
+            stagePointer(),
+            ['Measured', 'Mem', 'Float', 0x2e00, '/', 'Value', '', 15]
+        ),
+    }
+})
 
 
 export default set
