@@ -805,6 +805,64 @@ for (const [stage, ID] of Object.entries(dungeons)) {
     })
 }
 
+//Create victory achievements
+set.addAchievement({
+    title: "Endless Battle",
+    points: 25,
+    description: "Wish to live on",
+    type: 'win_condition',
+    conditions: $(
+        checkLevel(0x0124),
+        ['AndNext', 'Mem', '32bit', 0x01210d90, '=', 'Value', '', 2],
+        ['AndNext', 'Delta', '32bit', 0x01210d76, '=', 'Value', '', 0x4210],
+        ['', 'Mem', '32bit', 0x01210d76, '=', 'Value', '', 0, 1],
+        ['AndNext', 'Mem', '32bit', 0x01210d90, '=', 'Value', '', 2],
+        ['AndNext', 'Delta', '32bit', 0x01210d76, '=', 'Value', '', 0x4240],
+        ['', 'Mem', '32bit', 0x01210d76, '=', 'Value', '', 0],
+        ['AndNext', 'Mem', '32bit', 0x01210d90, '=', 'Value', '', 3],
+        ['AndNext', 'Delta', '32bit', 0x01210d76, '=', 'Value', '', 0x4240],
+        ['ResetIf', 'Mem', '32bit', 0x01210d76, '=', 'Value', '', 0],
+    )
+})
+
+set.addAchievement({
+    title: "A Worthy End",
+    points: 25,
+    description: "Die in peace",
+    type: 'win_condition',
+    conditions: $(
+        checkLevel(0x0124),
+        ['AndNext', 'Mem', '32bit', 0x01210d90, '=', 'Value', '', 3],
+        ['AndNext', 'Delta', '32bit', 0x01210d76, '=', 'Value', '', 0x4210],
+        ['', 'Mem', '32bit', 0x01210d76, '=', 'Value', '', 0, 1],
+        ['AndNext', 'Mem', '32bit', 0x01210d90, '=', 'Value', '', 2],
+        ['AndNext', 'Delta', '32bit', 0x01210d76, '=', 'Value', '', 0x4240],
+        ['', 'Mem', '32bit', 0x01210d76, '=', 'Value', '', 0],
+        ['AndNext', 'Mem', '32bit', 0x01210d90, '=', 'Value', '', 3],
+        ['AndNext', 'Delta', '32bit', 0x01210d76, '=', 'Value', '', 0x4240],
+        ['ResetIf', 'Mem', '32bit', 0x01210d76, '=', 'Value', '', 0],
+    )
+})
+
+set.addAchievement({
+    title: "Glory to the Patapons!",
+    points: 25,
+    description: "Sacrifice yourself to save the Patapons",
+    type: 'win_condition',
+    conditions: $(
+        checkLevel(0x0124),
+        ['AndNext', 'Mem', '32bit', 0x01210d90, '=', 'Value', '', 4],
+        ['AndNext', 'Delta', '32bit', 0x01210d76, '=', 'Value', '', 0x4210],
+        ['', 'Mem', '32bit', 0x01210d76, '=', 'Value', '', 0, 1],
+        ['AndNext', 'Mem', '32bit', 0x01210d90, '=', 'Value', '', 2],
+        ['AndNext', 'Delta', '32bit', 0x01210d76, '=', 'Value', '', 0x4240],
+        ['', 'Mem', '32bit', 0x01210d76, '=', 'Value', '', 0],
+        ['AndNext', 'Mem', '32bit', 0x01210d90, '=', 'Value', '', 3],
+        ['AndNext', 'Delta', '32bit', 0x01210d76, '=', 'Value', '', 0x4240],
+        ['ResetIf', 'Mem', '32bit', 0x01210d76, '=', 'Value', '', 0],
+    )
+})
+
 //Accursed Dodonga challenge
 set.addAchievement({
     title: "I Would Prefer a Treasure Chest",
@@ -1884,5 +1942,28 @@ set.addLeaderboard({
     }
 })
 
-
+/*
+//Create arena speedrun leaderboards
+set.addLeaderboard({
+    title: "- Will the Angry Wolf See a Full Moon? -",
+    description: "Finish the mission the fastest",
+    lowerIsBetter: true,
+    type: 'SECS',
+    conditions: {
+        start: {
+        core: $(['', 'Value', '', 1, '=', 'Value', '', 1]),
+        alt1: $(finishLevel(2)),
+        alt2: $(finishLevel(4)),
+        },
+        cancel: $(['', 'Value', '', 0, '=', 'Value', '', 1]),
+        submit: $(
+            ['', 'Delta', '32bit', 0x01ffd694, '=', 'Value', '', 0xffffffff], 
+            ['', 'Mem', '32bit', 0x01ffd694, '!=', 'Value', '', 0xffffffff],
+        ),
+        submit: $(
+            ['Measured', 'Mem', '32bit', 0x01ffd694],
+        ),
+    },
+})
+*/
 export default set
