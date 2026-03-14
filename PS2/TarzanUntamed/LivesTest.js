@@ -14,9 +14,7 @@ function binaryGenerator(len) {
     return(binary)
 }
 
-let bananaChains = ["/", ...binaryGenerator(1), ...binaryGenerator(2), ...binaryGenerator(3), ...binaryGenerator(4), ...binaryGenerator(5), ...binaryGenerator(6), ...binaryGenerator(7), ...binaryGenerator(8), ...binaryGenerator(9)]
-
-console.log(bananaChains)
+let bananaChains = ["/", ...binaryGenerator(8)]
 
 function pointerMaker(address) {
     return($(['AddAddress', 'Mem', '32bit', address, '&', 'Value', '', 0x1ffffff]))
