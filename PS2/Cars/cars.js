@@ -182,7 +182,7 @@ function shop2(items, total = items.length) {
   let logic = []
   items.forEach((item, index) => {
   const isLast = index === items.length - 1;
-  if (isLast) {
+  if (!isLast) {
     logic.push($(
       ['AddSource', 'Delta', '8bit', mipsBase + item],
     ));
@@ -194,7 +194,7 @@ function shop2(items, total = items.length) {
 });
   items.forEach((item, index) => {
     const isLast = index === items.length - 1;
-    if (isLast) {
+    if (!isLast) {
       logic.push($(
         ['AddSource', 'Mem', '8bit', mipsBase + item],
       ));
@@ -204,6 +204,7 @@ function shop2(items, total = items.length) {
       ));
     }
   });
+  return(logic)
 }
 
 set.addAchievement({
@@ -837,323 +838,171 @@ set.addAchievement({
   title: "A Car's Gotta Have Style",
   description: "Buy all 13 Character Art packs",
   points: 0,
-  conditions: {
-    core: $(
-      ...shop(artPacks)
-    ),
-    alt1: $(
-      ...buy(artPacks)
-    ),
-    alt2: $(
-      ...measure(artPacks)
-    ),
-  }
+  conditions: $(
+    ...shop2(artPacks),
+  ),
 })
 
 set.addAchievement({
   title: "Sights Worth Slowin' For",
   description: "Buy 11 Environment Art packs",
   points: 0,
-  conditions: {
-    core: $(
-      ...shop(envPacks, 11)
-    ),
-    alt1: $(
-      ...buy(envPacks)
-    ),
-    alt2: $(
-      ...measure(envPacks, 11)
-    ),
-  }
+  conditions: $(
+    ...shop2(envPacks, 11),
+  ),
 })
 
 set.addAchievement({
   title: "See the Country, Feel the Ride",
   description: "Buy all 22 Environment Art packs",
   points: 0,
-  conditions: {
-    core: $(
-      ...shop(envPacks)
-    ),
-    alt1: $(
-      ...buy(envPacks)
-    ),
-    alt2: $(
-      ...measure(envPacks)
-    ),
-  }
+  conditions: $(
+    ...shop2(envPacks),
+  ),
 })
 
 set.addAchievement({
   title: "Hidden Under the Hood",
   description: "Buy all 6 Deleted Scenes",
   points: 0,
-  conditions: {
-    core: $(
-      ...shop(delScenes)
-    ),
-    alt1: $(
-      ...buy(delScenes)
-    ),
-    alt2: $(
-      ...measure(delScenes)
-    ),
-  }
+  conditions: $(
+    ...shop2(delScenes),
+  ),
 })
 
 set.addAchievement({
   title: "Lights, Camera, Ka-Chow!",
   description: "Buy all 9 Movie Clips",
   points: 0,
-  conditions: {
-    core: $(
-      ...shop(movScenes)
-    ),
-    alt1: $(
-      ...buy(movScenes)
-    ),
-    alt2: $(
-      ...measure(movScenes)
-    ),
-  }
+  conditions: $(
+    ...shop2(movScenes),
+  ),
 })
 
 set.addAchievement({
   title: "All Revved Up, All Accounted For",
   description: "Buy all characters",
   points: 0,
-  conditions: {
-    core: $(
-      ...shop(charPack)
-    ),
-    alt1: $(
-      ...buy(charPack)
-    ),
-    alt2: $(
-      ...measure(charPack)
-    ),
-  }
+  conditions: $(
+    ...shop2(charPack),
+  ),
 })
 
 set.addAchievement({
   title: "Ka-Chow! Best Look in Town",
   description: "Buy all of Lightning McQueens paintjobs",
   points: 0,
-  conditions: {
-    core: $(
-      ...shop(mcqPaint)
-    ),
-    alt1: $(
-      ...buy(mcqPaint)
-    ),
-    alt2: $(
-      ...measure(mcqPaint)
-    ),
-  }
+  conditions: $(
+    ...shop2(mcqPaint),
+  ),
 })
 
 set.addAchievement({
   title: "Towin' in Style, Dadgum!",
   description: "Buy all of Maters paintjobs",
   points: 0,
-  conditions: {
-    core: $(
-      ...shop(matPaint)
-    ),
-    alt1: $(
-      ...buy(matPaint)
-    ),
-    alt2: $(
-      ...measure(matPaint)
-    ),
-  }
+  conditions: $(
+    ...shop2(matPaint),
+  ),
 })
 
 set.addAchievement({
   title: "Porsche-ly Perfect",
   description: "Buy all of Sally's paintjobs",
   points: 0,
-  conditions: {
-    core: $(
-      ...shop(salPaint)
-    ),
-    alt1: $(
-      ...buy(salPaint)
-    ),
-    alt2: $(
-      ...measure(salPaint)
-    ),
-  }
+  conditions: $(
+    ...shop2(salPaint),
+  ),
 })
 
 set.addAchievement({
   title: "Fabulous Hudson Hornet",
   description: "Buy all of Doc's paintjobs",
   points: 0,
-  conditions: {
-    core: $(
-      ...shop(docPaint)
-    ),
-    alt1: $(
-      ...buy(docPaint)
-    ),
-    alt2: $(
-      ...measure(docPaint)
-    ),
-  }
+  conditions: $(
+    ...shop2(docPaint),
+  ),
 })
 
 set.addAchievement({
   title: "Low and Slow",
   description: "Buy all of Ramone's paintjobs",
   points: 0,
-  conditions: {
-    core: $(
-      ...shop(ramPaint)
-    ),
-    alt1: $(
-      ...buy(ramPaint)
-    ),
-    alt2: $(
-      ...measure(ramPaint)
-    ),
-  }
+  conditions: $(
+    ...shop2(ramPaint),
+  ),
 })
 
 set.addAchievement({
   title: "V8 Café Chic",
   description: "Buy all of Flo's paintjobs",
   points: 0,
-  conditions: {
-    core: $(
-      ...shop(floPaint)
-    ),
-    alt1: $(
-      ...buy(floPaint)
-    ),
-    alt2: $(
-      ...measure(floPaint)
-    ),
-  }
+  conditions: $(
+    ...shop2(floPaint),
+  ),
 })
 
 set.addAchievement({
   title: "Law and Order in Every Finish",
   description: "Buy all of Sherrif's paintjobs",
   points: 0,
-  conditions: {
-    core: $(
-      ...shop(sherPaint)
-    ),
-    alt1: $(
-      ...buy(sherPaint)
-    ),
-    alt2: $(
-      ...measure(sherPaint)
-    ),
-  }
+  conditions: $(
+    ...shop2(sherPaint),
+  ),
 })
 
 set.addAchievement({
   title: "Kachigga!",
   description: "Buy all of Chick Hicks paintsjobs",
   points: 0,
-  conditions: {
-    core: $(
-      ...shop(chickPaint)
-    ),
-    alt1: $(
-      ...buy(chickPaint)
-    ),
-    alt2: $(
-      ...measure(chickPaint)
-    ),
-  }
+  conditions: $(
+    ...shop2(chickPaint),
+  ),
 })
 
 set.addAchievement({
   title: "Boosted and Customized",
   description: "Buy all of Wingo's paintjobs",
   points: 0,
-  conditions: {
-    core: $(
-      ...shop(wingPaint)
-    ),
-    alt1: $(
-      ...buy(wingPaint)
-    ),
-    alt2: $(
-      ...measure(wingPaint)
-    ),
-  }
+  conditions: $(
+    ...shop2(wingPaint),
+  ),
 })
 
 set.addAchievement({
   title: "Boogity Boogity Boogity Styles!",
   description: "Buy all of Darrell Cartrips paintjobs",
   points: 0,
-  conditions: {
-    core: $(
-      ...shop(darPaint)
-    ),
-    alt1: $(
-      ...buy(darPaint)
-    ),
-    alt2: $(
-      ...measure(darPaint)
-    ),
-  }
+  conditions: $(
+    ...shop2(darPaint),
+  ),
 })
 
 set.addAchievement({
   title: "The King's Full Livery",
   description: "Buy all of the King's paintjobs",
   points: 0,
-  conditions: {
-    core: $(
-      ...shop(kingPaint)
-    ),
-    alt1: $(
-      ...buy(kingPaint)
-    ),
-    alt2: $(
-      ...measure(kingPaint)
-    ),
-  }
+  conditions: $(
+    ...shop2(kingPaint),
+  ),
 })
 
 set.addAchievement({
   title: "Ka-Chow Goes Ka-Pow!",
   description: "Buy all of Monster Truck Lightnings paintjobs",
   points: 0,
-  conditions: {
-    core: $(
-      ...shop(mmcqPaint)
-    ),
-    alt1: $(
-      ...buy(mmcqPaint)
-    ),
-    alt2: $(
-      ...measure(mmcqPaint)
-    ),
-  }
+  conditions: $(
+    ...shop2(mmcqPaint),
+  ),
 })
 
 set.addAchievement({
   title: "Terror of the Tarmac",
   description: "Buy all of Count Spatula's paintjobs",
   points: 0,
-  conditions: {
-    core: $(
-      ...shop(cntPaint)
-    ),
-    alt1: $(
-      ...buy(cntPaint)
-    ),
-    alt2: $(
-      ...measure(cntPaint)
-    ),
-  }
+  conditions: $(
+    ...shop2(cntPaint),
+  ),
 })
 
 set.addLeaderboard({
