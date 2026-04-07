@@ -1,8 +1,8 @@
 {
     "type": "module",
     "dependencies": {
-        "@cruncheevos/cli": "^0.0.8",
-        "@joshraphael/autocr-cli": "^1.2.7",
-        "dotenv": "^16.4.7"
+        "@cruncheevos/cli": "^0.1.0",
+        "@joshraphael/autocr-cli": "^1.2.8",
+        "dotenv": "^17.3.1"
     }
 }
