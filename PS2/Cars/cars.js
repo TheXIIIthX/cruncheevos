@@ -552,6 +552,19 @@ set.addAchievement({
   ),
 })
 
+set.addAchievement({
+  title: "Look at Me Go!",
+  description: "Finish Mater's Speedy Circuit in third place or higher",
+  points: 0,
+  conditions: $(
+    level(logo),
+    ['', 'Mem', '32bitBE', 0x004ecba4, '=', 'Value', '', 0x52525f54],
+    noPractice(),
+    finish(),
+    finishRace(6),
+  ),
+})
+
 //Still need save protect
 set.addAchievement({
   title: "Rookie on the Circuit",
@@ -827,6 +840,19 @@ set.addAchievement({
 })
 
 set.addAchievement({
+  title: "Quickest Tow in the West",
+  description: "Win Mater's Speedy Circuit on Champion difficulty",
+  points: 0,
+  conditions: $(
+    level(logo),
+    ['', 'Mem', '32bitBE', 0x004ecba4, '=', 'Value', '', 0x52525f54],
+    difficulty(2),
+    win(),
+    finishRace(6),
+  ),
+})
+
+set.addAchievement({
   title: "I'm Faster Than Fast, Quicker Than Quick",
   description: "Win the Palm Mile Speedway on Champion difficulty",
   points: 0,
@@ -1054,6 +1080,107 @@ set.addAchievement({
   points: 0,
   conditions: $(
     ...shop2(cntPaint),
+  ),
+})
+
+set.addAchievement({
+  title: "With a Little Rust-eze, You Too Can Drive Like Me!",
+  description: "As Lightning McQueen, win Rustbucket Race-o-Rama on Champion difficulty in 4 minutes or less",
+  points: 0,
+  conditions: $(
+  ),
+})
+
+set.addAchievement({
+  title: "Im the World's Best Backwards Driver!",
+  description: "As Mater, win Boostin' with Fillmore on Champion difficulty while earning 2,000 points from driving backwards",
+  points: 0,
+  conditions: $(
+  ),
+})
+
+set.addAchievement({
+  title: "All Natural, Stickers",
+  description: "As Sally, win Sally's Wheel Well Sprint on Champion difficulty without boosting or taking shortcuts",
+  points: 0,
+  conditions: $(
+  ),
+})
+
+set.addAchievement({
+  title: "Let Me Show You How It's Done",
+  description: "As Doc Hudson, win Doc's Challenge on Champion difficulty while earning 1,000 points from powersliding",
+  points: 0,
+  conditions: $(
+  ),
+})
+
+set.addAchievement({
+  title: "Low n' Slow",
+  description: "As Ramone, win Delinquent Road Hazards on Champion difficulty while earning the Safe Driver bonus 14 times",
+  points: 0,
+  conditions: $(
+  ),
+})
+
+set.addAchievement({
+  title: "Showgirl, Even Off-Road",
+  description: "As Flo, win Sarge's Off-Road Challenge on Champion difficulty with at least 4,200 points or more",
+  points: 0,
+  conditions: $(
+  ),
+})
+
+set.addAchievement({
+  title: "Through the Eyes of the Law",
+  description: "As Sheriff, win Sheriff's Chase on Champion difficulty in first person mode",
+  points: 0,
+  conditions: $(
+
+  ),
+})
+
+set.addAchievement({
+  title: "Who Needs Drifting?! Kachigga!",
+  description: "As Chick Hicks, win Ornament Valley GP on champion difficulty without Powersliding",
+  points: 0,
+  conditions: $(
+
+  ),
+})
+
+set.addAchievement({
+  title: "So Much for Downforce",
+  description: "As Wingo, win Chick's Challenge on Champion difficulty while attaining a Big Air bonus 9 times",
+  points: 0,
+  conditions: $(
+  ),
+})
+
+set.addAchievement({
+  title: "You See That Speed Boost?",
+  description: "As Darrell Cartrip, win Palm Mile Speedway while earning 1,000 points from tilting",
+  points: 0,
+  conditions: $(
+
+  ),
+})
+
+set.addAchievement({
+  title: "Return of Dinoco's Legend",
+  description: "As The King, win Smasherville International Speedway on Champion difficulty while earning the Lap Leader bonus 9 times",
+  points: 0,
+  conditions: $(
+
+  ),
+})
+
+set.addAchievement({
+  title: "Small Town Bringdown",
+  description: "As Count Spatula, win Radiator Springs GP on Champion difficulty",
+  points: 0,
+  conditions: $(
+
   ),
 })
 
