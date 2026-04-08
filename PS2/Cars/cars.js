@@ -827,7 +827,7 @@ set.addAchievement({
 })
 
 set.addAchievement({
-  title: "I’m Faster Than Fast, Quicker Than Quick",
+  title: "I'm Faster Than Fast, Quicker Than Quick",
   description: "Win the Palm Mile Speedway on Champion difficulty",
   points: 0,
   conditions: $(
@@ -1079,7 +1079,7 @@ set.addLeaderboard({
       raceTimer(),
     ),
   },
-  id: 51610,
+  id: 160918,
 })
 
 set.addLeaderboard({
@@ -1104,7 +1104,7 @@ set.addLeaderboard({
       raceTimer(),
     ),
   },
-  id: 51611,
+  id: 160919,
 })
 
 set.addLeaderboard({
@@ -1129,7 +1129,7 @@ set.addLeaderboard({
       raceTimer(),
     ),
   },
-  id: 51612,
+  id: 160920,
 })
 
 set.addLeaderboard({
@@ -1154,7 +1154,7 @@ set.addLeaderboard({
       raceTimer(),
     ),
   },
-  id: 51613,
+  id: 160921,
 })
 
 set.addLeaderboard({
@@ -1179,7 +1179,7 @@ set.addLeaderboard({
       raceTimer(),
     ),
   },
-  id: 51614,
+  id: 160922,
 })
 
 set.addLeaderboard({
@@ -1204,7 +1204,7 @@ set.addLeaderboard({
       raceTimer(),
     ),
   },
-  id: 51615,
+  id: 160923,
 })
 
 set.addLeaderboard({
@@ -1229,7 +1229,7 @@ set.addLeaderboard({
       raceTimer(),
     ),
   },
-  id: 51616,
+  id: 160924,
 })
 
 set.addLeaderboard({
@@ -1254,7 +1254,7 @@ set.addLeaderboard({
       raceTimer(),
     ),
   },
-  id: 51617,
+  id: 160925,
 })
 
 set.addLeaderboard({
@@ -1279,7 +1279,7 @@ set.addLeaderboard({
       raceTimer(),
     ),
   },
-  id: 51618,
+  id: 160926,
 })
 
 set.addLeaderboard({
@@ -1304,7 +1304,7 @@ set.addLeaderboard({
       raceTimer(),
     ),
   },
-  id: 51619,
+  id: 160927,
 })
 
 set.addLeaderboard({
@@ -1329,7 +1329,7 @@ set.addLeaderboard({
       raceTimer(),
     ),
   },
-  id: 51620,
+  id: 160928,
 })
 
 set.addLeaderboard({
@@ -1354,7 +1354,7 @@ set.addLeaderboard({
       raceTimer(),
     ),
   },
-  id: 51621,
+  id: 160929,
 })
 
 set.addLeaderboard({
@@ -1379,7 +1379,7 @@ set.addLeaderboard({
       raceTimer(),
     ),
   },
-  id: 51622,
+  id: 160930,
 })
 
 set.addLeaderboard({
@@ -1404,7 +1404,7 @@ set.addLeaderboard({
       raceTimer(),
     ),
   },
-  id: 51623,
+  id: 160931,
 })
 
 set.addLeaderboard({
@@ -1429,7 +1429,7 @@ set.addLeaderboard({
       raceTimer(),
     ),
   },
-  id: 51624,
+  id: 160932,
 })
 
 set.addLeaderboard({
@@ -1454,7 +1454,7 @@ set.addLeaderboard({
       raceTimer(),
     ),
   },
-  id: 51625,
+  id: 160933,
 })
 
 set.addLeaderboard({
@@ -1479,7 +1479,7 @@ set.addLeaderboard({
       raceTimer(),
     ),
   },
-  id: 51626,
+  id: 160934,
 })
 
 set.addLeaderboard({
@@ -1504,7 +1504,7 @@ set.addLeaderboard({
       raceTimer(),
     ),
   },
-  id: 51627,
+  id: 160935,
 })
 
 set.addLeaderboard({
@@ -1529,79 +1529,34 @@ set.addLeaderboard({
       raceTimer(),
     ),
   },
-  id: 51628,
+  id: 160936,
 })
 
 set.addLeaderboard({
-  title: `⏱️ Time Trial - Mater's Speedy Circuit`,
+  title: `Time Trial - Mater's Speedy Circuit`,
   description:
-    'Complete all six laps on Practice Mode in the fastest time you can! (No respawning).',
+    'Complete all six laps in the fastest time you can!',
   lowerIsBetter: true,
   type: 'MILLISECS',
   conditions: {
     start: $(
-      ['', 'Mem', '32bit', 0x7ed85c, '=', 'Value', '', 0x80ac70],
-      ['', 'Mem', '32bit', 0x5185a8, '>', 'Value', '', 80],
-      ['', 'Mem', '32bit', 0x553828, '=', 'Value', '', 0],
-      ['', 'Mem', '32bit', 0x7ed780, '=', 'Value', '', 1],
-      ['', 'Mem', '32bit', 0x7ed788, '=', 'Value', '', 3],
-      ['AddAddress', 'Mem', '32bit', 0x7eb56c],
-      ['AddAddress', 'Mem', '32bit', 0xe8],
-      ['AddAddress', 'Mem', '32bit', 0x10],
-      ['AddAddress', 'Mem', '32bit', 0x30],
-      ['AddAddress', 'Mem', '32bit', 0x0],
-      ['AndNext', 'Delta', 'Float', 0x28, '=', 'Float', '', 0],
-      ['AddAddress', 'Mem', '32bit', 0x7eb56c],
-      ['AddAddress', 'Mem', '32bit', 0xe8],
-      ['AddAddress', 'Mem', '32bit', 0x10],
-      ['AddAddress', 'Mem', '32bit', 0x30],
-      ['AddAddress', 'Mem', '32bit', 0x0],
-      ['', 'Mem', 'Float', 0x28, '>', 'Float', '', 0],
-      ['', 'Mem', 'Bit2', 0x52beb0, '=', 'Value', '', 0],
-      ['', 'Mem', 'Bit5', 0x52beb2, '=', 'Value', '', 0],
+      level(logo),
+      ['', 'Mem', '32bitBE', 0x004ecba4, '=', 'Value', '', 0x52525f54],
+      finishRace(6),
     ),
     cancel: $(
-      ['OrNext', 'Mem', '32bit', 0x553828, '!=', 'Value', '', 0],
-      ['OrNext', 'Mem', '32bit', 0x5185a8, '<', 'Value', '', 32],
-      ['AddAddress', 'Mem', '32bit', 0x7eb56c],
-      ['AddAddress', 'Mem', '32bit', 0xe8],
-      ['AddAddress', 'Mem', '32bit', 0x10],
-      ['AddAddress', 'Mem', '32bit', 0x30],
-      ['AddAddress', 'Mem', '32bit', 0x0],
-      ['AndNext', 'Delta', 'Float', 0x28, '>', 'Float', '', 0],
-      ['AddAddress', 'Mem', '32bit', 0x7eb56c],
-      ['AddAddress', 'Mem', '32bit', 0xe8],
-      ['AddAddress', 'Mem', '32bit', 0x10],
-      ['AddAddress', 'Mem', '32bit', 0x30],
-      ['AddAddress', 'Mem', '32bit', 0x0],
-      ['OrNext', 'Mem', 'Float', 0x28, '=', 'Float', '', 0],
-      ['AndNext', 'Mem', '32bit', 0x7c8ce8, '=', 'Value', '', 0],
-      ['', 'Mem', '32bit', 0x7c8a98, '=', 'Value', '', 1],
+      levelQuit(),
     ),
     submit: $(
-      ['AddAddress', 'Mem', '32bit', 0x7eb56c],
-      ['AddAddress', 'Mem', '32bit', 0xe8],
-      ['AddAddress', 'Mem', '32bit', 0x10],
-      ['AddAddress', 'Mem', '32bit', 0x30],
-      ['AddAddress', 'Mem', '32bit', 0x0],
-      ['ResetNextIf', 'Mem', '32bit', 0x3c, '=', 'Value', '', 0],
-      ['AddAddress', 'Mem', '32bit', 0x7eb56c],
-      ['AddAddress', 'Mem', '32bit', 0xe8],
-      ['AddAddress', 'Mem', '32bit', 0x10],
-      ['AddAddress', 'Mem', '32bit', 0x30],
-      ['AddAddress', 'Mem', '32bit', 0x0],
-      ['', 'Mem', 'Lower4', 0x48, '=', 'Value', '', 3, 5],
+      level(logo),
+      ['', 'Mem', '32bitBE', 0x004ecba4, '=', 'Value', '', 0x52525f54],
+      finishRace(6),
     ),
     value: $(
-      ['AddAddress', 'Mem', '32bit', 0x7eb56c],
-      ['AddAddress', 'Mem', '32bit', 0xe8],
-      ['AddAddress', 'Mem', '32bit', 0x10],
-      ['AddAddress', 'Mem', '32bit', 0x30],
-      ['AddAddress', 'Mem', '32bit', 0x0],
-      ['Measured', 'Mem', 'Float', 0x28, '*', 'Value', '', 100],
+      raceTimer(),
     ),
   },
-  id: 51629,
+  id: 160942,
 })
 
 set.addLeaderboard({
@@ -1626,7 +1581,7 @@ set.addLeaderboard({
       raceTimer(),
     ),
   },
-  id: 51630,
+  id: 160937,
 })
 
 set.addLeaderboard({
@@ -1651,7 +1606,7 @@ set.addLeaderboard({
       raceTimer(),
     ),
   },
-  id: 51631,
+  id: 160938,
 })
 
 set.addLeaderboard({
@@ -1676,7 +1631,7 @@ set.addLeaderboard({
       raceTimer(),
     ),
   },
-  id: 51632,
+  id: 160939,
 })
 
 set.addLeaderboard({
@@ -1701,7 +1656,7 @@ set.addLeaderboard({
       raceTimer(),
     ),
   },
-  id: 51633,
+  id: 160940,
 })
 
 set.addLeaderboard({
@@ -1726,7 +1681,7 @@ set.addLeaderboard({
       raceTimer(),
     ),
   },
-  id: 51634,
+  id: 160941,
 })
 
 export default set
