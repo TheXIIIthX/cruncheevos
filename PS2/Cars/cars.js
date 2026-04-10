@@ -1,4 +1,4 @@
-import { AchievementSet, define as $, measured } from '@cruncheevos/core'
+import { AchievementSet, define as $, measured, andNext, once, trigger, resetIf } from '@cruncheevos/core'
 const set = new AchievementSet({ gameId: 20525, title: 'Cars' })
 
 const RadiatorSpringsGrandPrix = 0x315f3100
@@ -35,6 +35,20 @@ const OrnamentValleyGP = 0x365f3300
 const LosAngelesInternationalSpeedway = 0x365f3500
 const logo = 0x6c6f676f
 
+const McQueen = [0x4d435100, 0x4d635100, 0x4d637100, 0x6d637100]
+const Mater = [0x4d617400, 0x6d617400]
+const Sally = [0x53616c00, 0x73616c00]
+const Doc = [0x68756400]
+const Ramone = [0x72616d00]
+const Flo = [0x666c6f00]
+const Sheriff = [0x53686572, 0x73686572]
+const Chick = [0x63686900]
+const Wingo = [0x77696e00]
+const Darrell = [0x64617200]
+const King = [0x6b696e67]
+const MonsterMcQueen = [0x4d63514d, 0x6d63716d]
+const Spatula = [0x63737061]
+
 const mipsBase = 0x00458380
 const artPacks = [0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17, 0x18, 0x19, 0x1a, 0x1b, 0x1c, 0x1d]
 const envPacks = [0x1e, 0x1f, 0x20, 0x21, 0x22, 0x23, 0x24, 0x25, 0x26, 0x27, 0x28, 0x29, 0x2a, 0x2b, 0x2c, 0x2d, 0x2e, 0x2f, 0x30, 0x31, 0x32, 0x33]
@@ -61,6 +75,31 @@ function pointer(offset) {
     ))
 }
 
+function loadprotect() {
+  return($(
+    ['', 'Mem', '32bit', 0x005185a8, '!=', 'Value', '', 0x49],
+  ))
+}
+
+function cheatprotect() {
+  return($(
+    ['AddSource', 'Mem', '32bit', 0x0052beb0, '&', 'Value', '', 0xffefffff],
+    ['', 'Value', '', 0, '=', 'Value', '', 0],
+  ))
+}
+
+function timer(time) {
+  return($(
+    pointer(0x0048d990),
+    pointer(0x300),
+    pointer(0x4c),
+    pointer(0xc44),
+    pointer(0x54),
+    pointer(0x0),
+    ['', 'Mem', 'Float', 0x28, '<', 'Value', '', time],
+  ))
+}
+
 function raceTimer() {
   return($(
     pointer(0x0048d990),
@@ -70,6 +109,17 @@ function raceTimer() {
     pointer(0x54),
     pointer(0x0),
     ['Measured', 'Mem', 'Float', 0x28, '*', 'Value', '', 100],
+  ))
+}
+
+function lead(time) {
+  return($(
+    pointer(0x0048d990),
+    pointer(0x300),
+    pointer(0x4c),
+    pointer(0xc44),
+    pointer(0x4),
+    ['', 'Mem', 'Float', 0x2c, '>', 'Value', '', time],
   ))
 }
 
@@ -146,6 +196,19 @@ function finishRace(laps) {
     pointer(0x80),
     ['', 'Mem', '32bit', 0x3c, '=', 'Value', '', laps],
   ))
+}
+
+function character(characterID) {
+  let logic = []
+  characterID.forEach((ID, index) => {
+  const isLast = index === characterID.length - 1;
+  if (!isLast) {
+    logic.push($(['OrNext', 'Mem', '32bitBE', 0x007ed864, '=', 'Value', '', ID],))
+  } else {
+    logic.push($(['', 'Mem', '32bitBE', 0x007ed864, '=', 'Value', '', ID],))
+  }
+});
+  return(logic)
 }
 
 function story() {
@@ -259,12 +322,21 @@ function shop2(items, total = items.length) {
   return(logic)
 }
 
+function firstperson() {
+  return($(['', 'Mem', '32bit', 0x004eba08, '=', 'Value', '', 1]))
+}
+
+function notfirstperson() {
+  return($(['', 'Mem', '32bit', 0x004eba08, '!=', 'Value', '', 1]))
+}
+
 set.addAchievement({
   title: "I Am Speed",
   description: "Finish Radiator Springs Grand Prix in Story Mode",
   type: 'progression',
   points: 0,
   conditions: $(
+    cheatprotect(),
     level(RadiatorSpringsGrandPrix),
     story(),
     finishRace(3),
@@ -277,6 +349,7 @@ set.addAchievement({
   type: 'progression',
   points: 0,
   conditions: $(
+    cheatprotect(),
     level(PalmMileSpeedway),
     story(),
     finish(),
@@ -290,6 +363,7 @@ set.addAchievement({
   type: 'progression',
   points: 0,
   conditions: $(
+    cheatprotect(),
     level(MotorSpeedwayoftheSouth),
     story(),
     finish(),
@@ -303,6 +377,7 @@ set.addAchievement({
   type: 'progression',
   points: 0,
   conditions: $(
+    cheatprotect(),
     level(SunValleyInternationalRaceway),
     story(),
     finish(),
@@ -316,6 +391,7 @@ set.addAchievement({
   type: 'progression',
   points: 0,
   conditions: $(
+    cheatprotect(),
     level(SmashervilleInternationalSpeedway),
     story(),
     win(),
@@ -329,6 +405,7 @@ set.addAchievement({
   type: 'win_condition',
   points: 0,
   conditions: $(
+    cheatprotect(),
     level(LosAngelesInternationalSpeedway),
     story(),
     win(),
@@ -341,6 +418,7 @@ set.addAchievement({
   description: "Finish Radiator Cap Circuit in third place or higher",
   points: 0,
   conditions: $(
+    cheatprotect(),
     level(RadiatorCapCircuit),
     noPractice(),
     finish(),
@@ -353,6 +431,7 @@ set.addAchievement({
   description: "Finish Sally's Sunshine Circuit in third place or higher",
   points: 0,
   conditions: $(
+    cheatprotect(),
     level(SallysSunshineCircuit),
     noPractice(),
     finish(),
@@ -365,6 +444,7 @@ set.addAchievement({
   description: "Finish Doc's Challenge in third place or higher",
   points: 0,
   conditions: $(
+    cheatprotect(),
     level(DocsChallenge),
     noPractice(),
     finish(),
@@ -377,6 +457,7 @@ set.addAchievement({
   description: "Finish Boostin' with Fillmore in third place or higher",
   points: 0,
   conditions: $(
+    cheatprotect(),
     level(BoostinwithFillmore),
     noPractice(),
     finish(),
@@ -389,6 +470,7 @@ set.addAchievement({
   description: "Finish North Desert Dash in third place or higher",
   points: 0,
   conditions: $(
+    cheatprotect(),
     level(NorthDesertDash),
     noPractice(),
     finish(),
@@ -401,6 +483,7 @@ set.addAchievement({
   description: "Finish Sarge's Off-Road Challenge in third place or higher",
   points: 0,
   conditions: $(
+    cheatprotect(),
     level(SargesOffRoadChallenge),
     noPractice(),
     finish(),
@@ -413,6 +496,7 @@ set.addAchievement({
   description: "Finish Sheriff's Chase in third place or higher",
   points: 0,
   conditions: $(
+    cheatprotect(),
     level(SheriffsChase),
     noPractice(),
     finish(),
@@ -425,6 +509,7 @@ set.addAchievement({
   description: "Finish Ornament Valley Circuit in third place or higher",
   points: 0,
   conditions: $(
+    cheatprotect(),
     level(OrnamentValleyCircuit),
     noPractice(),
     finish(),
@@ -437,6 +522,7 @@ set.addAchievement({
   description: "Finish Rustbucket Race-O-Rama in third place or higher",
   points: 0,
   conditions: $(
+    cheatprotect(),
     level(RustbucketRaceoRama),
     noPractice(),
     finish(),
@@ -449,6 +535,7 @@ set.addAchievement({
   description: "Finish Sally's Wheel Well Sprint in third place or higher",
   points: 0,
   conditions: $(
+    cheatprotect(),
     level(SallysWheelWellSprint),
     noPractice(),
     finish(),
@@ -461,6 +548,7 @@ set.addAchievement({
   description: "Finish Doc's Check-Up in third place or higher",
   points: 0,
   conditions: $(
+    cheatprotect(),
     level(DocsCheckUp),
     noPractice(),
     finish(),
@@ -473,6 +561,7 @@ set.addAchievement({
   description: "Finish Tailfin Pass Circuit in third place or higher",
   points: 0,
   conditions: $(
+    cheatprotect(),
     level(TailfinPassCircuit),
     noPractice(),
     finish(),
@@ -485,6 +574,7 @@ set.addAchievement({
   description: "Finish Monster Truck Mayhem in third place or higher",
   points: 0,
   conditions: $(
+    cheatprotect(),
     level(MonsterTruckMayhem),
     noPractice(),
     finish(),
@@ -497,6 +587,7 @@ set.addAchievement({
   description: "Finish Delinquent Road Hazard in third place or higher",
   points: 0,
   conditions: $(
+    cheatprotect(),
     level(DelinquentRoadHazards),
     noPractice(),
     finish(),
@@ -509,6 +600,7 @@ set.addAchievement({
   description: "Finish Chick's Challenge in third place or higher",
   points: 0,
   conditions: $(
+    cheatprotect(),
     level(ChicksChallenge),
     noPractice(),
     finish(),
@@ -521,6 +613,7 @@ set.addAchievement({
   description: "Finish Radiator Springs GP in third place or higher",
   points: 0,
   conditions: $(
+    cheatprotect(),
     level(RadiatorSpringsGP),
     noPractice(),
     finish(),
@@ -533,6 +626,7 @@ set.addAchievement({
   description: "Finish Tailfin Pass GP in third place or higher",
   points: 0,
   conditions: $(
+    cheatprotect(),
     level(TailfinPassGP),
     noPractice(),
     finish(),
@@ -545,6 +639,7 @@ set.addAchievement({
   description: "Finish Ornament Valley GP in third place or higher",
   points: 0,
   conditions: $(
+    cheatprotect(),
     level(OrnamentValleyGP),
     noPractice(),
     finish(),
@@ -557,6 +652,7 @@ set.addAchievement({
   description: "Finish Mater's Speedy Circuit in third place or higher",
   points: 0,
   conditions: $(
+    cheatprotect(),
     level(logo),
     ['', 'Mem', '32bitBE', 0x004ecba4, '=', 'Value', '', 0x52525f54],
     noPractice(),
@@ -571,6 +667,8 @@ set.addAchievement({
   description: "Collect 50 trophies",
   points: 0,
   conditions: $(
+    cheatprotect(),
+    loadprotect(),
     ['', 'Mem', '32bit', 0x007ed780, '=', 'Value', '', 0],
     pointer(0x2ec),
     pointer(0x28),
@@ -586,6 +684,8 @@ set.addAchievement({
   description: "Collect 150 trophies",
   points: 0,
   conditions: $(
+    cheatprotect(),
+    loadprotect(),
     ['', 'Mem', '32bit', 0x007ed780, '=', 'Value', '', 0],
     pointer(0x2ec),
     pointer(0x28),
@@ -601,6 +701,8 @@ set.addAchievement({
   description: "Collect all 250 trophies",
   points: 0,
   conditions: $(
+    cheatprotect(),
+    loadprotect(),
     ['', 'Mem', '32bit', 0x007ed780, '=', 'Value', '', 0],
     pointer(0x2ec),
     pointer(0x28),
@@ -616,6 +718,7 @@ set.addAchievement({
   description: "Win Radiator Springs Grand Prix on Champion difficulty",
   points: 0,
   conditions: $(
+    cheatprotect(),
     level(RadiatorSpringsGrandPrix),
     difficulty(2),
     win(),
@@ -628,6 +731,7 @@ set.addAchievement({
   description: "Win Radiator Cap Circuit on Champion difficulty",
   points: 0,
   conditions: $(
+    cheatprotect(),
     level(RadiatorCapCircuit),
     difficulty(2),
     win(),
@@ -640,6 +744,7 @@ set.addAchievement({
   description: "Win Sally's Sunshine Circuit on Champion difficulty",
   points: 0,
   conditions: $(
+    cheatprotect(),
     level(SallysSunshineCircuit),
     difficulty(2),
     win(),
@@ -652,6 +757,7 @@ set.addAchievement({
   description: "Win Doc's Challenge on Champion difficulty",
   points: 0,
   conditions: $(
+    cheatprotect(),
     level(DocsChallenge),
     difficulty(2),
     win(),
@@ -664,6 +770,7 @@ set.addAchievement({
   description: "Win Boostin' with Fillmore on Champion difficulty",
   points: 0,
   conditions: $(
+    cheatprotect(),
     level(BoostinwithFillmore),
     difficulty(2),
     win(),
@@ -676,6 +783,7 @@ set.addAchievement({
   description: "Win North Desert Dash on Champion difficulty",
   points: 0,
   conditions: $(
+    cheatprotect(),
     level(NorthDesertDash),
     difficulty(2),
     win(),
@@ -688,6 +796,7 @@ set.addAchievement({
   description: "Win Sarge's Off-Road Challenge on Champion difficulty",
   points: 0,
   conditions: $(
+    cheatprotect(),
     level(SargesOffRoadChallenge),
     difficulty(2),
     win(),
@@ -700,6 +809,7 @@ set.addAchievement({
   description: "Win Sheriff's Chase on Champion difficulty",
   points: 0,
   conditions: $(
+    cheatprotect(),
     level(SheriffsChase),
     difficulty(2),
     win(),
@@ -712,6 +822,7 @@ set.addAchievement({
   description: "Win Ornament Valley Circuit on Champion difficulty",
   points: 0,
   conditions: $(
+    cheatprotect(),
     level(OrnamentValleyCircuit),
     difficulty(2),
     win(),
@@ -724,6 +835,7 @@ set.addAchievement({
   description: "Win Rustbucket Race-O-Rama on Champion difficulty",
   points: 0,
   conditions: $(
+    cheatprotect(),
     level(RustbucketRaceoRama),
     difficulty(2),
     win(),
@@ -736,6 +848,7 @@ set.addAchievement({
   description: "Win Sally's Wheel Well Sprint on Champion difficulty",
   points: 0,
   conditions: $(
+    cheatprotect(),
     level(SallysWheelWellSprint),
     difficulty(2),
     win(),
@@ -748,6 +861,7 @@ set.addAchievement({
   description: "Win Doc's Check-Up on Champion difficulty",
   points: 0,
   conditions: $(
+    cheatprotect(),
     level(DocsCheckUp),
     difficulty(2),
     win(),
@@ -760,6 +874,7 @@ set.addAchievement({
   description: "Win Tailfin Pass Circuit on Champion difficulty",
   points: 0,
   conditions: $(
+    cheatprotect(),
     level(TailfinPassCircuit),
     difficulty(2),
     win(),
@@ -772,6 +887,7 @@ set.addAchievement({
   description: "Win Monster Truck Mayhem on Champion difficulty",
   points: 0,
   conditions: $(
+    cheatprotect(),
     level(MonsterTruckMayhem),
     difficulty(2),
     win(),
@@ -784,6 +900,7 @@ set.addAchievement({
   description: "Win Delinquent Road Hazard on Champion difficulty",
   points: 0,
   conditions: $(
+    cheatprotect(),
     level(DelinquentRoadHazards),
     difficulty(2),
     win(),
@@ -796,6 +913,7 @@ set.addAchievement({
   description: "Win Chick's Challenge on Champion difficulty",
   points: 0,
   conditions: $(
+    cheatprotect(),
     level(ChicksChallenge),
     difficulty(2),
     win(),
@@ -808,6 +926,7 @@ set.addAchievement({
   description: "Win Radiator Springs GP on Champion difficulty",
   points: 0,
   conditions: $(
+    cheatprotect(),
     level(RadiatorSpringsGP),
     difficulty(2),
     win(),
@@ -820,6 +939,7 @@ set.addAchievement({
   description: "Win Tailfin Pass GP on Champion difficulty",
   points: 0,
   conditions: $(
+    cheatprotect(),
     level(TailfinPassGP),
     difficulty(2),
     win(),
@@ -832,6 +952,7 @@ set.addAchievement({
   description: "Win Ornament Valley GP on Champion difficulty",
   points: 0,
   conditions: $(
+    cheatprotect(),
     level(OrnamentValleyGP),
     difficulty(2),
     win(),
@@ -844,6 +965,7 @@ set.addAchievement({
   description: "Win Mater's Speedy Circuit on Champion difficulty",
   points: 0,
   conditions: $(
+    cheatprotect(),
     level(logo),
     ['', 'Mem', '32bitBE', 0x004ecba4, '=', 'Value', '', 0x52525f54],
     difficulty(2),
@@ -857,6 +979,7 @@ set.addAchievement({
   description: "Win the Palm Mile Speedway on Champion difficulty",
   points: 0,
   conditions: $(
+    cheatprotect(),
     level(PalmMileSpeedway),
     difficulty(2),
     win(),
@@ -869,6 +992,7 @@ set.addAchievement({
   description: "Win the Motor Speedway of the South on Champion difficulty",
   points: 0,
   conditions: $(
+    cheatprotect(),
     level(MotorSpeedwayoftheSouth),
     difficulty(2),
     win(),
@@ -881,6 +1005,7 @@ set.addAchievement({
   description: "Win the Sun Valley International Raceway on Champion difficulty",
   points: 0,
   conditions: $(
+    cheatprotect(),
     level(SunValleyInternationalRaceway),
     difficulty(2),
     win(),
@@ -893,6 +1018,7 @@ set.addAchievement({
   description: "Win the Smasherville International Raceway on Champion difficulty",
   points: 0,
   conditions: $(
+    cheatprotect(),
     level(SmashervilleInternationalSpeedway),
     difficulty(2),
     win(),
@@ -905,6 +1031,7 @@ set.addAchievement({
   description: "Win the Los Angeles International Speedway on Champion difficulty",
   points: 0,
   conditions: $(
+    cheatprotect(),
     level(LosAngelesInternationalSpeedway),
     difficulty(2),
     win(),
@@ -917,6 +1044,8 @@ set.addAchievement({
   description: "Buy all 13 Character Art packs",
   points: 0,
   conditions: $(
+    cheatprotect(),
+    loadprotect(),
     ...shop2(artPacks),
   ),
 })
@@ -926,6 +1055,8 @@ set.addAchievement({
   description: "Buy 11 Environment Art packs",
   points: 0,
   conditions: $(
+    cheatprotect(),
+    loadprotect(),
     ...shop2(envPacks, 11),
   ),
 })
@@ -935,6 +1066,8 @@ set.addAchievement({
   description: "Buy all 22 Environment Art packs",
   points: 0,
   conditions: $(
+    cheatprotect(),
+    loadprotect(),
     ...shop2(envPacks),
   ),
 })
@@ -944,6 +1077,8 @@ set.addAchievement({
   description: "Buy all 6 Deleted Scenes",
   points: 0,
   conditions: $(
+    cheatprotect(),
+    loadprotect(),
     ...shop2(delScenes),
   ),
 })
@@ -953,6 +1088,8 @@ set.addAchievement({
   description: "Buy all 9 Movie Clips",
   points: 0,
   conditions: $(
+    cheatprotect(),
+    loadprotect(),
     ...shop2(movScenes),
   ),
 })
@@ -962,6 +1099,8 @@ set.addAchievement({
   description: "Buy all characters",
   points: 0,
   conditions: $(
+    cheatprotect(),
+    loadprotect(),
     ...shop2(charPack),
   ),
 })
@@ -971,6 +1110,8 @@ set.addAchievement({
   description: "Buy all of Lightning McQueens paintjobs",
   points: 0,
   conditions: $(
+    cheatprotect(),
+    loadprotect(),
     ...shop2(mcqPaint),
   ),
 })
@@ -980,6 +1121,8 @@ set.addAchievement({
   description: "Buy all of Maters paintjobs",
   points: 0,
   conditions: $(
+    cheatprotect(),
+    loadprotect(),
     ...shop2(matPaint),
   ),
 })
@@ -989,6 +1132,8 @@ set.addAchievement({
   description: "Buy all of Sally's paintjobs",
   points: 0,
   conditions: $(
+    cheatprotect(),
+    loadprotect(),
     ...shop2(salPaint),
   ),
 })
@@ -998,6 +1143,8 @@ set.addAchievement({
   description: "Buy all of Doc's paintjobs",
   points: 0,
   conditions: $(
+    cheatprotect(),
+    loadprotect(),
     ...shop2(docPaint),
   ),
 })
@@ -1007,6 +1154,8 @@ set.addAchievement({
   description: "Buy all of Ramone's paintjobs",
   points: 0,
   conditions: $(
+    cheatprotect(),
+    loadprotect(),
     ...shop2(ramPaint),
   ),
 })
@@ -1016,6 +1165,8 @@ set.addAchievement({
   description: "Buy all of Flo's paintjobs",
   points: 0,
   conditions: $(
+    cheatprotect(),
+    loadprotect(),
     ...shop2(floPaint),
   ),
 })
@@ -1025,6 +1176,8 @@ set.addAchievement({
   description: "Buy all of Sherrif's paintjobs",
   points: 0,
   conditions: $(
+    cheatprotect(),
+    loadprotect(),
     ...shop2(sherPaint),
   ),
 })
@@ -1034,6 +1187,8 @@ set.addAchievement({
   description: "Buy all of Chick Hicks paintsjobs",
   points: 0,
   conditions: $(
+    cheatprotect(),
+    loadprotect(),
     ...shop2(chickPaint),
   ),
 })
@@ -1043,6 +1198,8 @@ set.addAchievement({
   description: "Buy all of Wingo's paintjobs",
   points: 0,
   conditions: $(
+    cheatprotect(),
+    loadprotect(),
     ...shop2(wingPaint),
   ),
 })
@@ -1052,6 +1209,8 @@ set.addAchievement({
   description: "Buy all of Darrell Cartrips paintjobs",
   points: 0,
   conditions: $(
+    cheatprotect(),
+    loadprotect(),
     ...shop2(darPaint),
   ),
 })
@@ -1061,6 +1220,8 @@ set.addAchievement({
   description: "Buy all of the King's paintjobs",
   points: 0,
   conditions: $(
+    cheatprotect(),
+    loadprotect(),
     ...shop2(kingPaint),
   ),
 })
@@ -1070,6 +1231,8 @@ set.addAchievement({
   description: "Buy all of Monster Truck Lightnings paintjobs",
   points: 0,
   conditions: $(
+    cheatprotect(),
+    loadprotect(),
     ...shop2(mmcqPaint),
   ),
 })
@@ -1079,20 +1242,29 @@ set.addAchievement({
   description: "Buy all of Count Spatula's paintjobs",
   points: 0,
   conditions: $(
+    cheatprotect(),
+    loadprotect(),
     ...shop2(cntPaint),
   ),
 })
 
 set.addAchievement({
   title: "With a Little Rust-eze, You Too Can Drive Like Me!",
-  description: "As Lightning McQueen, win Rustbucket Race-o-Rama on Champion difficulty in 4 minutes or less",
+  description: "As Lightning McQueen, win Rustbucket Race-o-Rama on Champion difficulty with a lead of 5 seconds or more",
   points: 0,
   conditions: $(
+    cheatprotect(),
+    ...character(McQueen),
+    level(RustbucketRaceoRama),
+    difficulty(2),
+    win(),
+    lead(5),
+    finishRace(12),
   ),
 })
 
 set.addAchievement({
-  title: "Im the World's Best Backwards Driver!",
+  title: "I'm the World's Best Backwards Driver!",
   description: "As Mater, win Boostin' with Fillmore on Champion difficulty while earning 2,000 points from driving backwards",
   points: 0,
   conditions: $(
@@ -1131,12 +1303,23 @@ set.addAchievement({
   ),
 })
 
+//First person mode flag flickers
 set.addAchievement({
   title: "Through the Eyes of the Law",
   description: "As Sheriff, win Sheriff's Chase on Champion difficulty in first person mode",
   points: 0,
   conditions: $(
-
+    cheatprotect(),
+    andNext(
+    level(SheriffsChase),
+    difficulty(2),
+    timer(5), 
+    once(firstperson()),
+    ),
+    trigger(win()),
+    trigger(finishRace(1)),
+    resetIf(notfirstperson()),
+    resetIf(levelQuit()),
   ),
 })
 
@@ -1192,6 +1375,7 @@ set.addLeaderboard({
   type: 'MILLISECS',
   conditions: {
     start: $(
+      cheatprotect(),
       level(RadiatorSpringsGrandPrix),
       finishRace(3),
     ),
@@ -1199,6 +1383,7 @@ set.addLeaderboard({
       levelQuit(),
     ),
     submit: $(
+      cheatprotect(),
       level(RadiatorSpringsGrandPrix),
       finishRace(3),
     ),
@@ -1217,6 +1402,7 @@ set.addLeaderboard({
   type: 'MILLISECS',
   conditions: {
     start: $(
+      cheatprotect(),
       level(RadiatorCapCircuit),
       finishRace(3),
     ),
@@ -1224,6 +1410,7 @@ set.addLeaderboard({
       levelQuit(),
     ),
     submit: $(
+      cheatprotect(),
       level(RadiatorCapCircuit),
       finishRace(3),
     ),
@@ -1242,6 +1429,7 @@ set.addLeaderboard({
   type: 'MILLISECS',
   conditions: {
     start: $(
+      cheatprotect(),
       level(SallysSunshineCircuit),
       finishRace(3),
     ),
@@ -1249,6 +1437,7 @@ set.addLeaderboard({
       levelQuit(),
     ),
     submit: $(
+      cheatprotect(),
       level(SallysSunshineCircuit),
       finishRace(3),
     ),
@@ -1267,6 +1456,7 @@ set.addLeaderboard({
   type: 'MILLISECS',
   conditions: {
     start: $(
+      cheatprotect(),
       level(DocsChallenge),
       finishRace(3),
     ),
@@ -1274,6 +1464,7 @@ set.addLeaderboard({
       levelQuit(),
     ),
     submit: $(
+      cheatprotect(),
       level(DocsChallenge),
       finishRace(3),
     ),
@@ -1292,6 +1483,7 @@ set.addLeaderboard({
   type: 'MILLISECS',
   conditions: {
     start: $(
+      cheatprotect(),
       level(BoostinwithFillmore),
       finishRace(3),
     ),
@@ -1299,6 +1491,7 @@ set.addLeaderboard({
       levelQuit(),
     ),
     submit: $(
+      cheatprotect(),
       level(BoostinwithFillmore),
       finishRace(3),
     ),
@@ -1317,6 +1510,7 @@ set.addLeaderboard({
   type: 'MILLISECS',
   conditions: {
     start: $(
+      cheatprotect(),
       level(NorthDesertDash),
       finishRace(3),
     ),
@@ -1324,6 +1518,7 @@ set.addLeaderboard({
       levelQuit(),
     ),
     submit: $(
+      cheatprotect(),
       level(NorthDesertDash),
       finishRace(3),
     ),
@@ -1342,6 +1537,7 @@ set.addLeaderboard({
   type: 'MILLISECS',
   conditions: {
     start: $(
+      cheatprotect(),
       level(SargesOffRoadChallenge),
       finishRace(3),
     ),
@@ -1349,6 +1545,7 @@ set.addLeaderboard({
       levelQuit(),
     ),
     submit: $(
+      cheatprotect(),
       level(SargesOffRoadChallenge),
       finishRace(3),
     ),
@@ -1367,6 +1564,7 @@ set.addLeaderboard({
   type: 'MILLISECS',
   conditions: {
     start: $(
+      cheatprotect(),
       level(SheriffsChase),
       finishRace(1),
     ),
@@ -1374,6 +1572,7 @@ set.addLeaderboard({
       levelQuit(),
     ),
     submit: $(
+      cheatprotect(),
       level(SheriffsChase),
       finishRace(1),
     ),
@@ -1392,6 +1591,7 @@ set.addLeaderboard({
   type: 'MILLISECS',
   conditions: {
     start: $(
+      cheatprotect(),
       level(OrnamentValleyCircuit),
       finishRace(3),
     ),
@@ -1399,6 +1599,7 @@ set.addLeaderboard({
       levelQuit(),
     ),
     submit: $(
+      cheatprotect(),
       level(OrnamentValleyCircuit),
       finishRace(3),
     ),
@@ -1417,6 +1618,7 @@ set.addLeaderboard({
   type: 'MILLISECS',
   conditions: {
     start: $(
+      cheatprotect(),
       level(RustbucketRaceoRama),
       finishRace(12),
     ),
@@ -1424,6 +1626,7 @@ set.addLeaderboard({
       levelQuit(),
     ),
     submit: $(
+      cheatprotect(),
       level(RustbucketRaceoRama),
       finishRace(12),
     ),
@@ -1442,6 +1645,7 @@ set.addLeaderboard({
   type: 'MILLISECS',
   conditions: {
     start: $(
+      cheatprotect(),
       level(SallysWheelWellSprint),
       finishRace(1),
     ),
@@ -1449,6 +1653,7 @@ set.addLeaderboard({
       levelQuit(),
     ),
     submit: $(
+      cheatprotect(),
       level(SallysWheelWellSprint),
       finishRace(1),
     ),
@@ -1467,6 +1672,7 @@ set.addLeaderboard({
   type: 'MILLISECS',
   conditions: {
     start: $(
+      cheatprotect(),
       level(DocsCheckUp),
       finishRace(3),
     ),
@@ -1474,6 +1680,7 @@ set.addLeaderboard({
       levelQuit(),
     ),
     submit: $(
+      cheatprotect(),
       level(DocsCheckUp),
       finishRace(3),
     ),
@@ -1492,6 +1699,7 @@ set.addLeaderboard({
   type: 'MILLISECS',
   conditions: {
     start: $(
+      cheatprotect(),
       level(TailfinPassCircuit),
       finishRace(3),
     ),
@@ -1499,6 +1707,7 @@ set.addLeaderboard({
       levelQuit(),
     ),
     submit: $(
+      cheatprotect(),
       level(TailfinPassCircuit),
       finishRace(3),
     ),
@@ -1517,6 +1726,7 @@ set.addLeaderboard({
   type: 'MILLISECS',
   conditions: {
     start: $(
+      cheatprotect(),
       level(MonsterTruckMayhem),
       finishRace(12),
     ),
@@ -1524,6 +1734,7 @@ set.addLeaderboard({
       levelQuit(),
     ),
     submit: $(
+      cheatprotect(),
       level(MonsterTruckMayhem),
       finishRace(12),
     ),
@@ -1542,6 +1753,7 @@ set.addLeaderboard({
   type: 'MILLISECS',
   conditions: {
     start: $(
+      cheatprotect(),
       level(DelinquentRoadHazards),
       finishRace(3),
     ),
@@ -1549,6 +1761,7 @@ set.addLeaderboard({
       levelQuit(),
     ),
     submit: $(
+      cheatprotect(),
       level(DelinquentRoadHazards),
       finishRace(3),
     ),
@@ -1567,6 +1780,7 @@ set.addLeaderboard({
   type: 'MILLISECS',
   conditions: {
     start: $(
+      cheatprotect(),
       level(ChicksChallenge),
       finishRace(3),
     ),
@@ -1574,6 +1788,7 @@ set.addLeaderboard({
       levelQuit(),
     ),
     submit: $(
+      cheatprotect(),
       level(ChicksChallenge),
       finishRace(3),
     ),
@@ -1592,6 +1807,7 @@ set.addLeaderboard({
   type: 'MILLISECS',
   conditions: {
     start: $(
+      cheatprotect(),
       level(RadiatorSpringsGP),
       finishRace(2),
     ),
@@ -1599,6 +1815,7 @@ set.addLeaderboard({
       levelQuit(),
     ),
     submit: $(
+      cheatprotect(),
       level(RadiatorSpringsGP),
       finishRace(2),
     ),
@@ -1617,6 +1834,7 @@ set.addLeaderboard({
   type: 'MILLISECS',
   conditions: {
     start: $(
+      cheatprotect(),
       level(TailfinPassGP),
       finishRace(1),
     ),
@@ -1624,6 +1842,7 @@ set.addLeaderboard({
       levelQuit(),
     ),
     submit: $(
+      cheatprotect(),
       level(TailfinPassGP),
       finishRace(1),
     ),
@@ -1642,6 +1861,7 @@ set.addLeaderboard({
   type: 'MILLISECS',
   conditions: {
     start: $(
+      cheatprotect(),
       level(OrnamentValleyGP),
       finishRace(2),
     ),
@@ -1649,6 +1869,7 @@ set.addLeaderboard({
       levelQuit(),
     ),
     submit: $(
+      cheatprotect(),
       level(OrnamentValleyGP),
       finishRace(2),
     ),
@@ -1667,6 +1888,7 @@ set.addLeaderboard({
   type: 'MILLISECS',
   conditions: {
     start: $(
+      cheatprotect(),
       level(logo),
       ['', 'Mem', '32bitBE', 0x004ecba4, '=', 'Value', '', 0x52525f54],
       finishRace(6),
@@ -1675,6 +1897,7 @@ set.addLeaderboard({
       levelQuit(),
     ),
     submit: $(
+      cheatprotect(),
       level(logo),
       ['', 'Mem', '32bitBE', 0x004ecba4, '=', 'Value', '', 0x52525f54],
       finishRace(6),
@@ -1694,6 +1917,7 @@ set.addLeaderboard({
   type: 'MILLISECS',
   conditions: {
     start: $(
+      cheatprotect(),
       level(PalmMileSpeedway),
       finishRace(12),
     ),
@@ -1701,6 +1925,7 @@ set.addLeaderboard({
       levelQuit(),
     ),
     submit: $(
+      cheatprotect(),
       level(PalmMileSpeedway),
       finishRace(12),
     ),
@@ -1719,6 +1944,7 @@ set.addLeaderboard({
   type: 'MILLISECS',
   conditions: {
     start: $(
+      cheatprotect(),
       level(MotorSpeedwayoftheSouth),
       finishRace(12),
     ),
@@ -1726,6 +1952,7 @@ set.addLeaderboard({
       levelQuit(),
     ),
     submit: $(
+      cheatprotect(),
       level(MotorSpeedwayoftheSouth),
       finishRace(12),
     ),
@@ -1744,6 +1971,7 @@ set.addLeaderboard({
   type: 'MILLISECS',
   conditions: {
     start: $(
+      cheatprotect(),
       level(SunValleyInternationalRaceway),
       finishRace(12),
     ),
@@ -1751,6 +1979,7 @@ set.addLeaderboard({
       levelQuit(),
     ),
     submit: $(
+      cheatprotect(),
       level(SunValleyInternationalRaceway),
       finishRace(12),
     ),
@@ -1769,6 +1998,7 @@ set.addLeaderboard({
   type: 'MILLISECS',
   conditions: {
     start: $(
+      cheatprotect(),
       level(SmashervilleInternationalSpeedway),
       finishRace(12),
     ),
@@ -1776,6 +2006,7 @@ set.addLeaderboard({
       levelQuit(),
     ),
     submit: $(
+      cheatprotect(),
       level(SmashervilleInternationalSpeedway),
       finishRace(12),
     ),
@@ -1794,6 +2025,7 @@ set.addLeaderboard({
   type: 'MILLISECS',
   conditions: {
     start: $(
+      cheatprotect(),
       level(LosAngelesInternationalSpeedway),
       finishRace(12),
     ),
@@ -1801,6 +2033,7 @@ set.addLeaderboard({
       levelQuit(),
     ),
     submit: $(
+      cheatprotect(),
       level(LosAngelesInternationalSpeedway),
       finishRace(12),
     ),
