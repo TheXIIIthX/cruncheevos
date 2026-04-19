@@ -77,14 +77,73 @@ function pointer(offset) {
 
 function loadprotect() {
   return($(
+    ['', 'Mem', '32bit', 0x005185a8, '!=', 'Value', '', 0],
     ['', 'Mem', '32bit', 0x005185a8, '!=', 'Value', '', 0x49],
   ))
 }
 
 function cheatprotect() {
   return($(
-    ['AddSource', 'Mem', '32bit', 0x0052beb0, '&', 'Value', '', 0xffefffff],
-    ['', 'Value', '', 0, '=', 'Value', '', 0],
+    ['', 'Mem', 'Bit1', 0x52beb0, '=', 'Value', '', 0],
+    ['', 'Mem', 'Bit2', 0x52beb0, '=', 'Value', '', 0],
+    ['', 'Mem', 'Bit3', 0x52beb0, '=', 'Value', '', 0],
+    ['', 'Mem', 'Bit7', 0x52beb1, '=', 'Value', '', 0],
+    ['', 'Mem', 'Bit5', 0x52beb2, '=', 'Value', '', 0],
+    ['', 'Mem', 'Bit7', 0x52beb2, '=', 'Value', '', 0],
+    ['', 'Mem', 'Bit0', 0x52beb3, '=', 'Value', '', 0],
+    ['', 'Mem', 'Bit1', 0x52beb3, '=', 'Value', '', 0],
+  ))
+}
+
+function startHit() {
+  return($(
+    pointer(0x0048d990),
+    pointer(0x300),
+    pointer(0x4c),
+    pointer(0xc44),
+    pointer(0x54),
+    pointer(0x0),
+    ['AndNext', 'Delta', '32bit', 0x28, '=', 'Value', '', 0x0],
+    pointer(0x0048d990),
+    pointer(0x300),
+    pointer(0x4c),
+    pointer(0xc44),
+    pointer(0x54),
+    pointer(0x0),
+    ['', 'Mem', '32bit', 0x28, '!=', 'Value', '', 0x0, 1],
+  ))
+}
+
+function resetHit() {
+  return($(
+    ['ResetIf', 'Delta', '32bitBE', 0x0052bc7c, '!=', 'Mem', '32bitBE', 0x0052bc7c],
+  ))
+}
+
+function glitchProtect() {
+  return($(
+    ['AddSource', 'Value', '', 0x1],
+    pointer(0x0048d990),
+    pointer(0x300),
+    pointer(0x4c),
+    pointer(0xc44),
+    pointer(0x54),
+    pointer(0x0),
+    ['AndNext', 'Delta', '32bit', 0x38, '!=', 'Mem', '32bit', 0x38],
+    pointer(0x0048d990),
+    pointer(0x300),
+    pointer(0x4c),
+    pointer(0xc44),
+    pointer(0x54),
+    pointer(0x0),
+    ['AndNext', 'Delta', '32bit', 0x38, '!=', 'Mem', '32bit', 0x38],
+    pointer(0x0048d990),
+    pointer(0x300),
+    pointer(0x4c),
+    pointer(0xc44),
+    pointer(0x54),
+    pointer(0x0),
+    ['ResetIf', 'Mem', '32bit', 0x38, '!=', 'Value', '', 0x0],
   ))
 }
 
@@ -1378,6 +1437,9 @@ set.addLeaderboard({
       cheatprotect(),
       level(RadiatorSpringsGrandPrix),
       finishRace(3),
+      startHit(),
+      resetHit(),
+      glitchProtect(),
     ),
     cancel: $(
       levelQuit(),
@@ -1405,6 +1467,9 @@ set.addLeaderboard({
       cheatprotect(),
       level(RadiatorCapCircuit),
       finishRace(3),
+      startHit(),
+      resetHit(),
+      glitchProtect(),
     ),
     cancel: $(
       levelQuit(),
@@ -1432,6 +1497,9 @@ set.addLeaderboard({
       cheatprotect(),
       level(SallysSunshineCircuit),
       finishRace(3),
+      startHit(),
+      resetHit(),
+      glitchProtect(),
     ),
     cancel: $(
       levelQuit(),
@@ -1459,6 +1527,9 @@ set.addLeaderboard({
       cheatprotect(),
       level(DocsChallenge),
       finishRace(3),
+      startHit(),
+      resetHit(),
+      glitchProtect(),
     ),
     cancel: $(
       levelQuit(),
@@ -1486,6 +1557,9 @@ set.addLeaderboard({
       cheatprotect(),
       level(BoostinwithFillmore),
       finishRace(3),
+      startHit(),
+      resetHit(),
+      glitchProtect(),
     ),
     cancel: $(
       levelQuit(),
@@ -1513,6 +1587,9 @@ set.addLeaderboard({
       cheatprotect(),
       level(NorthDesertDash),
       finishRace(3),
+      startHit(),
+      resetHit(),
+      glitchProtect(),
     ),
     cancel: $(
       levelQuit(),
@@ -1540,6 +1617,9 @@ set.addLeaderboard({
       cheatprotect(),
       level(SargesOffRoadChallenge),
       finishRace(3),
+      startHit(),
+      resetHit(),
+      glitchProtect(),
     ),
     cancel: $(
       levelQuit(),
@@ -1567,6 +1647,9 @@ set.addLeaderboard({
       cheatprotect(),
       level(SheriffsChase),
       finishRace(1),
+      startHit(),
+      resetHit(),
+      glitchProtect(),
     ),
     cancel: $(
       levelQuit(),
@@ -1594,6 +1677,9 @@ set.addLeaderboard({
       cheatprotect(),
       level(OrnamentValleyCircuit),
       finishRace(3),
+      startHit(),
+      resetHit(),
+      glitchProtect(),
     ),
     cancel: $(
       levelQuit(),
@@ -1621,6 +1707,9 @@ set.addLeaderboard({
       cheatprotect(),
       level(RustbucketRaceoRama),
       finishRace(12),
+      startHit(),
+      resetHit(),
+      glitchProtect(),
     ),
     cancel: $(
       levelQuit(),
@@ -1648,6 +1737,9 @@ set.addLeaderboard({
       cheatprotect(),
       level(SallysWheelWellSprint),
       finishRace(1),
+      startHit(),
+      resetHit(),
+      glitchProtect(),
     ),
     cancel: $(
       levelQuit(),
@@ -1675,6 +1767,9 @@ set.addLeaderboard({
       cheatprotect(),
       level(DocsCheckUp),
       finishRace(3),
+      startHit(),
+      resetHit(),
+      glitchProtect(),
     ),
     cancel: $(
       levelQuit(),
@@ -1702,6 +1797,9 @@ set.addLeaderboard({
       cheatprotect(),
       level(TailfinPassCircuit),
       finishRace(3),
+      startHit(),
+      resetHit(),
+      glitchProtect(),
     ),
     cancel: $(
       levelQuit(),
@@ -1729,6 +1827,9 @@ set.addLeaderboard({
       cheatprotect(),
       level(MonsterTruckMayhem),
       finishRace(12),
+      startHit(),
+      resetHit(),
+      glitchProtect(),
     ),
     cancel: $(
       levelQuit(),
@@ -1756,6 +1857,9 @@ set.addLeaderboard({
       cheatprotect(),
       level(DelinquentRoadHazards),
       finishRace(3),
+      startHit(),
+      resetHit(),
+      glitchProtect(),
     ),
     cancel: $(
       levelQuit(),
@@ -1783,6 +1887,9 @@ set.addLeaderboard({
       cheatprotect(),
       level(ChicksChallenge),
       finishRace(3),
+      startHit(),
+      resetHit(),
+      glitchProtect(),
     ),
     cancel: $(
       levelQuit(),
@@ -1810,6 +1917,9 @@ set.addLeaderboard({
       cheatprotect(),
       level(RadiatorSpringsGP),
       finishRace(2),
+      startHit(),
+      resetHit(),
+      glitchProtect(),
     ),
     cancel: $(
       levelQuit(),
@@ -1837,6 +1947,9 @@ set.addLeaderboard({
       cheatprotect(),
       level(TailfinPassGP),
       finishRace(1),
+      startHit(),
+      resetHit(),
+      glitchProtect(),
     ),
     cancel: $(
       levelQuit(),
@@ -1864,6 +1977,9 @@ set.addLeaderboard({
       cheatprotect(),
       level(OrnamentValleyGP),
       finishRace(2),
+      startHit(),
+      resetHit(),
+      glitchProtect(),
     ),
     cancel: $(
       levelQuit(),
@@ -1892,6 +2008,9 @@ set.addLeaderboard({
       level(logo),
       ['', 'Mem', '32bitBE', 0x004ecba4, '=', 'Value', '', 0x52525f54],
       finishRace(6),
+      startHit(),
+      resetHit(),
+      glitchProtect(),
     ),
     cancel: $(
       levelQuit(),
@@ -1920,6 +2039,9 @@ set.addLeaderboard({
       cheatprotect(),
       level(PalmMileSpeedway),
       finishRace(12),
+      startHit(),
+      resetHit(),
+      glitchProtect(),
     ),
     cancel: $(
       levelQuit(),
@@ -1947,6 +2069,9 @@ set.addLeaderboard({
       cheatprotect(),
       level(MotorSpeedwayoftheSouth),
       finishRace(12),
+      startHit(),
+      resetHit(),
+      glitchProtect(),
     ),
     cancel: $(
       levelQuit(),
@@ -1974,6 +2099,9 @@ set.addLeaderboard({
       cheatprotect(),
       level(SunValleyInternationalRaceway),
       finishRace(12),
+      startHit(),
+      resetHit(),
+      glitchProtect(),
     ),
     cancel: $(
       levelQuit(),
@@ -2001,6 +2129,9 @@ set.addLeaderboard({
       cheatprotect(),
       level(SmashervilleInternationalSpeedway),
       finishRace(12),
+      startHit(),
+      resetHit(),
+      glitchProtect(),
     ),
     cancel: $(
       levelQuit(),
@@ -2028,6 +2159,9 @@ set.addLeaderboard({
       cheatprotect(),
       level(LosAngelesInternationalSpeedway),
       finishRace(12),
+      startHit(),
+      resetHit(),
+      glitchProtect(),
     ),
     cancel: $(
       levelQuit(),
