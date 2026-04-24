@@ -53,20 +53,17 @@ function blackCheck() {
 function colorCheck(colorcodes) {
     let logic = []
     for (let i = 0; i < blockCount * 4; i += 4) {
-        colorcodes.forEach((color, index) => {
-        const isLast = index === colorcodes.length - 1;
-        if (!isLast) {
-            logic.push($(
-                ['AndNext', 'Delta', '8bit', blockBase + i, '!=', 'Value', '', color],
-                ['AndNext', 'Mem', '8bit', blockBase + i, '=', 'Value', '', 0x0],
-            ))
-        } else {
-            logic.push($(
-                ['AndNext', 'Delta', '8bit', blockBase + i, '!=', 'Value', '', color],
-                ['ResetIf', 'Mem', '8bit', blockBase + i, '=', 'Value', '', 0x0],
-            ))
-        }
-        });
+      logic.push($(
+        ['AndNext', 'Delta', '32bit', 0x014b70, '<', 'Mem', '32bit', 0x014b70],
+      ))
+      for (let color of colorcodes) {
+        logic.push($(
+          ['AndNext', 'Prior', '8bit', blockBase + i, '!=', 'Value', '', color],
+        ))
+      }
+      logic.push($(
+        ['ResetIf', 'Mem', '8bit', blockBase + i, '=', 'Value', '', 0x0],
+      ))
     }
     return(logic)
 }
@@ -78,10 +75,10 @@ function levelStart(level, mode = 0, minimum = true) {
     }
     return($(
         ['AndNext', 'Mem', '8bit', 0x0131e0, '=', 'Value', '', 0],
-        ['AndNext', 'Mem', '8bit', 0x0138a0, '=', 'Value', '', mode],
+        ['AndNext', 'Mem', '8bit', 0x0131e4, '=', 'Value', '', mode],
         ['AndNext', 'Mem', '8bit', 0x0131e8, sign, 'Value', '', level - 1],
-        ['AndNext', 'Delta', '8bit', 0x00666b, '=', 'Value', '', 0x3],
-        ['', 'Mem', '8bit', 0x00666b, '=', 'Value', '', 0xff, 1],
+        ['AndNext', 'Delta', '8bit', 0x01a284, '=', 'Value', '', 0x1],
+        ['', 'Mem', '8bit', 0x01a284, '=', 'Value', '', 0x0, 1],
     ))
 }
 
@@ -94,8 +91,8 @@ function activeScore(level) {
 
 function scoreStart1() {
     return($(
-        ['', 'Delta', '8bit', 0x00666b, '=', 'Value', '', 3],
-        ['', 'Mem', '8bit', 0x00666b, '=', 'Value', '', 0],
+        ['', 'Delta', '8bit', 0x01a284, '=', 'Value', '', 1],
+        ['', 'Mem', '8bit', 0x01a284, '=', 'Value', '', 0],
     ))
 }
 
@@ -108,239 +105,283 @@ function scoreStart2() {
 
 function levelEnd() {
     return($(
-        ['', 'Delta', '8bit', 0x006826, '=', 'Value', '', 6],
-        ['Trigger', 'Mem', '8bit', 0x006826, '=', 'Value', '', 0],
+        ['', 'Delta', '8bit', 0x01a2b9, '=', 'Value', '', 0],
+        ['Trigger', 'Mem', '8bit', 0x01a2b9, '=', 'Value', '', 1],
     ))
+}
+
+function menuReset() {
+  return($(
+    ['ResetIf', 'Mem', '8bit', 0x006474, '!=', 'Value', '', 0xff],
+  ))
 }
 
 set.addAchievement({
   title: "Fiery Red",
   description: "Clear your first basic puzzle",
-  points: 0,
+  points: 1,
+  type: 'progression',
   conditions: $(
     inLevel(),
     ['', 'Delta', '32bit', 0x13228, '=', 'Value', '', 0xffffffff],
     ['', 'Mem', '32bit', 0x13228, '=', 'Value', '', 0x64],
   ),
+  id: 602086,
 })
 
 set.addAchievement({
   title: "Mellow Yellow",
   description: "Clear 5 basic puzzles",
-  points: 0,
+  points: 3,
+  type: 'progression',
   conditions: $(
     inLevel(),
     ...levelsClear(5, 0),
   ),
+  id: 602087,
 })
 
 set.addAchievement({
   title: "Gentle Blue",
   description: "Clear 10 basic puzzles",
-  points: 0,
+  points: 4,
+  type: 'progression',
   conditions: $(
     inLevel(),
     ...levelsClear(10, 0),
   ),
+  id: 602088,
 })
 
 set.addAchievement({
   title: "The Complete Palette",
   description: "Clear all 15 basic puzzles",
-  points: 0,
+  points: 5,
+  type: 'progression',
   conditions: $(
     inLevel(),
     ...levelsClear(15, 0),
   ),
+  id: 602089,
 })
 
 set.addAchievement({
   title: "Saturated Thought",
   description: "Clear an advanced puzzle",
-  points: 0,
+  points: 2,
+  type: 'progression',
   conditions: $(
     inLevel(),
     ['', 'Delta', '32bit', 0x13328, '=', 'Value', '', 0xffffffff],
     ['', 'Mem', '32bit', 0x13328, '=', 'Value', '', 0x64],
-  ),
+  ),id: 602090
 })
 
 set.addAchievement({
   title: "Deep Pigment",
   description: "Clear 5 advanced puzzles",
-  points: 0,
+  points: 3,
+  type: 'progression',
   conditions: $(
     inLevel(),
     ...levelsClear(5, 1),
-  ),
+  ),id: 602091,
 })
 
 set.addAchievement({
   title: "Chromatic Calm",
   description: "Clear 10 advanced puzzles",
-  points: 0,
+  points: 3,
+  type: 'progression',
   conditions: $(
     inLevel(),
     ...levelsClear(10, 1),
   ),
+  id: 602092,
 })
 
 set.addAchievement({
   title: "Infinite Ochre",
   description: "Clear 15 advanced puzzles",
-  points: 0,
+  points: 4,
+  type: 'progression',
   conditions: $(
     inLevel(),
     ...levelsClear(15, 1),
   ),
+  id: 602093,
 })
 
 set.addAchievement({
   title: "Bold Vermilion",
   description: "Clear 20 advanced puzzles",
-  points: 0,
+  points: 5,
+  type: 'progression',
   conditions: $(
     inLevel(),
     ...levelsClear(20, 1),
   ),
+  id: 602094,
 })
 
 set.addAchievement({
   title: "Indigo Wisdom",
   description: "Clear 25 advanced puzzles",
-  points: 0,
+  points: 5,
+  type: 'progression',
   conditions: $(
     inLevel(),
     ...levelsClear(25, 1),
   ),
+  id: 602095,
 })
 
 set.addAchievement({
   title: "Master of Shades",
   description: "Clear 30 advanced puzzles",
-  points: 0,
+  points: 10,
+  type: 'progression',
   conditions: $(
     inLevel(),
     ...levelsClear(30, 1),
   ),
+  id: 602096,
 })
 
 set.addAchievement({
   title: "Full Canvas",
   description: "Clear 35 advanced puzzles",
-  points: 0,
+  points: 10,
+  type: 'win_condition',
   conditions: $(
     inLevel(),
     ...levelsClear(35, 1),
   ),
+  id: 602097,
 })
 
 set.addAchievement({
   title: "Unblemished Pigment",
   description: "Clear an advanced puzzle level 30 or higher without getting any black blocks",
-  points: 0,
+  points: 25,
   conditions: $(
     levelStart(30, 1),
     levelEnd(),
     ...blackCheck(),
+    menuReset(),
   ),
+  id: 602098,
 })
 
 set.addAchievement({
-  title: "Elemental Peace",
+  title: "[Void] Elemental Peace",
   description: "Clear a basic puzzle level 10 or higher only clearing red, yellow and blue blocks",
   points: 0,
   conditions: $(
     levelStart(10),
     levelEnd(),
     ...colorCheck([0x03, 0x43, 0x83]),
+    menuReset(),
   ),
+  id: 602099,
 })
 
 set.addAchievement({
   title: "Color Cadence",
   description: "Attain a 5x combo",
-  points: 0,
+  points: 5,
   conditions: $(
     inLevel(),
     ['', 'Delta', '8bit', 0x01a27c, '=', 'Value', '', 0x4],
     ['', 'Mem', '8bit', 0x01a27c, '=', 'Value', '', 0x5],
   ),
+  id: 602100,
 })
 
 set.addAchievement({
   title: "Brilliance Unleashed",
   description: "Clear an Advanced level in 15 moves or less",
-  points: 0,
+  points: 10,
   conditions: $(
-    ['AndNext', 'Mem', '8bit', 0x0131e0, '=', 'Value', '', 0],
-    ['AndNext', 'Mem', '8bit', 0x0138a0, '=', 'Value', '', 1],
-    ['AndNext', 'Delta', '8bit', 0x00666b, '=', 'Value', '', 0x3],
-    ['', 'Mem', '8bit', 0x00666b, '=', 'Value', '', 0xff, 1],
+    ['', 'Mem', '8bit', 0x0131e0, '=', 'Value', '', 0],
+    ['', 'Mem', '8bit', 0x0131e4, '=', 'Value', '', 1],
+    ['', 'Mem', '8bit', 0x01a284, '=', 'Value', '', 0xff],
+    ['', 'Mem', '32bit', 0x014904, '<=', 'Value', '', 15],
     levelEnd(),
-    ['ResetIf', 'Mem', '32bit', 0x014904, '>', 'Value', '', 15],
   ),
+  id: 602101,
 })
 
 set.addAchievement({
   title: "Soft Pastel",
-  description: "Score 50000 points in score mode basic level 1",
-  points: 0,
+  description: "Score 20,000 points in score mode basic level 1",
+  points: 10,
   conditions: $(
     activeScore(1),
-    ['', 'Mem', '32bit', 0x0131ec, '>=', 'Value', '', 50000],
+    ['', 'Delta', '32bit', 0x0131ec, '<', 'Value', '', 20000],
+    ['', 'Mem', '32bit', 0x0131ec, '>=', 'Value', '', 20000],
   ),
+  id: 602102,
 })
 
 set.addAchievement({
   title: "Golden Ochre",
-  description: "Score 40000 points in score mode basic level 2",
-  points: 0,
+  description: "Score 15,000 points in score mode basic level 2",
+  points: 10,
   conditions: $(
     activeScore(2),
-    ['', 'Mem', '32bit', 0x0131ec, '>=', 'Value', '', 40000],
+    ['', 'Delta', '32bit', 0x0131ec, '<', 'Value', '', 15000],
+    ['', 'Mem', '32bit', 0x0131ec, '>=', 'Value', '', 15000],
   ),
+  id: 602103,
 })
 
 set.addAchievement({
   title: "Lapis Serenity",
-  description: "Score 30000 points in score mode basic level 3",
-  points: 0,
+  description: "Score 15,000 points in score mode basic level 3",
+  points: 10,
   conditions: $(
     activeScore(3),
-    ['', 'Mem', '32bit', 0x0131ec, '>=', 'Value', '', 30000],
+    ['', 'Delta', '32bit', 0x0131ec, '<', 'Value', '', 15000],
+    ['', 'Mem', '32bit', 0x0131ec, '>=', 'Value', '', 15000],
   ),
+  id: 602104,
 })
 
 set.addAchievement({
   title: "Madder Rose",
-  description: "Score 20000 points in score mode basic level 4",
-  points: 0,
+  description: "Score 10,000 points in score mode basic level 4",
+  points: 10,
   conditions: $(
     activeScore(4),
-    ['', 'Mem', '32bit', 0x0131ec, '>=', 'Value', '', 20000],
+    ['', 'Delta', '32bit', 0x0131ec, '<', 'Value', '', 10000],
+    ['', 'Mem', '32bit', 0x0131ec, '>=', 'Value', '', 10000],
   ),
+  id: 602105,
 })
 
 set.addAchievement({
   title: "Pure Luminescence",
-  description: "Score 20000 points in score mode basic level 5",
-  points: 0,
+  description: "Score 10,000 points in score mode basic level 5",
+  points: 10,
   conditions: $(
     activeScore(5),
-    ['', 'Mem', '32bit', 0x0131ec, '>=', 'Value', '', 20000],
+    ['', 'Delta', '32bit', 0x0131ec, '<', 'Value', '', 10000],
+    ['', 'Mem', '32bit', 0x0131ec, '>=', 'Value', '', 10000],
   ),
+  id: 602106,
 })
 
 set.addAchievement({
   title: "Happy Little Accidents",
   description: "Score 1000 points in one combo in score attack",
-  points: 0,
+  points: 10,
   conditions: $(
     ['', 'Mem', '8bit', 0x0131e0, '=', 'Value', '', 1],
     ['', 'Delta', '32bit', 0x01a280, '<', 'Value', '', 1000],
     ['', 'Mem', '32bit', 0x01a280, '>=', 'Value', '', 1000],
   ),
+  id: 602107,
 })
 
 set.addLeaderboard({
@@ -351,25 +392,22 @@ set.addLeaderboard({
   conditions: {
     start: {
         core: $(
-            activeScore(1),
-        ),
-        alt1: $(
             scoreStart1(),
-        ),
-        alt2: $(
-            scoreStart2(),
+            activeScore(1),
         ),
     },
     cancel: $(
+        ['', 'Delta', '8bit', 0x006474, '!=', 'Value', '', 0xff],
         ['', 'Mem', '8bit', 0x006474, '!=', 'Value', '', 0xff],
     ),
     submit: $(
-        ['', 'Mem', '32bit', 0x0131ec, '!=', 'Value', '', 0],
-        ['', 'Delta', '8bit', 0x006826, '=', 'Value', '', 6],
-        ['', 'Mem', '8bit', 0x006826, '=', 'Value', '', 0],
+        ['AndNext', 'Delta', '8bit', 0x006474, '=', 'Value', '', 0xff],
+        ['OrNext', 'Mem', '8bit', 0x006474, '=', 'Value', '', 0x54],
+        ['', 'Delta', '32bit', 0x0131ec, '>', 'Mem', '32bit', 0x0131ec],
+
     ),
     value: $(
-        ['Measured', 'Mem', '32bit', 0x0131ec],
+        ['Measured', 'Delta', '32bit', 0x0131ec],
     ),
   },
   id: 161287,
@@ -383,22 +421,18 @@ set.addLeaderboard({
   conditions: {
     start: {
         core: $(
-            activeScore(2),
-        ),
-        alt1: $(
             scoreStart1(),
-        ),
-        alt2: $(
-            scoreStart2(),
+            activeScore(2),
         ),
     },
     cancel: $(
+        ['', 'Delta', '8bit', 0x006474, '!=', 'Value', '', 0xff],
         ['', 'Mem', '8bit', 0x006474, '!=', 'Value', '', 0xff],
     ),
     submit: $(
-        ['', 'Mem', '32bit', 0x0131ec, '!=', 'Value', '', 0],
-        ['', 'Delta', '8bit', 0x006826, '=', 'Value', '', 6],
-        ['', 'Mem', '8bit', 0x006826, '=', 'Value', '', 0],
+        ['AndNext', 'Delta', '8bit', 0x006474, '=', 'Value', '', 0xff],
+        ['OrNext', 'Mem', '8bit', 0x006474, '=', 'Value', '', 0x54],
+        ['', 'Delta', '32bit', 0x0131ec, '>', 'Mem', '32bit', 0x0131ec],
     ),
     value: $(
         ['Measured', 'Mem', '32bit', 0x0131ec],
@@ -415,22 +449,18 @@ set.addLeaderboard({
   conditions: {
     start: {
         core: $(
-            activeScore(3),
-        ),
-        alt1: $(
             scoreStart1(),
-        ),
-        alt2: $(
-            scoreStart2(),
+            activeScore(3),
         ),
     },
     cancel: $(
+        ['', 'Delta', '8bit', 0x006474, '!=', 'Value', '', 0xff],
         ['', 'Mem', '8bit', 0x006474, '!=', 'Value', '', 0xff],
     ),
     submit: $(
-        ['', 'Mem', '32bit', 0x0131ec, '!=', 'Value', '', 0],
-        ['', 'Delta', '8bit', 0x006826, '=', 'Value', '', 6],
-        ['', 'Mem', '8bit', 0x006826, '=', 'Value', '', 0],
+        ['AndNext', 'Delta', '8bit', 0x006474, '=', 'Value', '', 0xff],
+        ['OrNext', 'Mem', '8bit', 0x006474, '=', 'Value', '', 0x54],
+        ['', 'Delta', '32bit', 0x0131ec, '>', 'Mem', '32bit', 0x0131ec],
     ),
     value: $(
         ['Measured', 'Mem', '32bit', 0x0131ec],
@@ -447,22 +477,18 @@ set.addLeaderboard({
   conditions: {
     start: {
         core: $(
-            activeScore(4),
-        ),
-        alt1: $(
             scoreStart1(),
-        ),
-        alt2: $(
-            scoreStart2(),
+            activeScore(4),
         ),
     },
     cancel: $(
+        ['', 'Delta', '8bit', 0x006474, '!=', 'Value', '', 0xff],
         ['', 'Mem', '8bit', 0x006474, '!=', 'Value', '', 0xff],
     ),
     submit: $(
-        ['', 'Mem', '32bit', 0x0131ec, '!=', 'Value', '', 0],
-        ['', 'Delta', '8bit', 0x006826, '=', 'Value', '', 6],
-        ['', 'Mem', '8bit', 0x006826, '=', 'Value', '', 0],
+        ['AndNext', 'Delta', '8bit', 0x006474, '=', 'Value', '', 0xff],
+        ['OrNext', 'Mem', '8bit', 0x006474, '=', 'Value', '', 0x54],
+        ['', 'Delta', '32bit', 0x0131ec, '>', 'Mem', '32bit', 0x0131ec],
     ),
     value: $(
         ['Measured', 'Mem', '32bit', 0x0131ec],
@@ -479,22 +505,18 @@ set.addLeaderboard({
   conditions: {
     start: {
         core: $(
-            activeScore(5),
-        ),
-        alt1: $(
             scoreStart1(),
-        ),
-        alt2: $(
-            scoreStart2(),
+            activeScore(5),
         ),
     },
     cancel: $(
+        ['', 'Delta', '8bit', 0x006474, '!=', 'Value', '', 0xff],
         ['', 'Mem', '8bit', 0x006474, '!=', 'Value', '', 0xff],
     ),
     submit: $(
-        ['', 'Mem', '32bit', 0x0131ec, '!=', 'Value', '', 0],
-        ['', 'Delta', '8bit', 0x006826, '=', 'Value', '', 6],
-        ['', 'Mem', '8bit', 0x006826, '=', 'Value', '', 0],
+        ['AndNext', 'Delta', '8bit', 0x006474, '=', 'Value', '', 0xff],
+        ['OrNext', 'Mem', '8bit', 0x006474, '=', 'Value', '', 0x54],
+        ['', 'Delta', '32bit', 0x0131ec, '>', 'Mem', '32bit', 0x0131ec],
     ),
     value: $(
         ['Measured', 'Mem', '32bit', 0x0131ec],
