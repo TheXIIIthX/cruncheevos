@@ -1,4 +1,4 @@
-import { AchievementSet, define as $, measured, andNext, once, trigger, resetIf } from '@cruncheevos/core'
+import { AchievementSet, define as $, measured, andNext, once, trigger, resetIf, orNext } from '@cruncheevos/core'
 const set = new AchievementSet({ gameId: 20525, title: 'Cars' })
 
 const RadiatorSpringsGrandPrix = 0x315f3100
@@ -254,6 +254,19 @@ function finishRace(laps) {
     pointer(0xc),
     pointer(0x80),
     ['', 'Mem', '32bit', 0x3c, '=', 'Value', '', laps],
+  ))
+}
+
+function pitstopEnd() {
+  return($(
+    pointer(0x0048d990),
+    pointer(0x300),
+    pointer(0x4c),
+    ['', 'Delta', '32bit', 0xc44, '=', 'Value', '', 0],
+    pointer(0x0048d990),
+    pointer(0x300),
+    pointer(0x4c),
+    ['', 'Mem', '32bit', 0xc44, '!=', 'Value', '', 0],
   ))
 }
 
@@ -1426,6 +1439,28 @@ set.addAchievement({
   ),
 })
 
+//Needs other trigger event
+set.addAchievement({
+  title: "Pit Stop!",
+  description: "Finish a pitstop in 16 seconds or less",
+  points: 0,
+  conditions: $(
+    orNext(level(PalmMileSpeedway), level(MotorSpeedwayoftheSouth), level(SunValleyInternationalRaceway), level(SmashervilleInternationalSpeedway), level(LosAngelesInternationalSpeedway)),
+    pointer(0x0048d990),
+    pointer(0x300),
+    pointer(0x4c),
+    ['', 'Mem', 'Float', 0xc6c, '<=', 'Value', '', 16],
+    pointer(0x0048d990),
+    pointer(0x300),
+    pointer(0x4c),
+    ['', 'Delta', '32bit', 0xc44, '=', 'Value', '', 0],
+    pointer(0x0048d990),
+    pointer(0x300),
+    pointer(0x4c),
+    ['Trigger', 'Mem', '32bit', 0xc44, '!=', 'Value', '', 0],
+  )
+})
+
 set.addLeaderboard({
   title: 'Time Trial - Radiator Springs Grand Prix',
   description:
@@ -2176,6 +2211,35 @@ set.addLeaderboard({
     ),
   },
   id: 160941,
+})
+
+set.addLeaderboard({
+  title: 'Time Trial - Pit Stop',
+  description:
+    'Finish McQueens pitstop in the fastest time you can!',
+    lowerIsBetter: true,
+    type: 'MILLISECS',
+    conditions: {
+      start: $(
+        cheatprotect(),
+        orNext(level(PalmMileSpeedway), level(MotorSpeedwayoftheSouth), level(SunValleyInternationalRaceway), level(SmashervilleInternationalSpeedway), level(LosAngelesInternationalSpeedway)),
+        pitstopEnd(),
+      ),
+      cancel: $(
+        levelQuit(),
+      ),
+      submit: $(
+        cheatprotect(),
+        orNext(level(PalmMileSpeedway), level(MotorSpeedwayoftheSouth), level(SunValleyInternationalRaceway), level(SmashervilleInternationalSpeedway), level(LosAngelesInternationalSpeedway)),
+        pitstopEnd(),
+      ),
+      value: $(
+        pointer(0x0048d990),
+        pointer(0x300),
+        pointer(0x4c),
+        ['Measured', 'Mem', 'Float', 0xc6c],
+      )
+    }
 })
 
 export default set
