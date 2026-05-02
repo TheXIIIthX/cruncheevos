@@ -21,7 +21,7 @@ function levelsClear(hits, set = 0) {
     let base
     let count
     let i
-    if (set == 0) {
+    if (set == 0) { 
         base = levelBase1
         count = basicLevelCount
     }
@@ -30,12 +30,12 @@ function levelsClear(hits, set = 0) {
         count = advancedLevelCount
     }
     for (i = 0; i < (count - 1) * 4; i += 4) {
-        deltas.push($(['AddSource', 'Delta', 'Bit0', base + i],))
-        mems.push($(['AddSource', 'Invert', 'Bit0', base + i],))
+        deltas.push($(['AddSource', 'Delta', 'Bit2', base + i, '^', 'Delta', 'Bit0', base + i],))
+        mems.push($(['AddSource', 'Mem', 'Bit2', base + i, '^', 'Delta', 'Bit0', base + i],))
     }
     logic.push($(
         ...deltas,
-        ['', 'Delta', 'Bit0', base + i, '=','Value', '', count - hits + 1],
+        ['', 'Delta', 'Bit0', base + i, '=','Value', '', hits - 1],
         ...mems,
         ['Measured', 'Invert', 'Bit0', base + i, '=','Value', '', hits],
     ))
@@ -123,7 +123,8 @@ set.addAchievement({
   type: 'progression',
   conditions: $(
     inLevel(),
-    ['', 'Delta', '32bit', 0x13228, '=', 'Value', '', 0xffffffff],
+    ['OrNext', 'Delta', '32bit', 0x13228, '=', 'Value', '', 0xffffffff],
+    ['', 'Delta', '32bit', 0x13228, '=', 'Value', '', 0x0],
     ['', 'Mem', '32bit', 0x13228, '=', 'Value', '', 0x64],
   ),
   id: 602086,
@@ -172,7 +173,8 @@ set.addAchievement({
   type: 'progression',
   conditions: $(
     inLevel(),
-    ['', 'Delta', '32bit', 0x13328, '=', 'Value', '', 0xffffffff],
+    ['OrNext', 'Delta', '32bit', 0x13328, '=', 'Value', '', 0xffffffff],
+    ['', 'Delta', '32bit', 0x13328, '=', 'Value', '', 0],
     ['', 'Mem', '32bit', 0x13328, '=', 'Value', '', 0x64],
   ),id: 602090
 })
@@ -300,12 +302,12 @@ set.addAchievement({
 
 set.addAchievement({
   title: "Brilliance Unleashed",
-  description: "Clear an Advanced level in 15 moves or less",
+  description: "Clear an Advanced level changing the color of blocks 15 times or less",
   points: 10,
   conditions: $(
     ['', 'Mem', '8bit', 0x0131e0, '=', 'Value', '', 0],
     ['', 'Mem', '8bit', 0x0131e4, '=', 'Value', '', 1],
-    ['', 'Mem', '8bit', 0x01a284, '=', 'Value', '', 0xff],
+    ['', 'Mem', '8bit', 0x01a284, '=', 'Value', '', 0],
     ['', 'Mem', '32bit', 0x014904, '<=', 'Value', '', 15],
     levelEnd(),
   ),
