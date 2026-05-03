@@ -1,4 +1,4 @@
-import { AchievementSet, define as $, measured, andNext, once, trigger, resetIf, orNext } from '@cruncheevos/core'
+import { AchievementSet, define as $, measured, andNext, once, trigger, resetIf, orNext, measuredIf } from '@cruncheevos/core'
 const set = new AchievementSet({ gameId: 20525, title: 'Cars' })
 
 const RadiatorSpringsGrandPrix = 0x315f3100
@@ -69,6 +69,15 @@ const kingPaint = [0x57, 0x58, 0x59, 0x5a, 0x5b, 0x5c, 0x5d]
 const mmcqPaint = [0xac, 0xad, 0xae, 0xb0, 0xb1, 0xb2, 0xb3, 0xb4, 0xb5, 0xb6, 0xb7, 0xb8, 0xb9]
 const cntPaint = [0x93, 0x94, 0x95, 0x96, 0x97, 0x98]
 
+const Backwards = 0x4241434b
+const BigAir = 0x42494720
+const FastStart = 0x46415354
+const LapLeader = 0x4c415020
+const Powerslide = 0x504f5745
+const SafeDriver = 0x53414645
+const Shortcut = 0x53484f52
+const Tilt = 0x54494c54
+
 function pointer(offset) {
     return($(
         ['AddAddress', 'Mem', '32bit', offset],
@@ -79,6 +88,12 @@ function loadprotect() {
   return($(
     ['', 'Mem', '32bit', 0x005185a8, '!=', 'Value', '', 0],
     ['', 'Mem', '32bit', 0x005185a8, '!=', 'Value', '', 0x49],
+  ))
+}
+
+function buyProtect() {
+  return($(
+    ['', 'Mem', '32bit', 0x005185a8, '!=', 'Value', '', 0],
   ))
 }
 
@@ -114,8 +129,34 @@ function startHit() {
   ))
 }
 
+function glitchProtectPlus() {
+  return($(
+    pointer(0x0048d990),
+    pointer(0x300),
+    pointer(0x4c),
+    pointer(0xc44),
+    pointer(0x54),
+    pointer(0x0),
+    ['AndNext', 'Delta', '32bit', 0x38, '=', 'Mem', '32bit', 0x0],
+    pointer(0x0048d990),
+    pointer(0x300),
+    pointer(0x4c),
+    pointer(0xc44),
+    pointer(0x54),
+    pointer(0x0),
+    ['', 'Mem', '32bit', 0x38, '=', 'Mem', '32bit', 0x1, 1],
+  ))
+}
+
 function resetHit() {
   return($(
+    pointer(0x0048d990),
+    pointer(0x300),
+    pointer(0x4c),
+    pointer(0xc44),
+    pointer(0x54),
+    pointer(0x0),
+    ['ResetIf', 'Mem', '32bit', 0x28, '=', 'Value', '', 0x0],
     ['ResetIf', 'Delta', '32bitBE', 0x0052bc7c, '!=', 'Mem', '32bitBE', 0x0052bc7c],
   ))
 }
@@ -283,6 +324,99 @@ function character(characterID) {
   return(logic)
 }
 
+function postcards(count) {
+  let logic = []
+  let upper
+  let lower
+  let upperminus
+  let lowerminus
+  let chain = $(
+    pointer(0x0052c590),
+    pointer(0x40),
+    pointer(0x34),
+    pointer(0x4),
+    pointer(0x0),
+    pointer(0x1c),
+    pointer(0x8398),
+  )
+  if (count.toString().length == 1) {
+    upper = count.toString().charCodeAt(0)
+    lower = 0x2f
+  }
+  else if (count.toString().length == 2) {
+    upper = count.toString().charCodeAt(0)
+    lower = count.toString().charCodeAt(1)
+  }
+  if (upper == 0x31) {
+    upperminus = 0x39
+  }
+  else {
+    upperminus = upper - 1
+  }
+  return($(
+    chain,
+    ['OrNext', 'Delta', '8bit', 0x0, '=', 'Value', '', 0x58],
+    chain,
+    ['', 'Delta', '8bit', 0x0, '=', 'Value', '', upperminus],
+    chain,
+    ['', 'Mem', '8bit', 0x1, '=', 'Value', '', lower],
+    chain,
+    ['', 'Mem', '8bit', 0x0, '=', 'Value', '', upper],
+  ))
+}
+
+function levelscore(score) {
+  return($(
+    pointer(0x0052c590),
+    pointer(0x40),
+    pointer(0x34),
+    pointer(0x4),
+    pointer(0x0),
+    pointer(0x1c),
+    pointer(0x4540),
+    ['', 'Mem', '32bit', 0x0, '=', 'Value', '', score],
+  ))
+}
+
+function trickscore(score) {
+  return($(
+    pointer(0x0052c590),
+    pointer(0x40),
+    pointer(0x34),
+    pointer(0x4),
+    pointer(0x0),
+    pointer(0x1c),
+    pointer(0x6a54),
+    ['', 'Mem', '32bitBE', 0x0, '=', 'Value', '', score],
+  ))
+}
+
+function trick(move) {
+  return($(
+    pointer(0x0052c590),
+    pointer(0x40),
+    pointer(0x34),
+    pointer(0x4),
+    pointer(0x0),
+    pointer(0x1c),
+    pointer(0x6a70),
+    ['', 'Mem', '32bitBE', 0x0, '=', 'Value', '', move],
+  ))
+}
+
+function boostUsed() {
+  return($(
+    pointer(0x0048d990),
+    pointer(0x304),
+    pointer(0x38),
+    pointer(0x28),
+    pointer(0x2c),
+    pointer(0x18),
+    pointer(0x6f0),
+    ['', 'Mem', 'Float', 0x8c, '<', 'Delta', 'Float', 0x8c],
+  ))
+}
+
 function story() {
   return($(
     ['', 'Mem', '32bit', 0x007ed780, '=', 'Value', '', 0x0],
@@ -395,11 +529,21 @@ function shop2(items, total = items.length) {
 }
 
 function firstperson() {
-  return($(['', 'Mem', '32bit', 0x004eba08, '=', 'Value', '', 1]))
+  return($(
+    pointer(0x0048d990),
+    pointer(0x304),
+    pointer(0x30),
+    ['', 'Mem', '32bit', 0x68, '=', 'Value', '', 0x7],
+  ))
 }
 
-function notfirstperson() {
-  return($(['', 'Mem', '32bit', 0x004eba08, '!=', 'Value', '', 1]))
+function notFirstPerson() {
+  return($(
+    pointer(0x0048d990),
+    pointer(0x304),
+    pointer(0x30),
+    ['', 'Mem', '32bit', 0x68, '!=', 'Value', '', 0x7],
+  ))
 }
 
 set.addAchievement({
@@ -412,6 +556,9 @@ set.addAchievement({
     level(RadiatorSpringsGrandPrix),
     story(),
     finishRace(3),
+    startHit(),
+    resetHit(),
+    glitchProtect(),
   ),
 })
 
@@ -426,6 +573,9 @@ set.addAchievement({
     story(),
     finish(),
     finishRace(12),
+    startHit(),
+    resetHit(),
+    glitchProtect(),
   ),
 })
 
@@ -440,6 +590,9 @@ set.addAchievement({
     story(),
     finish(),
     finishRace(12),
+    startHit(),
+    resetHit(),
+    glitchProtect(),
   ),
 })
 
@@ -454,6 +607,9 @@ set.addAchievement({
     story(),
     finish(),
     finishRace(12),
+    startHit(),
+    resetHit(),
+    glitchProtect(),
   ),
 })
 
@@ -468,6 +624,9 @@ set.addAchievement({
     story(),
     win(),
     finishRace(12),
+    startHit(),
+    resetHit(),
+    glitchProtect(),
   ),
 })
 
@@ -482,6 +641,9 @@ set.addAchievement({
     story(),
     win(),
     finishRace(12),
+    startHit(),
+    resetHit(),
+    glitchProtect(),
   ),
 })
 
@@ -495,6 +657,9 @@ set.addAchievement({
     noPractice(),
     finish(),
     finishRace(3),
+    startHit(),
+    resetHit(),
+    glitchProtect(),
   ),
 })
 
@@ -508,6 +673,9 @@ set.addAchievement({
     noPractice(),
     finish(),
     finishRace(3),
+    startHit(),
+    resetHit(),
+    glitchProtect(),
   ),
 })
 
@@ -521,6 +689,9 @@ set.addAchievement({
     noPractice(),
     finish(),
     finishRace(3),
+    startHit(),
+    resetHit(),
+    glitchProtect(),
   ),
 })
 
@@ -534,6 +705,9 @@ set.addAchievement({
     noPractice(),
     finish(),
     finishRace(3),
+    startHit(),
+    resetHit(),
+    glitchProtect(),
   ),
 })
 
@@ -547,6 +721,9 @@ set.addAchievement({
     noPractice(),
     finish(),
     finishRace(3),
+    startHit(),
+    resetHit(),
+    glitchProtect(),
   ),
 })
 
@@ -560,6 +737,9 @@ set.addAchievement({
     noPractice(),
     finish(),
     finishRace(3),
+    startHit(),
+    resetHit(),
+    glitchProtect(),
   ),
 })
 
@@ -573,6 +753,10 @@ set.addAchievement({
     noPractice(),
     finish(),
     finishRace(1),
+    startHit(),
+    glitchProtectPlus(),
+    resetHit(),
+    glitchProtect(),
   ),
 })
 
@@ -586,6 +770,9 @@ set.addAchievement({
     noPractice(),
     finish(),
     finishRace(3),
+    startHit(),
+    resetHit(),
+    glitchProtect(),
   ),
 })
 
@@ -599,6 +786,9 @@ set.addAchievement({
     noPractice(),
     finish(),
     finishRace(12),
+    startHit(),
+    resetHit(),
+    glitchProtect(),
   ),
 })
 
@@ -612,6 +802,9 @@ set.addAchievement({
     noPractice(),
     finish(),
     finishRace(1),
+    startHit(),
+    resetHit(),
+    glitchProtect(),
   ),
 })
 
@@ -625,6 +818,9 @@ set.addAchievement({
     noPractice(),
     finish(),
     finishRace(3),
+    startHit(),
+    resetHit(),
+    glitchProtect(),
   ),
 })
 
@@ -638,6 +834,9 @@ set.addAchievement({
     noPractice(),
     finish(),
     finishRace(3),
+    startHit(),
+    resetHit(),
+    glitchProtect(),
   ),
 })
 
@@ -651,6 +850,9 @@ set.addAchievement({
     noPractice(),
     finish(),
     finishRace(12),
+    startHit(),
+    resetHit(),
+    glitchProtect(),
   ),
 })
 
@@ -664,6 +866,9 @@ set.addAchievement({
     noPractice(),
     finish(),
     finishRace(3),
+    startHit(),
+    resetHit(),
+    glitchProtect(),
   ),
 })
 
@@ -677,6 +882,9 @@ set.addAchievement({
     noPractice(),
     finish(),
     finishRace(3),
+    startHit(),
+    resetHit(),
+    glitchProtect(),
   ),
 })
 
@@ -690,6 +898,9 @@ set.addAchievement({
     noPractice(),
     finish(),
     finishRace(2),
+    startHit(),
+    resetHit(),
+    glitchProtect(),
   ),
 })
 
@@ -703,6 +914,9 @@ set.addAchievement({
     noPractice(),
     finish(),
     finishRace(1),
+    startHit(),
+    resetHit(),
+    glitchProtect(),
   ),
 })
 
@@ -716,6 +930,9 @@ set.addAchievement({
     noPractice(),
     finish(),
     finishRace(2),
+    startHit(),
+    resetHit(),
+    glitchProtect(),
   ),
 })
 
@@ -730,10 +947,45 @@ set.addAchievement({
     noPractice(),
     finish(),
     finishRace(6),
+    startHit(),
+    resetHit(),
+    glitchProtect(),
   ),
 })
 
-//Still need save protect
+set.addAchievement({
+  title: "Back When This Was a Town Worth Stoppin' In",
+  description: "Collect 5 of Lizzie's postcards",
+  points: 0,
+  conditions: $(
+    cheatprotect(),
+    story(),
+    postcards(5),
+  ),
+})
+
+set.addAchievement({
+  title: "Stanley Would've Loved This",
+  description: "Collect 10 of Lizzie's postcards",
+  points: 0,
+  conditions: $(
+    cheatprotect(),
+    story(),
+    postcards(10),
+  ),
+})
+
+set.addAchievement({
+  title: "Keeping Stanley's Dream Alive",
+  description: "Collect all 20 of Lizzie's postcards",
+  points: 0,
+  conditions: $(
+    cheatprotect(),
+    story(),
+    postcards(20),
+  ),
+})
+
 set.addAchievement({
   title: "Rookie on the Circuit",
   description: "Collect 50 trophies",
@@ -795,6 +1047,9 @@ set.addAchievement({
     difficulty(2),
     win(),
     finishRace(3),
+    startHit(),
+    resetHit(),
+    glitchProtect(),
   ),
 })
 
@@ -808,6 +1063,9 @@ set.addAchievement({
     difficulty(2),
     win(),
     finishRace(3),
+    startHit(),
+    resetHit(),
+    glitchProtect(),
   ),
 })
 
@@ -821,6 +1079,9 @@ set.addAchievement({
     difficulty(2),
     win(),
     finishRace(3),
+    startHit(),
+    resetHit(),
+    glitchProtect(),
   ),
 })
 
@@ -834,6 +1095,9 @@ set.addAchievement({
     difficulty(2),
     win(),
     finishRace(3),
+    startHit(),
+    resetHit(),
+    glitchProtect(),
   ),
 })
 
@@ -847,6 +1111,9 @@ set.addAchievement({
     difficulty(2),
     win(),
     finishRace(3),
+    startHit(),
+    resetHit(),
+    glitchProtect(),
   ),
 })
 
@@ -860,6 +1127,9 @@ set.addAchievement({
     difficulty(2),
     win(),
     finishRace(3),
+    startHit(),
+    resetHit(),
+    glitchProtect(),
   ),
 })
 
@@ -873,6 +1143,9 @@ set.addAchievement({
     difficulty(2),
     win(),
     finishRace(3),
+    startHit(),
+    resetHit(),
+    glitchProtect(),
   ),
 })
 
@@ -886,6 +1159,10 @@ set.addAchievement({
     difficulty(2),
     win(),
     finishRace(1),
+    startHit(),
+    glitchProtectPlus(),
+    resetHit(),
+    glitchProtect(),
   ),
 })
 
@@ -899,6 +1176,9 @@ set.addAchievement({
     difficulty(2),
     win(),
     finishRace(3),
+    startHit(),
+    resetHit(),
+    glitchProtect(),
   ),
 })
 
@@ -912,6 +1192,9 @@ set.addAchievement({
     difficulty(2),
     win(),
     finishRace(12),
+    startHit(),
+    resetHit(),
+    glitchProtect(),
   ),
 })
 
@@ -925,6 +1208,9 @@ set.addAchievement({
     difficulty(2),
     win(),
     finishRace(1),
+    startHit(),
+    resetHit(),
+    glitchProtect(),
   ),
 })
 
@@ -938,6 +1224,9 @@ set.addAchievement({
     difficulty(2),
     win(),
     finishRace(3),
+    startHit(),
+    resetHit(),
+    glitchProtect(),
   ),
 })
 
@@ -951,6 +1240,9 @@ set.addAchievement({
     difficulty(2),
     win(),
     finishRace(3),
+    startHit(),
+    resetHit(),
+    glitchProtect(),
   ),
 })
 
@@ -964,6 +1256,9 @@ set.addAchievement({
     difficulty(2),
     win(),
     finishRace(12),
+    startHit(),
+    resetHit(),
+    glitchProtect(),
   ),
 })
 
@@ -977,6 +1272,9 @@ set.addAchievement({
     difficulty(2),
     win(),
     finishRace(3),
+    startHit(),
+    resetHit(),
+    glitchProtect(),
   ),
 })
 
@@ -990,6 +1288,9 @@ set.addAchievement({
     difficulty(2),
     win(),
     finishRace(3),
+    startHit(),
+    resetHit(),
+    glitchProtect(),
   ),
 })
 
@@ -1003,6 +1304,9 @@ set.addAchievement({
     difficulty(2),
     win(),
     finishRace(2),
+    startHit(),
+    resetHit(),
+    glitchProtect(),
   ),
 })
 
@@ -1016,6 +1320,9 @@ set.addAchievement({
     difficulty(2),
     win(),
     finishRace(1),
+    startHit(),
+    resetHit(),
+    glitchProtect(),
   ),
 })
 
@@ -1029,6 +1336,9 @@ set.addAchievement({
     difficulty(2),
     win(),
     finishRace(2),
+    startHit(),
+    resetHit(),
+    glitchProtect(),
   ),
 })
 
@@ -1043,6 +1353,9 @@ set.addAchievement({
     difficulty(2),
     win(),
     finishRace(6),
+    startHit(),
+    resetHit(),
+    glitchProtect(),
   ),
 })
 
@@ -1056,6 +1369,9 @@ set.addAchievement({
     difficulty(2),
     win(),
     finishRace(12),
+    startHit(),
+    resetHit(),
+    glitchProtect(),
   ),
 })
 
@@ -1069,6 +1385,9 @@ set.addAchievement({
     difficulty(2),
     win(),
     finishRace(12),
+    startHit(),
+    resetHit(),
+    glitchProtect(),
   ),
 })
 
@@ -1082,6 +1401,9 @@ set.addAchievement({
     difficulty(2),
     win(),
     finishRace(12),
+    startHit(),
+    resetHit(),
+    glitchProtect(),
   ),
 })
 
@@ -1095,6 +1417,9 @@ set.addAchievement({
     difficulty(2),
     win(),
     finishRace(12),
+    startHit(),
+    resetHit(),
+    glitchProtect(),
   ),
 })
 
@@ -1108,6 +1433,9 @@ set.addAchievement({
     difficulty(2),
     win(),
     finishRace(12),
+    startHit(),
+    resetHit(),
+    glitchProtect(),
   ),
 })
 
@@ -1117,7 +1445,7 @@ set.addAchievement({
   points: 0,
   conditions: $(
     cheatprotect(),
-    loadprotect(),
+    buyProtect(),
     ...shop2(artPacks),
   ),
 })
@@ -1128,7 +1456,7 @@ set.addAchievement({
   points: 0,
   conditions: $(
     cheatprotect(),
-    loadprotect(),
+    buyProtect(),
     ...shop2(envPacks, 11),
   ),
 })
@@ -1139,7 +1467,7 @@ set.addAchievement({
   points: 0,
   conditions: $(
     cheatprotect(),
-    loadprotect(),
+    buyProtect(),
     ...shop2(envPacks),
   ),
 })
@@ -1150,7 +1478,7 @@ set.addAchievement({
   points: 0,
   conditions: $(
     cheatprotect(),
-    loadprotect(),
+    buyProtect(),
     ...shop2(delScenes),
   ),
 })
@@ -1161,7 +1489,7 @@ set.addAchievement({
   points: 0,
   conditions: $(
     cheatprotect(),
-    loadprotect(),
+    buyProtect(),
     ...shop2(movScenes),
   ),
 })
@@ -1172,7 +1500,7 @@ set.addAchievement({
   points: 0,
   conditions: $(
     cheatprotect(),
-    loadprotect(),
+    buyProtect(),
     ...shop2(charPack),
   ),
 })
@@ -1183,7 +1511,7 @@ set.addAchievement({
   points: 0,
   conditions: $(
     cheatprotect(),
-    loadprotect(),
+    buyProtect(),
     ...shop2(mcqPaint),
   ),
 })
@@ -1194,7 +1522,7 @@ set.addAchievement({
   points: 0,
   conditions: $(
     cheatprotect(),
-    loadprotect(),
+    buyProtect(),
     ...shop2(matPaint),
   ),
 })
@@ -1205,7 +1533,7 @@ set.addAchievement({
   points: 0,
   conditions: $(
     cheatprotect(),
-    loadprotect(),
+    buyProtect(),
     ...shop2(salPaint),
   ),
 })
@@ -1216,7 +1544,7 @@ set.addAchievement({
   points: 0,
   conditions: $(
     cheatprotect(),
-    loadprotect(),
+    buyProtect(),
     ...shop2(docPaint),
   ),
 })
@@ -1227,7 +1555,7 @@ set.addAchievement({
   points: 0,
   conditions: $(
     cheatprotect(),
-    loadprotect(),
+    buyProtect(),
     ...shop2(ramPaint),
   ),
 })
@@ -1238,7 +1566,7 @@ set.addAchievement({
   points: 0,
   conditions: $(
     cheatprotect(),
-    loadprotect(),
+    buyProtect(),
     ...shop2(floPaint),
   ),
 })
@@ -1249,7 +1577,7 @@ set.addAchievement({
   points: 0,
   conditions: $(
     cheatprotect(),
-    loadprotect(),
+    buyProtect(),
     ...shop2(sherPaint),
   ),
 })
@@ -1260,7 +1588,7 @@ set.addAchievement({
   points: 0,
   conditions: $(
     cheatprotect(),
-    loadprotect(),
+    buyProtect(),
     ...shop2(chickPaint),
   ),
 })
@@ -1271,7 +1599,7 @@ set.addAchievement({
   points: 0,
   conditions: $(
     cheatprotect(),
-    loadprotect(),
+    buyProtect(),
     ...shop2(wingPaint),
   ),
 })
@@ -1282,7 +1610,7 @@ set.addAchievement({
   points: 0,
   conditions: $(
     cheatprotect(),
-    loadprotect(),
+    buyProtect(),
     ...shop2(darPaint),
   ),
 })
@@ -1293,7 +1621,7 @@ set.addAchievement({
   points: 0,
   conditions: $(
     cheatprotect(),
-    loadprotect(),
+    buyProtect(),
     ...shop2(kingPaint),
   ),
 })
@@ -1304,7 +1632,7 @@ set.addAchievement({
   points: 0,
   conditions: $(
     cheatprotect(),
-    loadprotect(),
+    buyProtect(),
     ...shop2(mmcqPaint),
   ),
 })
@@ -1315,7 +1643,7 @@ set.addAchievement({
   points: 0,
   conditions: $(
     cheatprotect(),
-    loadprotect(),
+    buyProtect(),
     ...shop2(cntPaint),
   ),
 })
@@ -1326,20 +1654,103 @@ set.addAchievement({
   points: 0,
   conditions: $(
     cheatprotect(),
+    glitchProtect(),
     ...character(McQueen),
     level(RustbucketRaceoRama),
     difficulty(2),
-    win(),
-    lead(5),
-    finishRace(12),
+    startHit(),
+    trigger(win()),
+    trigger(lead(5)),
+    trigger(finishRace(12)),
+    resetHit(),
   ),
 })
 
+//10 points per second
 set.addAchievement({
   title: "I'm the World's Best Backwards Driver!",
   description: "As Mater, win Boostin' with Fillmore on Champion difficulty while earning 2,000 points from driving backwards",
   points: 0,
   conditions: $(
+    measuredIf(cheatprotect()),
+    measuredIf(...character(Mater)),
+    measuredIf(level(BoostinwithFillmore)),
+    measuredIf(difficulty(2)),
+    startHit(),
+    pointer(0x004ee5d0),
+    pointer(0x498),
+    ['AndNext', 'Mem', 'Float', 0xe40, '!=', 'Value', '', 0],
+    pointer(0x004ee5d0),
+    pointer(0x498),
+    ['AddSource', 'Mem', 'Float', 0xe40, '%', 'Value', '', 1],
+    ['AddHits', 'Value', '', 0x0, '=', 'Value', '', 0],
+    pointer(0x004ee5d0),
+    pointer(0x498),
+    ['AndNext', 'Mem', 'Float', 0xe40, '!=', 'Value', '', 0],
+    pointer(0x004ee5d0),
+    pointer(0x498),
+    ['AddSource', 'Mem', 'Float', 0xe40, '%', 'Value', '', 1],
+    ['AddHits', 'Value', '', 0x0, '=', 'Value', '', 0],
+    pointer(0x004ee5d0),
+    pointer(0x498),
+    ['AndNext', 'Mem', 'Float', 0xe40, '!=', 'Value', '', 0],
+    pointer(0x004ee5d0),
+    pointer(0x498),
+    ['AddSource', 'Mem', 'Float', 0xe40, '%', 'Value', '', 1],
+    ['AddHits', 'Value', '', 0x0, '=', 'Value', '', 0],
+    pointer(0x004ee5d0),
+    pointer(0x498),
+    ['AndNext', 'Mem', 'Float', 0xe40, '!=', 'Value', '', 0],
+    pointer(0x004ee5d0),
+    pointer(0x498),
+    ['AddSource', 'Mem', 'Float', 0xe40, '%', 'Value', '', 1],
+    ['AddHits', 'Value', '', 0x0, '=', 'Value', '', 0],
+    pointer(0x004ee5d0),
+    pointer(0x498),
+    ['AndNext', 'Mem', 'Float', 0xe40, '!=', 'Value', '', 0],
+    pointer(0x004ee5d0),
+    pointer(0x498),
+    ['AddSource', 'Mem', 'Float', 0xe40, '%', 'Value', '', 1],
+    ['AddHits', 'Value', '', 0x0, '=', 'Value', '', 0],
+    pointer(0x004ee5d0),
+    pointer(0x498),
+    ['AndNext', 'Mem', 'Float', 0xe40, '!=', 'Value', '', 0],
+    pointer(0x004ee5d0),
+    pointer(0x498),
+    ['AddSource', 'Mem', 'Float', 0xe40, '%', 'Value', '', 1],
+    ['AddHits', 'Value', '', 0x0, '=', 'Value', '', 0],
+    pointer(0x004ee5d0),
+    pointer(0x498),
+    ['AndNext', 'Mem', 'Float', 0xe40, '!=', 'Value', '', 0],
+    pointer(0x004ee5d0),
+    pointer(0x498),
+    ['AddSource', 'Mem', 'Float', 0xe40, '%', 'Value', '', 1],
+    ['AddHits', 'Value', '', 0x0, '=', 'Value', '', 0],
+    pointer(0x004ee5d0),
+    pointer(0x498),
+    ['AndNext', 'Mem', 'Float', 0xe40, '!=', 'Value', '', 0],
+    pointer(0x004ee5d0),
+    pointer(0x498),
+    ['AddSource', 'Mem', 'Float', 0xe40, '%', 'Value', '', 1],
+    ['AddHits', 'Value', '', 0x0, '=', 'Value', '', 0],
+    pointer(0x004ee5d0),
+    pointer(0x498),
+    ['AndNext', 'Mem', 'Float', 0xe40, '!=', 'Value', '', 0],
+    pointer(0x004ee5d0),
+    pointer(0x498),
+    ['AddSource', 'Mem', 'Float', 0xe40, '%', 'Value', '', 1],
+    ['AddHits', 'Value', '', 0x0, '=', 'Value', '', 0],
+    pointer(0x004ee5d0),
+    pointer(0x498),
+    ['AndNext', 'Mem', 'Float', 0xe40, '!=', 'Value', '', 0],
+    pointer(0x004ee5d0),
+    pointer(0x498),
+    ['AddSource', 'Mem', 'Float', 0xe40, '%', 'Value', '', 1],
+    ['Measured', 'Value', '', 0x0, '=', 'Value', '', 0, 2000],
+    trigger(win()),
+    trigger(finishRace(3)),
+    resetHit(),
+    glitchProtect(),
   ),
 })
 
@@ -1348,22 +1759,201 @@ set.addAchievement({
   description: "As Sally, win Sally's Wheel Well Sprint on Champion difficulty without boosting or taking shortcuts",
   points: 0,
   conditions: $(
+    cheatprotect(),
+    ...character(Sally),
+    level(SallysWheelWellSprint),
+    difficulty(2),
+    startHit(),
+    trigger(win()),
+    trigger(finishRace(3)),
+    resetHit(),
+    glitchProtect(),
+    resetIf(boostUsed()),
+    resetIf(trick(Shortcut)),
   ),
 })
 
+//20 points per second
 set.addAchievement({
   title: "Let Me Show You How It's Done",
   description: "As Doc Hudson, win Doc's Challenge on Champion difficulty while earning 1,000 points from powersliding",
   points: 0,
   conditions: $(
+    measuredIf(cheatprotect()),
+    measuredIf(...character(Doc)),
+    measuredIf(level(DocsChallenge)),
+    measuredIf(difficulty(2)),
+    startHit(),
+    pointer(0x004ee5d0),
+    pointer(0x498),
+    ['AndNext', 'Mem', 'Float', 0xe3c, '!=', 'Value', '', 0],
+    pointer(0x004ee5d0),
+    pointer(0x498),
+    ['AddSource', 'Mem', 'Float', 0xe3c, '%', 'Value', '', 1],
+    ['AddHits', 'Value', '', 0x0, '=', 'Value', '', 0],
+    pointer(0x004ee5d0),
+    pointer(0x498),
+    ['AndNext', 'Mem', 'Float', 0xe3c, '!=', 'Value', '', 0],
+    pointer(0x004ee5d0),
+    pointer(0x498),
+    ['AddSource', 'Mem', 'Float', 0xe3c, '%', 'Value', '', 1],
+    ['AddHits', 'Value', '', 0x0, '=', 'Value', '', 0],
+    pointer(0x004ee5d0),
+    pointer(0x498),
+    ['AndNext', 'Mem', 'Float', 0xe3c, '!=', 'Value', '', 0],
+    pointer(0x004ee5d0),
+    pointer(0x498),
+    ['AddSource', 'Mem', 'Float', 0xe3c, '%', 'Value', '', 1],
+    ['AddHits', 'Value', '', 0x0, '=', 'Value', '', 0],
+    pointer(0x004ee5d0),
+    pointer(0x498),
+    ['AndNext', 'Mem', 'Float', 0xe3c, '!=', 'Value', '', 0],
+    pointer(0x004ee5d0),
+    pointer(0x498),
+    ['AddSource', 'Mem', 'Float', 0xe3c, '%', 'Value', '', 1],
+    ['AddHits', 'Value', '', 0x0, '=', 'Value', '', 0],
+    pointer(0x004ee5d0),
+    pointer(0x498),
+    ['AndNext', 'Mem', 'Float', 0xe3c, '!=', 'Value', '', 0],
+    pointer(0x004ee5d0),
+    pointer(0x498),
+    ['AddSource', 'Mem', 'Float', 0xe3c, '%', 'Value', '', 1],
+    ['AddHits', 'Value', '', 0x0, '=', 'Value', '', 0],
+    pointer(0x004ee5d0),
+    pointer(0x498),
+    ['AndNext', 'Mem', 'Float', 0xe3c, '!=', 'Value', '', 0],
+    pointer(0x004ee5d0),
+    pointer(0x498),
+    ['AddSource', 'Mem', 'Float', 0xe3c, '%', 'Value', '', 1],
+    ['AddHits', 'Value', '', 0x0, '=', 'Value', '', 0],
+    pointer(0x004ee5d0),
+    pointer(0x498),
+    ['AndNext', 'Mem', 'Float', 0xe3c, '!=', 'Value', '', 0],
+    pointer(0x004ee5d0),
+    pointer(0x498),
+    ['AddSource', 'Mem', 'Float', 0xe3c, '%', 'Value', '', 1],
+    ['AddHits', 'Value', '', 0x0, '=', 'Value', '', 0],
+    pointer(0x004ee5d0),
+    pointer(0x498),
+    ['AndNext', 'Mem', 'Float', 0xe3c, '!=', 'Value', '', 0],
+    pointer(0x004ee5d0),
+    pointer(0x498),
+    ['AddSource', 'Mem', 'Float', 0xe3c, '%', 'Value', '', 1],
+    ['AddHits', 'Value', '', 0x0, '=', 'Value', '', 0],
+    pointer(0x004ee5d0),
+    pointer(0x498),
+    ['AndNext', 'Mem', 'Float', 0xe3c, '!=', 'Value', '', 0],
+    pointer(0x004ee5d0),
+    pointer(0x498),
+    ['AddSource', 'Mem', 'Float', 0xe3c, '%', 'Value', '', 1],
+    ['AddHits', 'Value', '', 0x0, '=', 'Value', '', 0],
+    pointer(0x004ee5d0),
+    pointer(0x498),
+    ['AndNext', 'Mem', 'Float', 0xe3c, '!=', 'Value', '', 0],
+    pointer(0x004ee5d0),
+    pointer(0x498),
+    ['AddSource', 'Mem', 'Float', 0xe3c, '%', 'Value', '', 1],
+    ['AddHits', 'Value', '', 0x0, '=', 'Value', '', 0],
+    pointer(0x004ee5d0),
+    pointer(0x498),
+    ['AndNext', 'Mem', 'Float', 0xe3c, '!=', 'Value', '', 0],
+    pointer(0x004ee5d0),
+    pointer(0x498),
+    ['AddSource', 'Mem', 'Float', 0xe3c, '%', 'Value', '', 1],
+    ['AddHits', 'Value', '', 0x0, '=', 'Value', '', 0],
+    pointer(0x004ee5d0),
+    pointer(0x498),
+    ['AndNext', 'Mem', 'Float', 0xe3c, '!=', 'Value', '', 0],
+    pointer(0x004ee5d0),
+    pointer(0x498),
+    ['AddSource', 'Mem', 'Float', 0xe3c, '%', 'Value', '', 1],
+    ['AddHits', 'Value', '', 0x0, '=', 'Value', '', 0],
+    pointer(0x004ee5d0),
+    pointer(0x498),
+    ['AndNext', 'Mem', 'Float', 0xe3c, '!=', 'Value', '', 0],
+    pointer(0x004ee5d0),
+    pointer(0x498),
+    ['AddSource', 'Mem', 'Float', 0xe3c, '%', 'Value', '', 1],
+    ['AddHits', 'Value', '', 0x0, '=', 'Value', '', 0],
+    pointer(0x004ee5d0),
+    pointer(0x498),
+    ['AndNext', 'Mem', 'Float', 0xe3c, '!=', 'Value', '', 0],
+    pointer(0x004ee5d0),
+    pointer(0x498),
+    ['AddSource', 'Mem', 'Float', 0xe3c, '%', 'Value', '', 1],
+    ['AddHits', 'Value', '', 0x0, '=', 'Value', '', 0],
+    pointer(0x004ee5d0),
+    pointer(0x498),
+    ['AndNext', 'Mem', 'Float', 0xe3c, '!=', 'Value', '', 0],
+    pointer(0x004ee5d0),
+    pointer(0x498),
+    ['AddSource', 'Mem', 'Float', 0xe3c, '%', 'Value', '', 1],
+    ['AddHits', 'Value', '', 0x0, '=', 'Value', '', 0],
+    pointer(0x004ee5d0),
+    pointer(0x498),
+    ['AndNext', 'Mem', 'Float', 0xe3c, '!=', 'Value', '', 0],
+    pointer(0x004ee5d0),
+    pointer(0x498),
+    ['AddSource', 'Mem', 'Float', 0xe3c, '%', 'Value', '', 1],
+    ['AddHits', 'Value', '', 0x0, '=', 'Value', '', 0],
+    pointer(0x004ee5d0),
+    pointer(0x498),
+    ['AndNext', 'Mem', 'Float', 0xe3c, '!=', 'Value', '', 0],
+    pointer(0x004ee5d0),
+    pointer(0x498),
+    ['AddSource', 'Mem', 'Float', 0xe3c, '%', 'Value', '', 1],
+    ['AddHits', 'Value', '', 0x0, '=', 'Value', '', 0],
+    pointer(0x004ee5d0),
+    pointer(0x498),
+    ['AndNext', 'Mem', 'Float', 0xe3c, '!=', 'Value', '', 0],
+    pointer(0x004ee5d0),
+    pointer(0x498),
+    ['AddSource', 'Mem', 'Float', 0xe3c, '%', 'Value', '', 1],
+    ['AddHits', 'Value', '', 0x0, '=', 'Value', '', 0],
+    pointer(0x004ee5d0),
+    pointer(0x498),
+    ['AndNext', 'Mem', 'Float', 0xe3c, '!=', 'Value', '', 0],
+    pointer(0x004ee5d0),
+    pointer(0x498),
+    ['AddSource', 'Mem', 'Float', 0xe3c, '%', 'Value', '', 1],
+    ['AddHits', 'Value', '', 0x0, '=', 'Value', '', 0],
+    pointer(0x004ee5d0),
+    pointer(0x498),
+    ['AndNext', 'Mem', 'Float', 0xe3c, '!=', 'Value', '', 0],
+    pointer(0x004ee5d0),
+    pointer(0x498),
+    ['AddSource', 'Mem', 'Float', 0xe3c, '%', 'Value', '', 1],
+    ['Measured', 'Value', '', 0x0, '=', 'Value', '', 0, 1000],
+    trigger(win()),
+    trigger(finishRace(3)),
+    resetHit(),
+    glitchProtect(),
   ),
 })
 
+//Need a fix...
 set.addAchievement({
   title: "Low n' Slow",
   description: "As Ramone, win Delinquent Road Hazards on Champion difficulty while earning the Safe Driver bonus 14 times",
   points: 0,
   conditions: $(
+    measuredIf(cheatprotect()),
+    measuredIf(...character(Ramone)),
+    measuredIf(level(DelinquentRoadHazards)),
+    measuredIf(difficulty(2)),
+    startHit(),
+    pointer(0x0052c590),
+    pointer(0x40),
+    pointer(0x34),
+    pointer(0x4),
+    pointer(0x0),
+    pointer(0x1c),
+    pointer(0x6a70),
+    ['Measured', 'Mem', '32bit', 0x0, '=', 'Value', '', SafeDriver, 14],
+    trigger(win()),
+    trigger(finishRace(3)),
+    resetHit(),
+    glitchProtect(),
   ),
 })
 
@@ -1372,6 +1962,23 @@ set.addAchievement({
   description: "As Flo, win Sarge's Off-Road Challenge on Champion difficulty with at least 4,200 points or more",
   points: 0,
   conditions: $(
+    measuredIf(cheatprotect()),
+    measuredIf(...character(Flo)),
+    measuredIf(level(SargesOffRoadChallenge)),
+    measuredIf(difficulty(2)),
+    startHit(),
+    pointer(0x0052c590),
+    pointer(0x40),
+    pointer(0x34),
+    pointer(0x4),
+    pointer(0x0),
+    pointer(0x1c),
+    pointer(0x4540),
+    ['Measured', 'Mem', '32bit', 0x0, '>=', 'Value', '', 4200],
+    trigger(win()),
+    trigger(finishRace(3)),
+    resetHit(),
+    glitchProtect(),
   ),
 })
 
@@ -1382,16 +1989,16 @@ set.addAchievement({
   points: 0,
   conditions: $(
     cheatprotect(),
-    andNext(
-    level(SheriffsChase),
+    ...character(Sheriff),
+    level(SheriffsHotPursuit),
     difficulty(2),
-    timer(5), 
-    once(firstperson()),
-    ),
+    startHit(),
+    trigger(glitchProtectPlus()),
     trigger(win()),
     trigger(finishRace(1)),
-    resetIf(notfirstperson()),
-    resetIf(levelQuit()),
+    resetHit(),
+    resetIf(notFirstPerson()),
+    glitchProtect(),
   ),
 })
 
@@ -1400,7 +2007,16 @@ set.addAchievement({
   description: "As Chick Hicks, win Ornament Valley GP on champion difficulty without Powersliding",
   points: 0,
   conditions: $(
-
+    cheatprotect(),
+    ...character(Chick),
+    level(OrnamentValleyGP),
+    difficulty(2),
+    startHit(),
+    trigger(win()),
+    trigger(finishRace(2)),
+    resetHit(),
+    glitchProtect(),
+    resetHit(trick(Powerslide)),
   ),
 })
 
@@ -1409,15 +2025,109 @@ set.addAchievement({
   description: "As Wingo, win Chick's Challenge on Champion difficulty while attaining a Big Air bonus 9 times",
   points: 0,
   conditions: $(
+    measuredIf(cheatprotect()),
+    measuredIf(...character(Wingo)),
+    measuredIf(level(ChicksChallenge)),
+    measuredIf(difficulty(2)),
+    startHit(),
+    pointer(0x004ee5d0),
+    pointer(0x498),
+    ['AndNext', 'Delta', 'Float', 0xe44, '<', 'Value', '', 1],
+    pointer(0x004ee5d0),
+    pointer(0x498),
+    ['Measured', 'Mem', 'Float', 0xe44, '>=', 'Value', '', 1, 9],
+    trigger(win()),
+    trigger(finishRace(3)),
+    resetHit(),
+    glitchProtect(),
   ),
 })
 
+//10 points per second
 set.addAchievement({
   title: "You See That Speed Boost?",
   description: "As Darrell Cartrip, win Palm Mile Speedway while earning 1,000 points from tilting",
   points: 0,
   conditions: $(
-
+    measuredIf(cheatprotect()),
+    measuredIf(...character(Darrell)),
+    measuredIf(level(PalmMileSpeedway)),
+    measuredIf(difficulty(2)),
+    startHit(),
+    pointer(0x004ee5d0),
+    pointer(0x498),
+    ['AndNext', 'Mem', 'Float', 0xe4c, '!=', 'Value', '', 0],
+    pointer(0x004ee5d0),
+    pointer(0x498),
+    ['AddSource', 'Mem', 'Float', 0xe4c, '%', 'Value', '', 1],
+    ['AddHits', 'Value', '', 0x0, '=', 'Value', '', 0],
+    pointer(0x004ee5d0),
+    pointer(0x498),
+    ['AndNext', 'Mem', 'Float', 0xe4c, '!=', 'Value', '', 0],
+    pointer(0x004ee5d0),
+    pointer(0x498),
+    ['AddSource', 'Mem', 'Float', 0xe4c, '%', 'Value', '', 1],
+    ['AddHits', 'Value', '', 0x0, '=', 'Value', '', 0],
+    pointer(0x004ee5d0),
+    pointer(0x498),
+    ['AndNext', 'Mem', 'Float', 0xe4c, '!=', 'Value', '', 0],
+    pointer(0x004ee5d0),
+    pointer(0x498),
+    ['AddSource', 'Mem', 'Float', 0xe4c, '%', 'Value', '', 1],
+    ['AddHits', 'Value', '', 0x0, '=', 'Value', '', 0],
+    pointer(0x004ee5d0),
+    pointer(0x498),
+    ['AndNext', 'Mem', 'Float', 0xe4c, '!=', 'Value', '', 0],
+    pointer(0x004ee5d0),
+    pointer(0x498),
+    ['AddSource', 'Mem', 'Float', 0xe4c, '%', 'Value', '', 1],
+    ['AddHits', 'Value', '', 0x0, '=', 'Value', '', 0],
+    pointer(0x004ee5d0),
+    pointer(0x498),
+    ['AndNext', 'Mem', 'Float', 0xe4c, '!=', 'Value', '', 0],
+    pointer(0x004ee5d0),
+    pointer(0x498),
+    ['AddSource', 'Mem', 'Float', 0xe4c, '%', 'Value', '', 1],
+    ['AddHits', 'Value', '', 0x0, '=', 'Value', '', 0],
+    pointer(0x004ee5d0),
+    pointer(0x498),
+    ['AndNext', 'Mem', 'Float', 0xe4c, '!=', 'Value', '', 0],
+    pointer(0x004ee5d0),
+    pointer(0x498),
+    ['AddSource', 'Mem', 'Float', 0xe4c, '%', 'Value', '', 1],
+    ['AddHits', 'Value', '', 0x0, '=', 'Value', '', 0],
+    pointer(0x004ee5d0),
+    pointer(0x498),
+    ['AndNext', 'Mem', 'Float', 0xe4c, '!=', 'Value', '', 0],
+    pointer(0x004ee5d0),
+    pointer(0x498),
+    ['AddSource', 'Mem', 'Float', 0xe4c, '%', 'Value', '', 1],
+    ['AddHits', 'Value', '', 0x0, '=', 'Value', '', 0],
+    pointer(0x004ee5d0),
+    pointer(0x498),
+    ['AndNext', 'Mem', 'Float', 0xe4c, '!=', 'Value', '', 0],
+    pointer(0x004ee5d0),
+    pointer(0x498),
+    ['AddSource', 'Mem', 'Float', 0xe4c, '%', 'Value', '', 1],
+    ['AddHits', 'Value', '', 0x0, '=', 'Value', '', 0],
+    pointer(0x004ee5d0),
+    pointer(0x498),
+    ['AndNext', 'Mem', 'Float', 0xe4c, '!=', 'Value', '', 0],
+    pointer(0x004ee5d0),
+    pointer(0x498),
+    ['AddSource', 'Mem', 'Float', 0xe4c, '%', 'Value', '', 1],
+    ['AddHits', 'Value', '', 0x0, '=', 'Value', '', 0],
+    pointer(0x004ee5d0),
+    pointer(0x498),
+    ['AndNext', 'Mem', 'Float', 0xe4c, '!=', 'Value', '', 0],
+    pointer(0x004ee5d0),
+    pointer(0x498),
+    ['AddSource', 'Mem', 'Float', 0xe4c, '%', 'Value', '', 1],
+    ['Measured', 'Value', '', 0x0, '=', 'Value', '', 0, 1000],
+    trigger(win()),
+    trigger(finishRace(12)),
+    resetHit(),
+    glitchProtect(),
   ),
 })
 
@@ -1426,7 +2136,41 @@ set.addAchievement({
   description: "As The King, win Smasherville International Speedway on Champion difficulty while earning the Lap Leader bonus 9 times",
   points: 0,
   conditions: $(
+    measuredIf(cheatprotect()),
+    measuredIf(...character(King)),
+    measuredIf(level(SmashervilleInternationalSpeedway)),
+    measuredIf(difficulty(2)),
+    startHit(),
+    pointer(0x0052c590),
+    pointer(0x40),
+    pointer(0x34),
+    pointer(0x4),
+    pointer(0x0),
+    pointer(0x1c),
+    pointer(0x6a70),
+    ['Measured', 'Mem', '32bit', 0x0, '=', 'Value', '', LapLeader, 9],
+    trigger(win()),
+    trigger(finishRace(12)),
+    resetHit(),
+    glitchProtect(),
+  ),
+})
 
+set.addAchievement({
+  title: "PUNY CIRCUIT, TOW TRUCK!",
+  description: "As Monster McQueen, win Mater's Speedy Circuit on Champion Difficulty",
+  points: 0,
+  conditions: $(
+    cheatprotect(),
+    ...character(MonsterMcQueen),
+    level(logo),
+    ['', 'Mem', '32bitBE', 0x004ecba4, '=', 'Value', '', 0x52525f54],
+    difficulty(2),
+    startHit(),
+    trigger(win()),
+    trigger(finishRace(6)),
+    resetHit(),
+    glitchProtect(),
   ),
 })
 
@@ -1435,7 +2179,15 @@ set.addAchievement({
   description: "As Count Spatula, win Radiator Springs GP on Champion difficulty",
   points: 0,
   conditions: $(
-
+    cheatprotect(),
+    ...character(Spatula),
+    level(RadiatorSpringsGP),
+    difficulty(2),
+    startHit(),
+    trigger(win()),
+    trigger(finishRace(2)),
+    resetHit(),
+    glitchProtect(),
   ),
 })
 
@@ -1683,6 +2435,7 @@ set.addLeaderboard({
       level(SheriffsChase),
       finishRace(1),
       startHit(),
+      glitchProtectPlus(),
       resetHit(),
       glitchProtect(),
     ),
