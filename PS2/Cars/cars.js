@@ -78,6 +78,45 @@ const SafeDriver = 0x53414645
 const Shortcut = 0x53484f52
 const Tilt = 0x54494c54
 
+const Boot = 0x426f
+const Menu = 0x4672
+const Cutscene = 0x4353
+const gameCutscene = 0x5351
+const Exploration = 0x4558
+const Minigame = 0x4d47
+const Minigame2 = 0x534b
+const Race = 0x5252
+
+const TT1 = 0x54543132
+const TT2 = 0x54543135
+const TT3 = 0x54543600
+const TT4 = 0x54543133
+const TT5 = 0x54543900
+const TT6 = 0x54543400
+const TT7 = 0x54543131
+const TT8 = 0x54543134
+
+const lttr1 = 0x34484831
+const lttr2 = 0x34484832
+const lttr3 = 0x34484833
+const lttr4 = 0x34484834
+const lttr5 = 0x34484835
+const lttr6 = 0x34484836
+const lttr7 = 0x34484837
+const lttr8 = 0x34484838
+
+const bootcamp1 = 0x5f365f41
+const bootcamp2 = 0x5f365f42
+const bootcamp3 = 0x5f365f43
+
+const DocsPowerslide = 0x5f315f34
+
+const HP1 = 0x48503100
+const HP2 = 0x48503200
+const HP3 = 0x48503300
+const HP4 = 0x48503400
+const HP5 = 0x48503500
+
 function pointer(offset) {
     return($(
         ['AddAddress', 'Mem', '32bit', offset],
@@ -137,14 +176,14 @@ function glitchProtectPlus() {
     pointer(0xc44),
     pointer(0x54),
     pointer(0x0),
-    ['AndNext', 'Delta', '32bit', 0x38, '=', 'Mem', '32bit', 0x0],
+    ['', 'Mem', '32bit', 0x38, '=', 'Value', '', 113, 1],
     pointer(0x0048d990),
     pointer(0x300),
     pointer(0x4c),
     pointer(0xc44),
     pointer(0x54),
     pointer(0x0),
-    ['', 'Mem', '32bit', 0x38, '=', 'Mem', '32bit', 0x1, 1],
+    ['', 'Mem', '32bit', 0x38, '=', 'Value', '', 141, 1],
   ))
 }
 
@@ -163,6 +202,14 @@ function resetHit() {
 
 function glitchProtect() {
   return($(
+    ['AddSource', 'Value', '', 0x2],
+    pointer(0x0048d990),
+    pointer(0x300),
+    pointer(0x4c),
+    pointer(0xc44),
+    pointer(0x54),
+    pointer(0x0),
+    ['AndNext', 'Delta', '32bit', 0x38, '!=', 'Mem', '32bit', 0x38],
     ['AddSource', 'Value', '', 0x1],
     pointer(0x0048d990),
     pointer(0x300),
@@ -178,6 +225,69 @@ function glitchProtect() {
     pointer(0x54),
     pointer(0x0),
     ['AndNext', 'Delta', '32bit', 0x38, '!=', 'Mem', '32bit', 0x38],
+    pointer(0x0048d990),
+    pointer(0x300),
+    pointer(0x4c),
+    pointer(0xc44),
+    pointer(0x54),
+    pointer(0x0),
+    ['ResetIf', 'Mem', '32bit', 0x38, '!=', 'Value', '', 0x0],
+  ))
+}
+
+function glitchProtectSheriffChase() {
+  return($(
+    ['AddSource', 'Value', '', 0x2],
+    pointer(0x0048d990),
+    pointer(0x300),
+    pointer(0x4c),
+    pointer(0xc44),
+    pointer(0x54),
+    pointer(0x0),
+    ['AndNext', 'Delta', '32bit', 0x38, '!=', 'Mem', '32bit', 0x38],
+    ['AddSource', 'Value', '', 0x1],
+    pointer(0x0048d990),
+    pointer(0x300),
+    pointer(0x4c),
+    pointer(0xc44),
+    pointer(0x54),
+    pointer(0x0),
+    ['AndNext', 'Delta', '32bit', 0x38, '!=', 'Mem', '32bit', 0x38],
+    pointer(0x0048d990),
+    pointer(0x300),
+    pointer(0x4c),
+    pointer(0xc44),
+    pointer(0x54),
+    pointer(0x0),
+    ['AndNext', 'Delta', '32bit', 0x38, '!=', 'Mem', '32bit', 0x38],
+    pointer(0x0048d990),
+    pointer(0x300),
+    pointer(0x4c),
+    pointer(0xc44),
+    pointer(0x54),
+    pointer(0x0),
+    ['AndNext', 'Delta', '32bit', 0x38, '!=', 'Value', '', 113],
+    pointer(0x0048d990),
+    pointer(0x300),
+    pointer(0x4c),
+    pointer(0xc44),
+    pointer(0x54),
+    pointer(0x0),
+    ['AndNext', 'Mem', '32bit', 0x38, '!=', 'Value', '', 113],
+    pointer(0x0048d990),
+    pointer(0x300),
+    pointer(0x4c),
+    pointer(0xc44),
+    pointer(0x54),
+    pointer(0x0),
+    ['AndNext', 'Delta', '32bit', 0x38, '!=', 'Value', '', 141],
+    pointer(0x0048d990),
+    pointer(0x300),
+    pointer(0x4c),
+    pointer(0xc44),
+    pointer(0x54),
+    pointer(0x0),
+    ['AndNext', 'Mem', '32bit', 0x38, '!=', 'Value', '', 141],
     pointer(0x0048d990),
     pointer(0x300),
     pointer(0x4c),
@@ -533,7 +643,7 @@ function firstperson() {
     pointer(0x0048d990),
     pointer(0x304),
     pointer(0x30),
-    ['', 'Mem', '32bit', 0x68, '=', 'Value', '', 0x7],
+    ['', 'Delta', '32bit', 0x68, '=', 'Value', '', 0x7],
   ))
 }
 
@@ -542,7 +652,86 @@ function notFirstPerson() {
     pointer(0x0048d990),
     pointer(0x304),
     pointer(0x30),
-    ['', 'Mem', '32bit', 0x68, '!=', 'Value', '', 0x7],
+    ['', 'Delta', '32bit', 0x68, '!=', 'Value', '', 0x7],
+  ))
+}
+
+function levelType(type) {
+  return($(
+    pointer(0x0082b0e8),
+    pointer(0x0),
+    ['', 'Mem', '16bitBE', 0x0, '=', 'Value', '', type]
+  ))
+}
+
+function TractorTip(level) {
+  return($(
+    pointer(0x0082b0e8),
+    pointer(0x0),
+    ['', 'Mem', '32bitBE', 0x6, '=', 'Value', '', level]
+  ))
+}
+
+function tractorstipped(count) {
+  return($(
+    pointer(0x48d990),
+    pointer(0x2f0),
+    pointer(0x4c),
+    ['', 'Delta', '32bit', 0xd8c, '=', 'Value', '', count - 1],
+    pointer(0x48d990),
+    pointer(0x2f0),
+    pointer(0x4c),
+    ['', 'Mem', '32bit', 0xd8c, '=', 'Value', '', count],
+  ))
+}
+
+function LuigiRescue(level) {
+  return($(
+    pointer(0x0082b0e8),
+    pointer(0x0),
+    ['', 'Mem', '32bitBE', 0x5, '=', 'Value', '', level]
+  ))
+}
+
+function tiresSaved(count) {
+  return($(
+    pointer(0x48d990),
+    pointer(0x2f0),
+    pointer(0x4c),
+    ['', 'Delta', '32bit', 0xdc0, '=', 'Value', '', count - 1],
+    pointer(0x48d990),
+    pointer(0x2f0),
+    pointer(0x4c),
+    ['', 'Mem', '32bit', 0xdc0, '=', 'Value', '', count],
+  ))
+}
+
+function bootcamp(level) {
+  return($(
+    pointer(0x0082b0e8),
+    pointer(0x0),
+    ['', 'Mem', '32bitBE', 0x4, '=', 'Value', '', level]
+  ))
+}
+
+function HotPursuit(level) {
+  return($(
+    pointer(0x0082b0e8),
+    pointer(0x0),
+    ['', 'Mem', '32bitBE', 0x6, '=', 'Value', '', level]
+  ))
+}
+
+function SpeedersCaught() {
+  return($(
+    pointer(0x0048d990),
+    pointer(0x300),
+    pointer(0x4c),
+    ['', 'Delta', '32bit', 0xe28, '=', 'Value', '', 2],
+    pointer(0x0048d990),
+    pointer(0x300),
+    pointer(0x4c),
+    ['', 'Mem', '32bit', 0xe28, '=', 'Value', '', 3],
   ))
 }
 
@@ -560,6 +749,7 @@ set.addAchievement({
     resetHit(),
     glitchProtect(),
   ),
+  id: 606706,
 })
 
 set.addAchievement({
@@ -577,6 +767,7 @@ set.addAchievement({
     resetHit(),
     glitchProtect(),
   ),
+  id: 606707,
 })
 
 set.addAchievement({
@@ -594,6 +785,7 @@ set.addAchievement({
     resetHit(),
     glitchProtect(),
   ),
+  id: 606708,
 })
 
 set.addAchievement({
@@ -611,6 +803,7 @@ set.addAchievement({
     resetHit(),
     glitchProtect(),
   ),
+  id: 606709,
 })
 
 set.addAchievement({
@@ -628,6 +821,7 @@ set.addAchievement({
     resetHit(),
     glitchProtect(),
   ),
+  id: 606710,
 })
 
 set.addAchievement({
@@ -645,6 +839,7 @@ set.addAchievement({
     resetHit(),
     glitchProtect(),
   ),
+  id: 606711
 })
 
 set.addAchievement({
@@ -661,6 +856,7 @@ set.addAchievement({
     resetHit(),
     glitchProtect(),
   ),
+  id: 606666,
 })
 
 set.addAchievement({
@@ -677,6 +873,7 @@ set.addAchievement({
     resetHit(),
     glitchProtect(),
   ),
+  id: 606667,
 })
 
 set.addAchievement({
@@ -693,6 +890,7 @@ set.addAchievement({
     resetHit(),
     glitchProtect(),
   ),
+  id: 606668,
 })
 
 set.addAchievement({
@@ -709,6 +907,7 @@ set.addAchievement({
     resetHit(),
     glitchProtect(),
   ),
+  id: 606669,
 })
 
 set.addAchievement({
@@ -725,6 +924,7 @@ set.addAchievement({
     resetHit(),
     glitchProtect(),
   ),
+  id: 606670,
 })
 
 set.addAchievement({
@@ -741,6 +941,7 @@ set.addAchievement({
     resetHit(),
     glitchProtect(),
   ),
+  id: 606671,
 })
 
 set.addAchievement({
@@ -756,8 +957,9 @@ set.addAchievement({
     startHit(),
     glitchProtectPlus(),
     resetHit(),
-    glitchProtect(),
+    glitchProtectSheriffChase(),
   ),
+  id: 606672,
 })
 
 set.addAchievement({
@@ -774,6 +976,7 @@ set.addAchievement({
     resetHit(),
     glitchProtect(),
   ),
+  id: 606673,
 })
 
 set.addAchievement({
@@ -790,6 +993,7 @@ set.addAchievement({
     resetHit(),
     glitchProtect(),
   ),
+  id: 606674,
 })
 
 set.addAchievement({
@@ -806,6 +1010,7 @@ set.addAchievement({
     resetHit(),
     glitchProtect(),
   ),
+  id: 606675,
 })
 
 set.addAchievement({
@@ -822,6 +1027,7 @@ set.addAchievement({
     resetHit(),
     glitchProtect(),
   ),
+  id: 606676,
 })
 
 set.addAchievement({
@@ -838,6 +1044,7 @@ set.addAchievement({
     resetHit(),
     glitchProtect(),
   ),
+  id: 606677,
 })
 
 set.addAchievement({
@@ -854,6 +1061,7 @@ set.addAchievement({
     resetHit(),
     glitchProtect(),
   ),
+  id: 606678,
 })
 
 set.addAchievement({
@@ -870,6 +1078,7 @@ set.addAchievement({
     resetHit(),
     glitchProtect(),
   ),
+  id: 606679,
 })
 
 set.addAchievement({
@@ -886,6 +1095,7 @@ set.addAchievement({
     resetHit(),
     glitchProtect(),
   ),
+  id: 606680,
 })
 
 set.addAchievement({
@@ -902,6 +1112,7 @@ set.addAchievement({
     resetHit(),
     glitchProtect(),
   ),
+  id: 606681,
 })
 
 set.addAchievement({
@@ -918,6 +1129,7 @@ set.addAchievement({
     resetHit(),
     glitchProtect(),
   ),
+  id: 606682,
 })
 
 set.addAchievement({
@@ -934,6 +1146,7 @@ set.addAchievement({
     resetHit(),
     glitchProtect(),
   ),
+  id: 606683,
 })
 
 set.addAchievement({
@@ -951,6 +1164,306 @@ set.addAchievement({
     resetHit(),
     glitchProtect(),
   ),
+  id: 606735,
+})
+
+set.addAchievement({
+  title: "Tractors Is So Stupid!",
+  description: "Finish level 3 of Tractor Tipping",
+  points: 0,
+  conditions: $(
+    cheatprotect(),
+    levelType(Minigame),
+    TractorTip(TT3),
+    tractorstipped(7),
+  ),
+  id: 606769,
+})
+
+set.addAchievement({
+  title: "Now That's Some Good Tippin'!",
+  description: "Finish level 6 of Tractor Tipping",
+  points: 0,
+  conditions: $(
+    cheatprotect(),
+    levelType(Minigame),
+    TractorTip(TT6),
+    tractorstipped(13),
+  ),
+  id: 606770,
+})
+
+set.addAchievement({
+  title: "We Done Tipped Every Last One of 'em Tractors!",
+  description: "Finish level 8 of Tractor Tipping",
+  points: 0,
+  conditions: $(
+    cheatprotect(),
+    levelType(Minigame),
+    TractorTip(TT8),
+    tractorstipped(10),
+  ),
+  id: 606771,
+})
+
+set.addAchievement({
+  title: "Mama Mia, We Save-a the Day!",
+  description: "Finish level 3 of Luigi to the Rescue",
+  points: 0,
+  conditions: $(
+    cheatprotect(),
+    levelType(Minigame),
+    LuigiRescue(lttr3),
+    tiresSaved(8),
+  ),
+  id: 606772,
+})
+
+set.addAchievement({
+  title: "Luigi Delivers, Just Like New Tires!",
+  description: "Finish level 6 of Luigi to the Rescue",
+  points: 0,
+  conditions: $(
+    cheatprotect(),
+    levelType(Minigame),
+    LuigiRescue(lttr6),
+    tiresSaved(12),
+  ),
+  id: 606773,
+})
+
+set.addAchievement({
+  title: "Bellissimo! Every Tire Safe and Sound!",
+  description: "Finish level 8 of Luigi to the Rescue",
+  points: 0,
+  conditions: $(
+    cheatprotect(),
+    levelType(Minigame),
+    LuigiRescue(lttr8),
+    tiresSaved(12),
+  ),
+  id: 606774,
+})
+
+set.addAchievement({
+  title: "That's Just Basic Training, Soldier!",
+  description: "Finish level 1 of Sarge's Bootcamp",
+  points: 0,
+  conditions: $(
+    cheatprotect(),
+    levelType(Minigame2),
+    bootcamp(bootcamp1),
+    finishRace(3),
+    startHit(),
+    resetHit(),
+    glitchProtect(),
+  ),
+  id: 606775,
+})
+
+set.addAchievement({
+  title: "You Call That Discipline? Try Again!",
+  description: "Finish level 2 of Sarge's Bootcamp",
+  points: 0,
+  conditions: $(
+    cheatprotect(),
+    levelType(Minigame2),
+    bootcamp(bootcamp2),
+    finishRace(3),
+    startHit(),
+    resetHit(),
+    glitchProtect(),
+  ),
+  id: 606776,
+})
+
+set.addAchievement({
+  title: "Now That's What I Call Precision Driving!",
+  description: "Finish level 3 of Sarge's Bootcamp",
+  points: 0,
+  conditions: $(
+    cheatprotect(),
+    levelType(Minigame2),
+    bootcamp(bootcamp3),
+    finishRace(3),
+    startHit(),
+    resetHit(),
+    glitchProtect(),
+  ),
+  id: 606777,
+})
+
+set.addAchievement({
+  title: "You're Speedin', and I'm Catchin'!",
+  description: "Catch the Speeders in Sheriff's Hot Pursuit",
+  points: 0,
+  conditions: $(
+    cheatprotect(),
+    levelType(Minigame),
+    HotPursuit(HP1),
+    SpeedersCaught(),
+  ),
+  id: 609443,
+})
+
+set.addAchievement({
+  title: "Not in My Town, You Don't!",
+  description: "Catch the Hooligans in Sheriff's Hot Pursuit",
+  points: 0,
+  conditions: $(
+    cheatprotect(),
+    levelType(Minigame),
+    HotPursuit(HP2),
+    SpeedersCaught(),
+  ),
+  id: 609444,
+})
+
+set.addAchievement({
+  title: "Clearin' the Roads, One Troublemaker at a Time!",
+  description: "Catch the Road Hazards in Sheriff's Hot Pursuit",
+  points: 0,
+  conditions: $(
+    cheatprotect(),
+    levelType(Minigame),
+    HotPursuit(HP3),
+    SpeedersCaught(),
+  ),
+  id: 609445,
+})
+
+set.addAchievement({
+  title: "Radiator Springs Don't Tolerate that Nonsense!",
+  description: "Catch the Delinquents in Sheriff's Hot Pursuit",
+  points: 0,
+  conditions: $(
+    cheatprotect(),
+    levelType(Minigame),
+    HotPursuit(HP4),
+    SpeedersCaught(),
+  ),
+  id: 609446,
+})
+
+set.addAchievement({
+  title: "I Got My Eye on You, Son!",
+  description: "Catch the Hot-Rodders in Sheriff's Hot Pursuit",
+  points: 0,
+  conditions: $(
+    cheatprotect(),
+    levelType(Minigame),
+    HotPursuit(HP5),
+    SpeedersCaught(),
+  ),
+  id: 609447,
+})
+
+set.addAchievement({
+  title: "Turn Right to go Left",
+  description: "Finish Doc's Lesson: Powerslide",
+  points: 0,
+  conditions: $(
+    cheatprotect(),
+    levelType(Minigame2),
+    pointer(0x0082b0e8),
+    pointer(0x0),
+    ['', 'Mem', '32bitBE', 0x2, '=', 'Value', '', DocsPowerslide],
+    finishRace(3),
+    startHit(),
+    resetHit(),
+    glitchProtect(),
+  ),
+  id: 606803,
+})
+
+set.addAchievement({
+  title: "Right to go Left, Where Have I Heard That Before?",
+  description: "Finish Mater's Backwards Lesson",
+  points: 0,
+  conditions: $(
+    cheatprotect(),
+    levelType(Minigame2),
+    pointer(0x0082b0e8),
+    pointer(0x0),
+    ['', 'Mem', '32bitBE', 0x2, '=', 'Value', '', 0x5f335f32],
+    finishRace(2),
+    startHit(),
+    resetHit(),
+    glitchProtect(),
+  ),
+  id: 606804,
+})
+
+set.addAchievement({
+  title: "Got The Goods, I'm Ghost",
+  description: "Finish High Speed Heist",
+  points: 0,
+  conditions: $(
+    cheatprotect(),
+    level(HighSpeedHeist),
+    pointer(0x00490ef0),
+    pointer(0x950),
+    ['', 'Delta', '32bit', 0xd18, '<', 'Value', '', 5],
+    pointer(0x00490ef0),
+    pointer(0x950),
+    ['', 'Mem', '32bit', 0xd18, '=', 'Value', '', 5],
+  ),
+  id: 609440,
+})
+
+set.addAchievement({
+  title: "You Don't Mess With My Friends",
+  description: "Finish Lightning Strikes Back",
+  points: 0,
+  conditions: $(
+    cheatprotect(),
+    level(LightningStrikesBack),
+    pointer(0x00490a60),
+    pointer(0x2b0),
+    pointer(0x34c),
+    pointer(0x8),
+    ['', 'Mem', '32bit', 0xd4, '=', 'Value', '', 3],
+    pointer(0x00490a60),
+    pointer(0x2b0),
+    pointer(0x34c),
+    pointer(0x8),
+    ['', 'Mem', '32bit', 0xd8, '=', 'Value', '', 3],
+    pointer(0x00490a60),
+    pointer(0x2b0),
+    pointer(0x34c),
+    pointer(0x8),
+    ['', 'Mem', '32bit', 0xdc, '=', 'Value', '', 3],
+    pointer(0x00490a60),
+    pointer(0x2b0),
+    pointer(0x34c),
+    pointer(0x8),
+    ['', 'Delta', '32bit', 0xe0, '=', 'Value', '', 2],
+    pointer(0x00490a60),
+    pointer(0x2b0),
+    pointer(0x34c),
+    pointer(0x8),
+    ['', 'Mem', '32bit', 0xe0, '=', 'Value', '', 3],
+  ),
+  id: 609441,
+})
+
+set.addAchievement({
+  title: "Mater's Cleanup Crew",
+  description: "Complete Mater's Countdown Cleanup",
+  points: 0,
+  conditions: $(
+    cheatprotect(),
+    ['', 'Mem', '32bitBE', 0x004ecba4, '=', 'Value', '', 0x4d475f54],
+    pointer(0x0048d990),
+    pointer(0x300),
+    pointer(0x4c),
+    ['', 'Delta', '32bit', 0xc74, '<', 'Value', '', 100],
+    pointer(0x0048d990),
+    pointer(0x300),
+    pointer(0x4c),
+    ['', 'Mem', '32bit', 0xc74, '=', 'Value', '', 100],
+  ),
+  id: 609442,
 })
 
 set.addAchievement({
@@ -962,6 +1475,7 @@ set.addAchievement({
     story(),
     postcards(5),
   ),
+  id: 606750,
 })
 
 set.addAchievement({
@@ -973,6 +1487,7 @@ set.addAchievement({
     story(),
     postcards(10),
   ),
+  id: 606751,
 })
 
 set.addAchievement({
@@ -984,6 +1499,7 @@ set.addAchievement({
     story(),
     postcards(20),
   ),
+  id: 606752,
 })
 
 set.addAchievement({
@@ -1001,6 +1517,7 @@ set.addAchievement({
     pointer(0x28),
     ['', 'Mem', '32bit', 0x008150a8, '>=', 'Value', '', 50],
   ),
+  id: 606703,
 })
 
 set.addAchievement({
@@ -1018,6 +1535,7 @@ set.addAchievement({
     pointer(0x28),
     ['', 'Mem', '32bit', 0x008150a8, '>=', 'Value', '', 150],
   ),
+  id: 606704,
 })
 
 set.addAchievement({
@@ -1035,6 +1553,7 @@ set.addAchievement({
     pointer(0x28),
     ['', 'Mem', '32bit', 0x008150a8, '=', 'Value', '', 250],
   ),
+  id: 606705,
 })
 
 set.addAchievement({
@@ -1051,6 +1570,7 @@ set.addAchievement({
     resetHit(),
     glitchProtect(),
   ),
+  id: 606684,
 })
 
 set.addAchievement({
@@ -1067,6 +1587,7 @@ set.addAchievement({
     resetHit(),
     glitchProtect(),
   ),
+  id: 606685,
 })
 
 set.addAchievement({
@@ -1083,6 +1604,7 @@ set.addAchievement({
     resetHit(),
     glitchProtect(),
   ),
+  id: 606686,
 })
 
 set.addAchievement({
@@ -1099,6 +1621,7 @@ set.addAchievement({
     resetHit(),
     glitchProtect(),
   ),
+  id: 606687,
 })
 
 set.addAchievement({
@@ -1115,6 +1638,7 @@ set.addAchievement({
     resetHit(),
     glitchProtect(),
   ),
+  id: 606688,
 })
 
 set.addAchievement({
@@ -1131,6 +1655,7 @@ set.addAchievement({
     resetHit(),
     glitchProtect(),
   ),
+  id: 606689,
 })
 
 set.addAchievement({
@@ -1147,6 +1672,7 @@ set.addAchievement({
     resetHit(),
     glitchProtect(),
   ),
+  id: 606690,
 })
 
 set.addAchievement({
@@ -1162,8 +1688,9 @@ set.addAchievement({
     startHit(),
     glitchProtectPlus(),
     resetHit(),
-    glitchProtect(),
+    glitchProtectSheriffChase(),
   ),
+  id: 606691,
 })
 
 set.addAchievement({
@@ -1180,6 +1707,7 @@ set.addAchievement({
     resetHit(),
     glitchProtect(),
   ),
+  id: 606692,
 })
 
 set.addAchievement({
@@ -1196,6 +1724,7 @@ set.addAchievement({
     resetHit(),
     glitchProtect(),
   ),
+  id: 606693,
 })
 
 set.addAchievement({
@@ -1212,6 +1741,7 @@ set.addAchievement({
     resetHit(),
     glitchProtect(),
   ),
+  id: 606694,
 })
 
 set.addAchievement({
@@ -1228,6 +1758,7 @@ set.addAchievement({
     resetHit(),
     glitchProtect(),
   ),
+  id: 606695,
 })
 
 set.addAchievement({
@@ -1244,6 +1775,7 @@ set.addAchievement({
     resetHit(),
     glitchProtect(),
   ),
+  id: 606696,
 })
 
 set.addAchievement({
@@ -1260,6 +1792,7 @@ set.addAchievement({
     resetHit(),
     glitchProtect(),
   ),
+  id: 606697,
 })
 
 set.addAchievement({
@@ -1276,6 +1809,7 @@ set.addAchievement({
     resetHit(),
     glitchProtect(),
   ),
+  id: 606698,
 })
 
 set.addAchievement({
@@ -1292,6 +1826,7 @@ set.addAchievement({
     resetHit(),
     glitchProtect(),
   ),
+  id: 606699,
 })
 
 set.addAchievement({
@@ -1308,6 +1843,7 @@ set.addAchievement({
     resetHit(),
     glitchProtect(),
   ),
+  id: 606700,
 })
 
 set.addAchievement({
@@ -1324,6 +1860,7 @@ set.addAchievement({
     resetHit(),
     glitchProtect(),
   ),
+  id: 606701,
 })
 
 set.addAchievement({
@@ -1340,6 +1877,7 @@ set.addAchievement({
     resetHit(),
     glitchProtect(),
   ),
+  id: 606702,
 })
 
 set.addAchievement({
@@ -1357,6 +1895,7 @@ set.addAchievement({
     resetHit(),
     glitchProtect(),
   ),
+  id: 606736,
 })
 
 set.addAchievement({
@@ -1373,6 +1912,7 @@ set.addAchievement({
     resetHit(),
     glitchProtect(),
   ),
+  id: 606712,
 })
 
 set.addAchievement({
@@ -1389,6 +1929,7 @@ set.addAchievement({
     resetHit(),
     glitchProtect(),
   ),
+  id: 606713,
 })
 
 set.addAchievement({
@@ -1405,6 +1946,7 @@ set.addAchievement({
     resetHit(),
     glitchProtect(),
   ),
+  id: 606714,
 })
 
 set.addAchievement({
@@ -1421,6 +1963,7 @@ set.addAchievement({
     resetHit(),
     glitchProtect(),
   ),
+  id: 606715,
 })
 
 set.addAchievement({
@@ -1437,6 +1980,7 @@ set.addAchievement({
     resetHit(),
     glitchProtect(),
   ),
+  id: 606716,
 })
 
 set.addAchievement({
@@ -1445,9 +1989,10 @@ set.addAchievement({
   points: 0,
   conditions: $(
     cheatprotect(),
-    buyProtect(),
+    measuredIf(buyProtect()),
     ...shop2(artPacks),
   ),
+  id: 606717,
 })
 
 set.addAchievement({
@@ -1456,9 +2001,10 @@ set.addAchievement({
   points: 0,
   conditions: $(
     cheatprotect(),
-    buyProtect(),
+    measuredIf(buyProtect()),
     ...shop2(envPacks, 11),
   ),
+  id: 606718,
 })
 
 set.addAchievement({
@@ -1467,9 +2013,10 @@ set.addAchievement({
   points: 0,
   conditions: $(
     cheatprotect(),
-    buyProtect(),
+    measuredIf(buyProtect()),
     ...shop2(envPacks),
   ),
+  id: 606734,
 })
 
 set.addAchievement({
@@ -1478,9 +2025,10 @@ set.addAchievement({
   points: 0,
   conditions: $(
     cheatprotect(),
-    buyProtect(),
+    measuredIf(buyProtect()),
     ...shop2(delScenes),
   ),
+  id: 606719,
 })
 
 set.addAchievement({
@@ -1489,9 +2037,10 @@ set.addAchievement({
   points: 0,
   conditions: $(
     cheatprotect(),
-    buyProtect(),
+    measuredIf(buyProtect()),
     ...shop2(movScenes),
   ),
+  id: 606720,
 })
 
 set.addAchievement({
@@ -1500,9 +2049,10 @@ set.addAchievement({
   points: 0,
   conditions: $(
     cheatprotect(),
-    buyProtect(),
+    measuredIf(buyProtect()),
     ...shop2(charPack),
   ),
+  id: 606721,
 })
 
 set.addAchievement({
@@ -1511,9 +2061,10 @@ set.addAchievement({
   points: 0,
   conditions: $(
     cheatprotect(),
-    buyProtect(),
+    measuredIf(buyProtect()),
     ...shop2(mcqPaint),
   ),
+  id: 606665,
 })
 
 set.addAchievement({
@@ -1522,9 +2073,10 @@ set.addAchievement({
   points: 0,
   conditions: $(
     cheatprotect(),
-    buyProtect(),
+    measuredIf(buyProtect()),
     ...shop2(matPaint),
   ),
+  id: 606722,
 })
 
 set.addAchievement({
@@ -1533,9 +2085,10 @@ set.addAchievement({
   points: 0,
   conditions: $(
     cheatprotect(),
-    buyProtect(),
+    measuredIf(buyProtect()),
     ...shop2(salPaint),
   ),
+  id: 606723,
 })
 
 set.addAchievement({
@@ -1544,9 +2097,10 @@ set.addAchievement({
   points: 0,
   conditions: $(
     cheatprotect(),
-    buyProtect(),
+    measuredIf(buyProtect()),
     ...shop2(docPaint),
   ),
+  id: 606724,
 })
 
 set.addAchievement({
@@ -1555,9 +2109,10 @@ set.addAchievement({
   points: 0,
   conditions: $(
     cheatprotect(),
-    buyProtect(),
+    measuredIf(buyProtect()),
     ...shop2(ramPaint),
   ),
+  id: 606725,
 })
 
 set.addAchievement({
@@ -1566,20 +2121,22 @@ set.addAchievement({
   points: 0,
   conditions: $(
     cheatprotect(),
-    buyProtect(),
+    measuredIf(buyProtect()),
     ...shop2(floPaint),
   ),
+  id: 606726,
 })
 
 set.addAchievement({
   title: "Law and Order in Every Finish",
-  description: "Buy all of Sherrif's paintjobs",
+  description: "Buy all of Sheriff's paintjobs",
   points: 0,
   conditions: $(
     cheatprotect(),
-    buyProtect(),
+    measuredIf(buyProtect()),
     ...shop2(sherPaint),
   ),
+  id: 606727,
 })
 
 set.addAchievement({
@@ -1588,9 +2145,10 @@ set.addAchievement({
   points: 0,
   conditions: $(
     cheatprotect(),
-    buyProtect(),
+    measuredIf(buyProtect()),
     ...shop2(chickPaint),
   ),
+  id: 606728,
 })
 
 set.addAchievement({
@@ -1599,9 +2157,10 @@ set.addAchievement({
   points: 0,
   conditions: $(
     cheatprotect(),
-    buyProtect(),
+    measuredIf(buyProtect()),
     ...shop2(wingPaint),
   ),
+  id: 606729,
 })
 
 set.addAchievement({
@@ -1610,9 +2169,10 @@ set.addAchievement({
   points: 0,
   conditions: $(
     cheatprotect(),
-    buyProtect(),
+    measuredIf(buyProtect()),
     ...shop2(darPaint),
   ),
+  id: 606730,
 })
 
 set.addAchievement({
@@ -1621,9 +2181,10 @@ set.addAchievement({
   points: 0,
   conditions: $(
     cheatprotect(),
-    buyProtect(),
+    measuredIf(buyProtect()),
     ...shop2(kingPaint),
   ),
+  id: 606731,
 })
 
 set.addAchievement({
@@ -1632,9 +2193,10 @@ set.addAchievement({
   points: 0,
   conditions: $(
     cheatprotect(),
-    buyProtect(),
+    measuredIf(buyProtect()),
     ...shop2(mmcqPaint),
   ),
+  id: 606732,
 })
 
 set.addAchievement({
@@ -1643,9 +2205,10 @@ set.addAchievement({
   points: 0,
   conditions: $(
     cheatprotect(),
-    buyProtect(),
+    measuredIf(buyProtect()),
     ...shop2(cntPaint),
   ),
+  id: 606733,
 })
 
 set.addAchievement({
@@ -1664,6 +2227,7 @@ set.addAchievement({
     trigger(finishRace(12)),
     resetHit(),
   ),
+  id: 606737,
 })
 
 //10 points per second
@@ -1752,6 +2316,7 @@ set.addAchievement({
     resetHit(),
     glitchProtect(),
   ),
+  id: 606738,
 })
 
 set.addAchievement({
@@ -1771,6 +2336,7 @@ set.addAchievement({
     resetIf(boostUsed()),
     resetIf(trick(Shortcut)),
   ),
+  id: 606739,
 })
 
 //20 points per second
@@ -1929,6 +2495,7 @@ set.addAchievement({
     resetHit(),
     glitchProtect(),
   ),
+  id: 606740,
 })
 
 //Need a fix...
@@ -1955,6 +2522,7 @@ set.addAchievement({
     resetHit(),
     glitchProtect(),
   ),
+  id: 606741,
 })
 
 set.addAchievement({
@@ -1980,9 +2548,9 @@ set.addAchievement({
     resetHit(),
     glitchProtect(),
   ),
+  id: 606742,
 })
 
-//First person mode flag flickers
 set.addAchievement({
   title: "Through the Eyes of the Law",
   description: "As Sheriff, win Sheriff's Chase on Champion difficulty in first person mode",
@@ -1990,7 +2558,7 @@ set.addAchievement({
   conditions: $(
     cheatprotect(),
     ...character(Sheriff),
-    level(SheriffsHotPursuit),
+    level(SheriffsChase),
     difficulty(2),
     startHit(),
     trigger(glitchProtectPlus()),
@@ -1998,8 +2566,9 @@ set.addAchievement({
     trigger(finishRace(1)),
     resetHit(),
     resetIf(notFirstPerson()),
-    glitchProtect(),
+    glitchProtectSheriffChase(),
   ),
+  id: 606743,
 })
 
 set.addAchievement({
@@ -2018,6 +2587,7 @@ set.addAchievement({
     glitchProtect(),
     resetHit(trick(Powerslide)),
   ),
+  id: 606744,
 })
 
 set.addAchievement({
@@ -2041,6 +2611,7 @@ set.addAchievement({
     resetHit(),
     glitchProtect(),
   ),
+  id: 606745,
 })
 
 //10 points per second
@@ -2129,6 +2700,7 @@ set.addAchievement({
     resetHit(),
     glitchProtect(),
   ),
+  id: 606746,
 })
 
 set.addAchievement({
@@ -2154,6 +2726,7 @@ set.addAchievement({
     resetHit(),
     glitchProtect(),
   ),
+  id: 606747,
 })
 
 set.addAchievement({
@@ -2172,6 +2745,7 @@ set.addAchievement({
     resetHit(),
     glitchProtect(),
   ),
+  id: 606753,
 })
 
 set.addAchievement({
@@ -2189,6 +2763,7 @@ set.addAchievement({
     resetHit(),
     glitchProtect(),
   ),
+  id: 606748,
 })
 
 //Needs other trigger event
@@ -2210,7 +2785,8 @@ set.addAchievement({
     pointer(0x300),
     pointer(0x4c),
     ['Trigger', 'Mem', '32bit', 0xc44, '!=', 'Value', '', 0],
-  )
+  ),
+  id: 606749,
 })
 
 set.addLeaderboard({
@@ -2437,7 +3013,7 @@ set.addLeaderboard({
       startHit(),
       glitchProtectPlus(),
       resetHit(),
-      glitchProtect(),
+      glitchProtectSheriffChase(),
     ),
     cancel: $(
       levelQuit(),
