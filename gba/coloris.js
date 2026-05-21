@@ -1,4 +1,4 @@
-import { AchievementSet, define as $ } from '@cruncheevos/core'
+import { AchievementSet, define as $ , measuredIf} from '@cruncheevos/core'
 const set = new AchievementSet({ gameId: 8878, title: 'bit Generations: Coloris' })
 
 const levelBase1 = 0x13228
@@ -29,15 +29,15 @@ function levelsClear(hits, set = 0) {
         base = levelBase2
         count = advancedLevelCount
     }
-    for (i = 0; i < (count - 1) * 4; i += 4) {
+    for (i = 0; i < (count) * 4; i += 4) {
         deltas.push($(['AddSource', 'Delta', 'Bit2', base + i, '^', 'Delta', 'Bit0', base + i],))
-        mems.push($(['AddSource', 'Mem', 'Bit2', base + i, '^', 'Delta', 'Bit0', base + i],))
+        mems.push($(['AddSource', 'Mem', 'Bit2', base + i, '^', 'Mem', 'Bit0', base + i],))
     }
     logic.push($(
         ...deltas,
-        ['', 'Delta', 'Bit0', base + i, '=','Value', '', hits - 1],
+        ['', 'Value', '', 0x0, '=','Value', '', hits - 1],
         ...mems,
-        ['Measured', 'Invert', 'Bit0', base + i, '=','Value', '', hits],
+        ['Measured', 'Value', '', 0x0, '=','Value', '', hits],
     ))
     return(logic)
 }
@@ -116,6 +116,13 @@ function menuReset() {
   ))
 }
 
+function startup() {
+  return($(
+    ['', 'Mem', '8bit', 0x006826, '!=', 'Value', '', 0x01],
+    ['', 'Mem', '8bit', 0x006826, '!=', 'Value', '', 0xff],
+  ))
+}
+
 set.addAchievement({
   title: "Fiery Red",
   description: "Clear your first basic puzzle",
@@ -126,6 +133,7 @@ set.addAchievement({
     ['OrNext', 'Delta', '32bit', 0x13228, '=', 'Value', '', 0xffffffff],
     ['', 'Delta', '32bit', 0x13228, '=', 'Value', '', 0x0],
     ['', 'Mem', '32bit', 0x13228, '=', 'Value', '', 0x64],
+    startup(),
   ),
   id: 602086,
 })
@@ -138,6 +146,7 @@ set.addAchievement({
   conditions: $(
     inLevel(),
     ...levelsClear(5, 0),
+    measuredIf(startup()),
   ),
   id: 602087,
 })
@@ -150,7 +159,7 @@ set.addAchievement({
   conditions: $(
     inLevel(),
     ...levelsClear(10, 0),
-  ),
+    measuredIf(startup()),  ),
   id: 602088,
 })
 
@@ -162,6 +171,7 @@ set.addAchievement({
   conditions: $(
     inLevel(),
     ...levelsClear(15, 0),
+    measuredIf(startup()),
   ),
   id: 602089,
 })
@@ -176,7 +186,9 @@ set.addAchievement({
     ['OrNext', 'Delta', '32bit', 0x13328, '=', 'Value', '', 0xffffffff],
     ['', 'Delta', '32bit', 0x13328, '=', 'Value', '', 0],
     ['', 'Mem', '32bit', 0x13328, '=', 'Value', '', 0x64],
-  ),id: 602090
+    startup(),
+  ),
+  id: 602090,
 })
 
 set.addAchievement({
@@ -187,6 +199,7 @@ set.addAchievement({
   conditions: $(
     inLevel(),
     ...levelsClear(5, 1),
+    measuredIf(startup()),
   ),id: 602091,
 })
 
@@ -198,6 +211,7 @@ set.addAchievement({
   conditions: $(
     inLevel(),
     ...levelsClear(10, 1),
+    measuredIf(startup()),
   ),
   id: 602092,
 })
@@ -210,6 +224,7 @@ set.addAchievement({
   conditions: $(
     inLevel(),
     ...levelsClear(15, 1),
+    measuredIf(startup()),
   ),
   id: 602093,
 })
@@ -222,6 +237,7 @@ set.addAchievement({
   conditions: $(
     inLevel(),
     ...levelsClear(20, 1),
+    measuredIf(startup()),
   ),
   id: 602094,
 })
@@ -234,6 +250,7 @@ set.addAchievement({
   conditions: $(
     inLevel(),
     ...levelsClear(25, 1),
+    measuredIf(startup()),
   ),
   id: 602095,
 })
@@ -246,6 +263,7 @@ set.addAchievement({
   conditions: $(
     inLevel(),
     ...levelsClear(30, 1),
+    measuredIf(startup()),
   ),
   id: 602096,
 })
@@ -258,6 +276,7 @@ set.addAchievement({
   conditions: $(
     inLevel(),
     ...levelsClear(35, 1),
+    measuredIf(startup()),
   ),
   id: 602097,
 })
@@ -271,6 +290,7 @@ set.addAchievement({
     levelEnd(),
     ...blackCheck(),
     menuReset(),
+    startup(),
   ),
   id: 602098,
 })
@@ -284,6 +304,7 @@ set.addAchievement({
     levelEnd(),
     ...colorCheck([0x03, 0x43, 0x83]),
     menuReset(),
+    startup(),
   ),
   id: 602099,
 })
@@ -296,6 +317,7 @@ set.addAchievement({
     inLevel(),
     ['', 'Delta', '8bit', 0x01a27c, '=', 'Value', '', 0x4],
     ['', 'Mem', '8bit', 0x01a27c, '=', 'Value', '', 0x5],
+    startup(),
   ),
   id: 602100,
 })
@@ -305,11 +327,13 @@ set.addAchievement({
   description: "Clear an Advanced level changing the color of blocks 15 times or less",
   points: 10,
   conditions: $(
+    inLevel(),
     ['', 'Mem', '8bit', 0x0131e0, '=', 'Value', '', 0],
     ['', 'Mem', '8bit', 0x0131e4, '=', 'Value', '', 1],
     ['', 'Mem', '8bit', 0x01a284, '=', 'Value', '', 0],
     ['', 'Mem', '32bit', 0x014904, '<=', 'Value', '', 15],
     levelEnd(),
+    startup(),
   ),
   id: 602101,
 })
@@ -322,6 +346,7 @@ set.addAchievement({
     activeScore(1),
     ['', 'Delta', '32bit', 0x0131ec, '<', 'Value', '', 20000],
     ['', 'Mem', '32bit', 0x0131ec, '>=', 'Value', '', 20000],
+    startup(),
   ),
   id: 602102,
 })
@@ -334,6 +359,7 @@ set.addAchievement({
     activeScore(2),
     ['', 'Delta', '32bit', 0x0131ec, '<', 'Value', '', 15000],
     ['', 'Mem', '32bit', 0x0131ec, '>=', 'Value', '', 15000],
+    startup(),
   ),
   id: 602103,
 })
@@ -346,6 +372,7 @@ set.addAchievement({
     activeScore(3),
     ['', 'Delta', '32bit', 0x0131ec, '<', 'Value', '', 15000],
     ['', 'Mem', '32bit', 0x0131ec, '>=', 'Value', '', 15000],
+    startup(),
   ),
   id: 602104,
 })
@@ -358,6 +385,7 @@ set.addAchievement({
     activeScore(4),
     ['', 'Delta', '32bit', 0x0131ec, '<', 'Value', '', 10000],
     ['', 'Mem', '32bit', 0x0131ec, '>=', 'Value', '', 10000],
+    startup(),
   ),
   id: 602105,
 })
@@ -370,6 +398,7 @@ set.addAchievement({
     activeScore(5),
     ['', 'Delta', '32bit', 0x0131ec, '<', 'Value', '', 10000],
     ['', 'Mem', '32bit', 0x0131ec, '>=', 'Value', '', 10000],
+    startup(),
   ),
   id: 602106,
 })
@@ -382,6 +411,7 @@ set.addAchievement({
     ['', 'Mem', '8bit', 0x0131e0, '=', 'Value', '', 1],
     ['', 'Delta', '32bit', 0x01a280, '<', 'Value', '', 1000],
     ['', 'Mem', '32bit', 0x01a280, '>=', 'Value', '', 1000],
+    startup(),
   ),
   id: 602107,
 })
