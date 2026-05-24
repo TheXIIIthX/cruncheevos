@@ -202,6 +202,13 @@ function resetHit() {
 
 function glitchProtect() {
   return($(
+    pointer(0x0048d990),
+    pointer(0x300),
+    pointer(0x4c),
+    pointer(0xc44),
+    pointer(0x54),
+    pointer(0x0),
+    ['AndNext', 'Delta', '32bit', 0x70, '=', 'Value', '', 0x1],
     ['AddSource', 'Value', '', 0x2],
     pointer(0x0048d990),
     pointer(0x300),
@@ -413,11 +420,11 @@ function pitstopEnd() {
     pointer(0x0048d990),
     pointer(0x300),
     pointer(0x4c),
-    ['', 'Delta', '32bit', 0xc44, '=', 'Value', '', 0],
+    ['', 'Delta', '32bit', 0xc74, '=', 'Value', '', 0],
     pointer(0x0048d990),
     pointer(0x300),
     pointer(0x4c),
-    ['', 'Mem', '32bit', 0xc44, '!=', 'Value', '', 0],
+    ['', 'Mem', '32bit', 0xc74, '=', 'Value', '', 2],
   ))
 }
 
@@ -675,11 +682,11 @@ function TractorTip(level) {
 function tractorstipped(count) {
   return($(
     pointer(0x48d990),
-    pointer(0x2f0),
+    pointer(0x300),
     pointer(0x4c),
     ['', 'Delta', '32bit', 0xd8c, '=', 'Value', '', count - 1],
     pointer(0x48d990),
-    pointer(0x2f0),
+    pointer(0x300),
     pointer(0x4c),
     ['', 'Mem', '32bit', 0xd8c, '=', 'Value', '', count],
   ))
@@ -693,16 +700,24 @@ function LuigiRescue(level) {
   ))
 }
 
-function tiresSaved(count) {
+function tiresSaved() {
   return($(
     pointer(0x48d990),
-    pointer(0x2f0),
+    pointer(0x300),
     pointer(0x4c),
-    ['', 'Delta', '32bit', 0xdc0, '=', 'Value', '', count - 1],
+    ['AddSource', 'Mem', '32bit', 0xc6c],
     pointer(0x48d990),
-    pointer(0x2f0),
+    pointer(0x300),
     pointer(0x4c),
-    ['', 'Mem', '32bit', 0xdc0, '=', 'Value', '', count],
+    ['', 'Value', '', 0x0, '=', 'Mem', '32bit', 0xc70],
+    pointer(0x48d990),
+    pointer(0x300),
+    pointer(0x4c),
+    ['', 'Delta', '32bit', 0xc78, '=', 'Value', '', 0],
+    pointer(0x48d990),
+    pointer(0x300),
+    pointer(0x4c),
+    ['', 'Mem', '32bit', 0xc78, '=', 'Value', '', 1],
   ))
 }
 
@@ -1220,7 +1235,7 @@ set.addAchievement({
 })
 
 set.addAchievement({
-  title: "Luigi Delivers, Just Like New Tires!",
+  title: "Look Out Ferrari, Here Comme Luigi!",
   description: "Finish level 6 of Luigi to the Rescue",
   points: 0,
   conditions: $(
@@ -1233,7 +1248,7 @@ set.addAchievement({
 })
 
 set.addAchievement({
-  title: "Bellissimo! Every Tire Safe and Sound!",
+  title: "You Saved Them All! Bellissimo!",
   description: "Finish level 8 of Luigi to the Rescue",
   points: 0,
   conditions: $(
@@ -2780,11 +2795,11 @@ set.addAchievement({
     pointer(0x0048d990),
     pointer(0x300),
     pointer(0x4c),
-    ['', 'Delta', '32bit', 0xc44, '=', 'Value', '', 0],
+    ['', 'Delta', '32bit', 0xc74, '=', 'Value', '', 0],
     pointer(0x0048d990),
     pointer(0x300),
     pointer(0x4c),
-    ['Trigger', 'Mem', '32bit', 0xc44, '!=', 'Value', '', 0],
+    ['Trigger', 'Mem', '32bit', 0xc74, '=', 'Value', '', 2],
   ),
   id: 606749,
 })
@@ -3566,9 +3581,1019 @@ set.addLeaderboard({
         pointer(0x0048d990),
         pointer(0x300),
         pointer(0x4c),
-        ['Measured', 'Mem', 'Float', 0xc6c],
+        ['Measured', 'Mem', 'Float', 0xc6c, '*', 'Value', '', 100],
       )
-    }
+    },
+    id: 163446,
+})
+
+set.addLeaderboard({
+  title: 'Time Trial - Tractor Tipping - Level 1',
+  description: 'Tip all tractors as fast as you can!',
+  lowerIsBetter: false,
+  type: 'MILLISECS',
+  conditions: {
+    start: $(
+      cheatprotect(),
+      levelType(Minigame),
+      TractorTip(TT1),
+      tractorstipped(7),
+    ),
+    cancel: $(
+      levelQuit(),
+    ),
+    submit: $(
+      cheatprotect(),
+      levelType(Minigame),
+      TractorTip(TT1),
+      tractorstipped(7),
+    ),
+    value: $(
+      pointer(0x0048d990),
+      pointer(0x300),
+      pointer(0x4c),
+      ['Measured', 'Mem', 'Float', 0xd9c, '*', 'Value', '', 100],
+    ),
+  },
+  id: 163447,
+})
+
+set.addLeaderboard({
+  title: 'Time Trial - Tractor Tipping - Level 2',
+  description: 'Tip all tractors as fast as you can!',
+  lowerIsBetter: false,
+  type: 'MILLISECS',
+  conditions: {
+    start: $(
+      cheatprotect(),
+      levelType(Minigame),
+      TractorTip(TT2),
+      tractorstipped(8),
+    ),
+    cancel: $(
+      levelQuit(),
+    ),
+    submit: $(
+      cheatprotect(),
+      levelType(Minigame),
+      TractorTip(TT2),
+      tractorstipped(8),
+    ),
+    value: $(
+      pointer(0x0048d990),
+      pointer(0x300),
+      pointer(0x4c),
+      ['Measured', 'Mem', 'Float', 0xd9c, '*', 'Value', '', 100],
+    ),
+  },
+  id: 163448,
+})
+
+set.addLeaderboard({
+  title: 'Time Trial - Tractor Tipping - Level 3',
+  description: 'Tip all tractors as fast as you can!',
+  lowerIsBetter: false,
+  type: 'MILLISECS',
+  conditions: {
+    start: $(
+      cheatprotect(),
+      levelType(Minigame),
+      TractorTip(TT3),
+      tractorstipped(7),
+    ),
+    cancel: $(
+      levelQuit(),
+    ),
+    submit: $(
+      cheatprotect(),
+      levelType(Minigame),
+      TractorTip(TT3),
+      tractorstipped(7),
+    ),
+    value: $(
+      pointer(0x0048d990),
+      pointer(0x300),
+      pointer(0x4c),
+      ['Measured', 'Mem', 'Float', 0xd9c, '*', 'Value', '', 100],
+    ),
+  },
+  id: 163449,
+})
+
+set.addLeaderboard({
+  title: 'Time Trial - Tractor Tipping - Level 4',
+  description: 'Tip all tractors as fast as you can!',
+  lowerIsBetter: false,
+  type: 'MILLISECS',
+  conditions: {
+    start: $(
+      cheatprotect(),
+      levelType(Minigame),
+      TractorTip(TT4),
+      tractorstipped(7),
+    ),
+    cancel: $(
+      levelQuit(),
+    ),
+    submit: $(
+      cheatprotect(),
+      levelType(Minigame),
+      TractorTip(TT4),
+      tractorstipped(7),
+    ),
+    value: $(
+      pointer(0x0048d990),
+      pointer(0x300),
+      pointer(0x4c),
+      ['Measured', 'Mem', 'Float', 0xd9c, '*', 'Value', '', 100],
+    ),
+  },
+  id: 163450,
+})
+
+set.addLeaderboard({
+  title: 'Time Trial - Tractor Tipping - Level 5',
+  description: 'Tip all tractors as fast as you can!',
+  lowerIsBetter: false,
+  type: 'MILLISECS',
+  conditions: {
+    start: $(
+      cheatprotect(),
+      levelType(Minigame),
+      TractorTip(TT5),
+      tractorstipped(6),
+    ),
+    cancel: $(
+      levelQuit(),
+    ),
+    submit: $(
+      cheatprotect(),
+      levelType(Minigame),
+      TractorTip(TT5),
+      tractorstipped(6),
+    ),
+    value: $(
+      pointer(0x0048d990),
+      pointer(0x300),
+      pointer(0x4c),
+      ['Measured', 'Mem', 'Float', 0xd9c, '*', 'Value', '', 100],
+    ),
+  },
+  id: 163451,
+})
+
+set.addLeaderboard({
+  title: 'Time Trial - Tractor Tipping - Level 6',
+  description: 'Tip all tractors as fast as you can!',
+  lowerIsBetter: false,
+  type: 'MILLISECS',
+  conditions: {
+    start: $(
+      cheatprotect(),
+      levelType(Minigame),
+      TractorTip(TT6),
+      tractorstipped(13),
+    ),
+    cancel: $(
+      levelQuit(),
+    ),
+    submit: $(
+      cheatprotect(),
+      levelType(Minigame),
+      TractorTip(TT6),
+      tractorstipped(13),
+    ),
+    value: $(
+      pointer(0x0048d990),
+      pointer(0x300),
+      pointer(0x4c),
+      ['Measured', 'Mem', 'Float', 0xd9c, '*', 'Value', '', 100],
+    ),
+  },
+  id: 163452,
+})
+
+set.addLeaderboard({
+  title: 'Time Trial - Tractor Tipping - Level 7',
+  description: 'Tip all tractors as fast as you can!',
+  lowerIsBetter: false,
+  type: 'MILLISECS',
+  conditions: {
+    start: $(
+      cheatprotect(),
+      levelType(Minigame),
+      TractorTip(TT7),
+      tractorstipped(8),
+    ),
+    cancel: $(
+      levelQuit(),
+    ),
+    submit: $(
+      cheatprotect(),
+      levelType(Minigame),
+      TractorTip(TT7),
+      tractorstipped(8),
+    ),
+    value: $(
+      pointer(0x0048d990),
+      pointer(0x300),
+      pointer(0x4c),
+      ['Measured', 'Mem', 'Float', 0xd9c, '*', 'Value', '', 100],
+    ),
+  },
+  id: 163453,
+})
+
+set.addLeaderboard({
+  title: 'Time Trial - Tractor Tipping - Level 8',
+  description: 'Tip all tractors as fast as you can!',
+  lowerIsBetter: false,
+  type: 'MILLISECS',
+  conditions: {
+    start: $(
+      cheatprotect(),
+      levelType(Minigame),
+      TractorTip(TT8),
+      tractorstipped(10),
+    ),
+    cancel: $(
+      levelQuit(),
+    ),
+    submit: $(
+      cheatprotect(),
+      levelType(Minigame),
+      TractorTip(TT8),
+      tractorstipped(10),
+    ),
+    value: $(
+      pointer(0x0048d990),
+      pointer(0x300),
+      pointer(0x4c),
+      ['Measured', 'Mem', 'Float', 0xd9c, '*', 'Value', '', 100],
+    ),
+  },
+  id: 163454,
+})
+
+set.addLeaderboard({
+  title: "Time Trial - Doc's Lesson: Powerslide",
+  description: 'Complete all three laps in the fastest time you can!',
+  lowerIsBetter: true,
+  type: 'MILLISECS',
+  conditions: {
+    start: $(
+      cheatprotect(),
+      level(DocsLessonPowerslide),
+      finishRace(3),
+      startHit(),
+      resetHit(),
+      glitchProtect(),
+    ),
+    cancel: $(
+      levelQuit(),
+    ),
+    submit: $(
+      cheatprotect(),
+      level(DocsLessonPowerslide),
+      finishRace(3),
+    ),
+    value: $(
+        raceTimer(),
+      ),
+  },
+  id: 163455,
+})
+
+set.addLeaderboard({
+  title: 'Time Trial - Luigi to the Rescue - Level 1',
+  description: 'Save all tires as fast as you can!',
+  lowerIsBetter: false,
+  type: 'MILLISECS',
+  conditions: {
+    start: $(
+      cheatprotect(),
+      levelType(Minigame),
+      LuigiRescue(lttr1),
+      tiresSaved(),
+    ),
+    cancel: $(
+      levelQuit(),
+    ),
+    submit: $(
+      cheatprotect(),
+      levelType(Minigame),
+      LuigiRescue(lttr1),
+      tiresSaved(),
+    ),
+    value: $(
+      pointer(0x48d990),
+      pointer(0x300),
+      pointer(0x4c),
+      ['Measured', 'Mem', 'Float', 0xc68, '*', 'Value', '', 100],
+    ),
+  },
+  id: 163456,
+})
+
+set.addLeaderboard({
+  title: 'Time Trial - Luigi to the Rescue - Level 2',
+  description: 'Save all tires as fast as you can!',
+  lowerIsBetter: false,
+  type: 'MILLISECS',
+  conditions: {
+    start: $(
+      cheatprotect(),
+      levelType(Minigame),
+      LuigiRescue(lttr2),
+      tiresSaved(),
+    ),
+    cancel: $(
+      levelQuit(),
+    ),
+    submit: $(
+      cheatprotect(),
+      levelType(Minigame),
+      LuigiRescue(lttr2),
+      tiresSaved(),
+    ),
+    value: $(
+      pointer(0x48d990),
+      pointer(0x300),
+      pointer(0x4c),
+      ['Measured', 'Mem', 'Float', 0xc68, '*', 'Value', '', 100],
+    ),
+  },
+  id: 163457,
+})
+
+set.addLeaderboard({
+  title: 'Time Trial - Luigi to the Rescue - Level 3',
+  description: 'Save all tires as fast as you can!',
+  lowerIsBetter: false,
+  type: 'MILLISECS',
+  conditions: {
+    start: $(
+      cheatprotect(),
+      levelType(Minigame),
+      LuigiRescue(lttr3),
+      tiresSaved(),
+    ),
+    cancel: $(
+      levelQuit(),
+    ),
+    submit: $(
+      cheatprotect(),
+      levelType(Minigame),
+      LuigiRescue(lttr3),
+      tiresSaved(),
+    ),
+    value: $(
+      pointer(0x48d990),
+      pointer(0x300),
+      pointer(0x4c),
+      ['Measured', 'Mem', 'Float', 0xc68, '*', 'Value', '', 100],
+    ),
+  },
+  id: 163458,
+})
+
+set.addLeaderboard({
+  title: 'Time Trial - Luigi to the Rescue - Level 4',
+  description: 'Save all tires as fast as you can!',
+  lowerIsBetter: false,
+  type: 'MILLISECS',
+  conditions: {
+    start: $(
+      cheatprotect(),
+      levelType(Minigame),
+      LuigiRescue(lttr4),
+      tiresSaved(),
+    ),
+    cancel: $(
+      levelQuit(),
+    ),
+    submit: $(
+      cheatprotect(),
+      levelType(Minigame),
+      LuigiRescue(lttr4),
+      tiresSaved(),
+    ),
+    value: $(
+      pointer(0x48d990),
+      pointer(0x300),
+      pointer(0x4c),
+      ['Measured', 'Mem', 'Float', 0xc68, '*', 'Value', '', 100],
+    ),
+  },
+  id: 163459,
+})
+
+set.addLeaderboard({
+  title: 'Time Trial - Luigi to the Rescue - Level 5',
+  description: 'Save all tires as fast as you can!',
+  lowerIsBetter: false,
+  type: 'MILLISECS',
+  conditions: {
+    start: $(
+      cheatprotect(),
+      levelType(Minigame),
+      LuigiRescue(lttr5),
+      tiresSaved(),
+    ),
+    cancel: $(
+      levelQuit(),
+    ),
+    submit: $(
+      cheatprotect(),
+      levelType(Minigame),
+      LuigiRescue(lttr5),
+      tiresSaved(),
+    ),
+    value: $(
+      pointer(0x48d990),
+      pointer(0x300),
+      pointer(0x4c),
+      ['Measured', 'Mem', 'Float', 0xc68, '*', 'Value', '', 100],
+    ),
+  },
+  id: 163460,
+})
+
+set.addLeaderboard({
+  title: 'Time Trial - Luigi to the Rescue - Level 6',
+  description: 'Save all tires as fast as you can!',
+  lowerIsBetter: false,
+  type: 'MILLISECS',
+  conditions: {
+    start: $(
+      cheatprotect(),
+      levelType(Minigame),
+      LuigiRescue(lttr6),
+      tiresSaved(),
+    ),
+    cancel: $(
+      levelQuit(),
+    ),
+    submit: $(
+      cheatprotect(),
+      levelType(Minigame),
+      LuigiRescue(lttr6),
+      tiresSaved(),
+    ),
+    value: $(
+      pointer(0x48d990),
+      pointer(0x300),
+      pointer(0x4c),
+      ['Measured', 'Mem', 'Float', 0xc68, '*', 'Value', '', 100],
+    ),
+  },
+  id: 163461,
+})
+
+set.addLeaderboard({
+  title: 'Time Trial - Luigi to the Rescue - Level 7',
+  description: 'Save all tires as fast as you can!',
+  lowerIsBetter: false,
+  type: 'MILLISECS',
+  conditions: {
+    start: $(
+      cheatprotect(),
+      levelType(Minigame),
+      LuigiRescue(lttr7),
+      tiresSaved(),
+    ),
+    cancel: $(
+      levelQuit(),
+    ),
+    submit: $(
+      cheatprotect(),
+      levelType(Minigame),
+      LuigiRescue(lttr7),
+      tiresSaved(),
+    ),
+    value: $(
+      pointer(0x48d990),
+      pointer(0x300),
+      pointer(0x4c),
+      ['Measured', 'Mem', 'Float', 0xc68, '*', 'Value', '', 100],
+    ),
+  },
+  id: 163462,
+})
+
+set.addLeaderboard({
+  title: 'Time Trial - Luigi to the Rescue - Level 8',
+  description: 'Save all tires as fast as you can!',
+  lowerIsBetter: false,
+  type: 'MILLISECS',
+  conditions: {
+    start: $(
+      cheatprotect(),
+      levelType(Minigame),
+      LuigiRescue(lttr8),
+      tiresSaved(),
+    ),
+    cancel: $(
+      levelQuit(),
+    ),
+    submit: $(
+      cheatprotect(),
+      levelType(Minigame),
+      LuigiRescue(lttr8),
+      tiresSaved(),
+    ),
+    value: $(
+      pointer(0x48d990),
+      pointer(0x300),
+      pointer(0x4c),
+      ['Measured', 'Mem', 'Float', 0xc68, '*', 'Value', '', 100],
+    ),
+  },
+  id: 163463,
+})
+
+set.addLeaderboard({
+  title: "Time Trial - Sarge's Boot Camp - Level 1",
+  description: 'Complete all three laps in the fastest time you can!',
+  lowerIsBetter: true,
+  type: 'MILLISECS',
+  conditions: {
+    start: $(
+      cheatprotect(),
+      levelType(Minigame2),
+      bootcamp(bootcamp1),
+      finishRace(3),
+      startHit(),
+      resetHit(),
+      glitchProtect(),
+    ),
+    cancel: $(
+      levelQuit(),
+    ),
+    submit: $(
+      cheatprotect(),
+      levelType(Minigame2),
+      bootcamp(bootcamp1),
+      finishRace(3),
+    ),
+    value: $(
+        raceTimer(),
+      ),
+  },
+  id: 163464,
+})
+
+set.addLeaderboard({
+  title: "Time Trial - Sarge's Boot Camp - Level 2",
+  description: 'Complete all three laps in the fastest time you can!',
+  lowerIsBetter: true,
+  type: 'MILLISECS',
+  conditions: {
+    start: $(
+      cheatprotect(),
+      levelType(Minigame2),
+      bootcamp(bootcamp2),
+      finishRace(3),
+      startHit(),
+      resetHit(),
+      glitchProtect(),
+    ),
+    cancel: $(
+      levelQuit(),
+    ),
+    submit: $(
+      cheatprotect(),
+      levelType(Minigame2),
+      bootcamp(bootcamp2),
+      finishRace(3),
+    ),
+    value: $(
+        raceTimer(),
+      ),
+  },
+  id: 163465,
+})
+
+set.addLeaderboard({
+  title: "Time Trial - Sarge's Boot Camp - Level 3",
+  description: 'Complete all three laps in the fastest time you can!',
+  lowerIsBetter: true,
+  type: 'MILLISECS',
+  conditions: {
+    start: $(
+      cheatprotect(),
+      levelType(Minigame2),
+      bootcamp(bootcamp3),
+      finishRace(3),
+      startHit(),
+      resetHit(),
+      glitchProtect(),
+    ),
+    cancel: $(
+      levelQuit(),
+    ),
+    submit: $(
+      cheatprotect(),
+      levelType(Minigame2),
+      bootcamp(bootcamp3),
+      finishRace(3),
+    ),
+    value: $(
+        raceTimer(),
+      ),
+  },
+  id: 163466,
+})
+
+set.addLeaderboard({
+  title: "Time Trial - Mater's Backwards Lesson",
+  description: 'Complete both laps in the fastest time you can!',
+  lowerIsBetter: true,
+  type: 'MILLISECS',
+  conditions: {
+    start: $(
+      cheatprotect(),
+      level(MatersBackwardsLesson),
+      finishRace(2),
+      startHit(),
+      resetHit(),
+      glitchProtect(),
+    ),
+    cancel: $(
+      levelQuit(),
+    ),
+    submit: $(
+      cheatprotect(),
+      level(MatersBackwardsLesson),
+      finishRace(2),
+    ),
+    value: $(
+        raceTimer(),
+      ),
+  },
+  id: 163467,
+})
+
+set.addLeaderboard({
+  title: "Time Trial - Sheriff's Hot Pursuit - Speeders",
+  description: 'Catch a Speeder in the fastest time you can!',
+  lowerIsBetter: true,
+  type: 'MILLISECS',
+  conditions: {
+    start: $(
+      cheatprotect(),
+      levelType(Minigame),
+      HotPursuit(HP1),
+      ['AddSource', 'Value', '', 0x1],
+      pointer(0x0048d990),
+      pointer(0x300),
+      pointer(0x4c),
+      ['', 'Delta', '32bit', 0xe28, '=', 'Mem', '32bit', 0xe28],
+    ),
+    cancel: $(
+      levelQuit(),
+    ),
+    submit: $(
+      cheatprotect(),
+      levelType(Minigame),
+      HotPursuit(HP1),
+      ['AddSource', 'Value', '', 0x1],
+      pointer(0x0048d990),
+      pointer(0x300),
+      pointer(0x4c),
+      ['', 'Delta', '32bit', 0xe28, '=', 'Mem', '32bit', 0xe28],
+    ),
+    value: $(
+        pointer(0x0048d990),
+        pointer(0x300),
+        pointer(0x4c),
+        ['Measured', 'Mem', 'Float', 0xe5c, '*', 'Value', '', 100],
+      ),
+  },
+  id: 163468,
+})
+
+set.addLeaderboard({
+  title: "Time Trial - Sheriff's Hot Pursuit - Hooligans",
+  description: 'Catch a Hooligan in the fastest time you can!',
+  lowerIsBetter: true,
+  type: 'MILLISECS',
+  conditions: {
+    start: $(
+      cheatprotect(),
+      levelType(Minigame),
+      HotPursuit(HP2),
+      ['AddSource', 'Value', '', 0x1],
+      pointer(0x0048d990),
+      pointer(0x300),
+      pointer(0x4c),
+      ['', 'Delta', '32bit', 0xe28, '=', 'Mem', '32bit', 0xe28],
+    ),
+    cancel: $(
+      levelQuit(),
+    ),
+    submit: $(
+      cheatprotect(),
+      levelType(Minigame),
+      HotPursuit(HP2),
+      ['AddSource', 'Value', '', 0x1],
+      pointer(0x0048d990),
+      pointer(0x300),
+      pointer(0x4c),
+      ['', 'Delta', '32bit', 0xe28, '=', 'Mem', '32bit', 0xe28],
+    ),
+    value: $(
+        pointer(0x0048d990),
+        pointer(0x300),
+        pointer(0x4c),
+        ['Measured', 'Mem', 'Float', 0xe5c, '*', 'Value', '', 100],
+      ),
+  },
+  id: 163469,
+})
+
+set.addLeaderboard({
+  title: "Time Trial - Sheriff's Hot Pursuit - Road Hazards",
+  description: 'Catch a Road Hazard in the fastest time you can!',
+  lowerIsBetter: true,
+  type: 'MILLISECS',
+  conditions: {
+    start: $(
+      cheatprotect(),
+      levelType(Minigame),
+      HotPursuit(HP3),
+      ['AddSource', 'Value', '', 0x1],
+      pointer(0x0048d990),
+      pointer(0x300),
+      pointer(0x4c),
+      ['', 'Delta', '32bit', 0xe28, '=', 'Mem', '32bit', 0xe28],
+    ),
+    cancel: $(
+      levelQuit(),
+    ),
+    submit: $(
+      cheatprotect(),
+      levelType(Minigame),
+      HotPursuit(HP3),
+      ['AddSource', 'Value', '', 0x1],
+      pointer(0x0048d990),
+      pointer(0x300),
+      pointer(0x4c),
+      ['', 'Delta', '32bit', 0xe28, '=', 'Mem', '32bit', 0xe28],
+    ),
+    value: $(
+        pointer(0x0048d990),
+        pointer(0x300),
+        pointer(0x4c),
+        ['Measured', 'Mem', 'Float', 0xe5c, '*', 'Value', '', 100],
+      ),
+  },
+  id: 163470,
+})
+
+set.addLeaderboard({
+  title: "Time Trial - Sheriff's Hot Pursuit - Delinquents",
+  description: 'Catch a Delinquent in the fastest time you can!',
+  lowerIsBetter: true,
+  type: 'MILLISECS',
+  conditions: {
+    start: $(
+      cheatprotect(),
+      levelType(Minigame),
+      HotPursuit(HP4),
+      ['AddSource', 'Value', '', 0x1],
+      pointer(0x0048d990),
+      pointer(0x300),
+      pointer(0x4c),
+      ['', 'Delta', '32bit', 0xe28, '=', 'Mem', '32bit', 0xe28],
+    ),
+    cancel: $(
+      levelQuit(),
+    ),
+    submit: $(
+      cheatprotect(),
+      levelType(Minigame),
+      HotPursuit(HP4),
+      ['AddSource', 'Value', '', 0x1],
+      pointer(0x0048d990),
+      pointer(0x300),
+      pointer(0x4c),
+      ['', 'Delta', '32bit', 0xe28, '=', 'Mem', '32bit', 0xe28],
+    ),
+    value: $(
+        pointer(0x0048d990),
+        pointer(0x300),
+        pointer(0x4c),
+        ['Measured', 'Mem', 'Float', 0xe5c, '*', 'Value', '', 100],
+      ),
+  },
+  id: 163471,
+})
+
+set.addLeaderboard({
+  title: "Time Trial - Sheriff's Hot Pursuit - Hot Rodders",
+  description: 'Catch a Hot Rodder in the fastest time you can!',
+  lowerIsBetter: true,
+  type: 'MILLISECS',
+  conditions: {
+    start: $(
+      cheatprotect(),
+      levelType(Minigame),
+      HotPursuit(HP5),
+      ['AddSource', 'Value', '', 0x1],
+      pointer(0x0048d990),
+      pointer(0x300),
+      pointer(0x4c),
+      ['', 'Delta', '32bit', 0xe28, '=', 'Mem', '32bit', 0xe28],
+    ),
+    cancel: $(
+      levelQuit(),
+    ),
+    submit: $(
+      cheatprotect(),
+      levelType(Minigame),
+      HotPursuit(HP5),
+      ['AddSource', 'Value', '', 0x1],
+      pointer(0x0048d990),
+      pointer(0x300),
+      pointer(0x4c),
+      ['', 'Delta', '32bit', 0xe28, '=', 'Mem', '32bit', 0xe28],
+    ),
+    value: $(
+        pointer(0x0048d990),
+        pointer(0x300),
+        pointer(0x4c),
+        ['Measured', 'Mem', 'Float', 0xe5c, '*', 'Value', '', 100],
+      ),
+  },
+  id: 163472,
+})
+
+set.addLeaderboard({
+  title: 'Time Trial - High Speed Heist',
+  description: 'Rob Mack in the fastest time you can!',
+  lowerIsBetter: true,
+  type: 'MILLISECS',
+  conditions: {
+    start: $(
+      cheatprotect(),
+      level(HighSpeedHeist),
+      pointer(0x00490ef0),
+      pointer(0x950),
+      ['', 'Delta', '32bit', 0xd18, '<', 'Value', '', 5],
+      pointer(0x00490ef0),
+      pointer(0x950),
+      ['', 'Mem', '32bit', 0xd18, '=', 'Value', '', 5],
+    ),
+    cancel: $(
+      levelQuit(),
+    ),
+    submit: $(
+      cheatprotect(),
+      level(HighSpeedHeist),
+      pointer(0x00490ef0),
+      pointer(0x950),
+      ['', 'Delta', '32bit', 0xd18, '<', 'Value', '', 5],
+      pointer(0x00490ef0),
+      pointer(0x950),
+      ['', 'Mem', '32bit', 0xd18, '=', 'Value', '', 5],
+    ),
+    value: $(
+      pointer(0x0048d990),
+      pointer(0x300),
+      pointer(0x4c),
+      ['AddSource', 'Mem', 'Float', 0xc6c, '*', 'Value', '', 100],
+      pointer(0x0048d990),
+      pointer(0x300),
+      pointer(0x4c),
+      ['AddSource', 'Mem', 'Float', 0xc74, '*', 'Value', '', 100],
+      pointer(0x0048d990),
+      pointer(0x300),
+      pointer(0x4c),
+      ['Measured', 'Mem', 'Float', 0xc7c, '*', 'Value', '', 100],
+    ),
+  },
+  id: 163473,
+})
+
+set.addLeaderboard({
+  title: 'Time Trial - Lightning Strikes Back',
+  description: 'Recover your stuff in the fastest time you can!',
+  lowerIsBetter: true,
+  type: 'MILLISECS',
+  conditions: {
+    start: $(
+      cheatprotect(),
+      level(LightningStrikesBack),
+      pointer(0x00490a60),
+      pointer(0x2b0),
+      pointer(0x34c),
+      pointer(0x8),
+      ['', 'Mem', '32bit', 0xd4, '=', 'Value', '', 3],
+      pointer(0x00490a60),
+      pointer(0x2b0),
+      pointer(0x34c),
+      pointer(0x8),
+      ['', 'Mem', '32bit', 0xd8, '=', 'Value', '', 3],
+      pointer(0x00490a60),
+      pointer(0x2b0),
+      pointer(0x34c),
+      pointer(0x8),
+      ['', 'Mem', '32bit', 0xdc, '=', 'Value', '', 3],
+      pointer(0x00490a60),
+      pointer(0x2b0),
+      pointer(0x34c),
+      pointer(0x8),
+      ['', 'Delta', '32bit', 0xe0, '=', 'Value', '', 2],
+      pointer(0x00490a60),
+      pointer(0x2b0),
+      pointer(0x34c),
+      pointer(0x8),
+      ['', 'Mem', '32bit', 0xe0, '=', 'Value', '', 3],
+    ),
+    cancel: $(
+      levelQuit(),
+    ),
+    submit: $(
+      cheatprotect(),
+      level(LightningStrikesBack),
+      pointer(0x00490a60),
+      pointer(0x2b0),
+      pointer(0x34c),
+      pointer(0x8),
+      ['', 'Mem', '32bit', 0xd4, '=', 'Value', '', 3],
+      pointer(0x00490a60),
+      pointer(0x2b0),
+      pointer(0x34c),
+      pointer(0x8),
+      ['', 'Mem', '32bit', 0xd8, '=', 'Value', '', 3],
+      pointer(0x00490a60),
+      pointer(0x2b0),
+      pointer(0x34c),
+      pointer(0x8),
+      ['', 'Mem', '32bit', 0xdc, '=', 'Value', '', 3],
+      pointer(0x00490a60),
+      pointer(0x2b0),
+      pointer(0x34c),
+      pointer(0x8),
+      ['', 'Delta', '32bit', 0xe0, '=', 'Value', '', 2],
+      pointer(0x00490a60),
+      pointer(0x2b0),
+      pointer(0x34c),
+      pointer(0x8),
+      ['', 'Mem', '32bit', 0xe0, '=', 'Value', '', 3],
+    ),
+    value: $(
+      pointer(0x0048d990),
+      pointer(0x300),
+      pointer(0x4c),
+      ['Measured', 'Mem', 'Float', 0xc68, '*', 'Value', '', 100],
+    ),
+  },
+  id: 163474,
+})
+
+set.addLeaderboard({
+  title: "Time Trial - Mater's Countdown Clean-Up",
+  description: 'Collect all 100 junk with the most time remaining!',
+  lowerIsBetter: false,
+  type: 'MILLISECS',
+  conditions: {
+    start: $(
+      cheatprotect(),
+      ['', 'Mem', '32bitBE', 0x004ecba4, '=', 'Value', '', 0x4d475f54],
+      pointer(0x0048d990),
+      pointer(0x300),
+      pointer(0x4c),
+      ['', 'Delta', '32bit', 0xc74, '<', 'Value', '', 100],
+      pointer(0x0048d990),
+      pointer(0x300),
+      pointer(0x4c),
+      ['', 'Mem', '32bit', 0xc74, '=', 'Value', '', 100],
+    ),
+    cancel: $(
+      levelQuit(),
+    ),
+    submit: $(
+      cheatprotect(),
+      ['', 'Mem', '32bitBE', 0x004ecba4, '=', 'Value', '', 0x4d475f54],
+      pointer(0x0048d990),
+      pointer(0x300),
+      pointer(0x4c),
+      ['', 'Delta', '32bit', 0xc74, '<', 'Value', '', 100],
+      pointer(0x0048d990),
+      pointer(0x300),
+      pointer(0x4c),
+      ['', 'Mem', '32bit', 0xc74, '=', 'Value', '', 100],
+    ),
+    value: $(
+      pointer(0x0048d990),
+      pointer(0x300),
+      pointer(0x4c),
+      ['Measured', 'Mem', 'Float', 0xc6c, '*', 'Value', '', 100],
+    ),
+  },
+  id: 163475,
 })
 
 export default set
