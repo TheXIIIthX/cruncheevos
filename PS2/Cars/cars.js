@@ -1,4 +1,4 @@
-import { AchievementSet, define as $, measured, andNext, once, trigger, resetIf, orNext, measuredIf } from '@cruncheevos/core'
+import { AchievementSet, define as $, measured, andNext, once, trigger, resetIf, orNext, measuredIf, resetNextIf, pauseIf } from '@cruncheevos/core'
 const set = new AchievementSet({ gameId: 20525, title: 'Cars' })
 
 const RadiatorSpringsGrandPrix = 0x315f3100
@@ -123,6 +123,12 @@ function pointer(offset) {
     ))
 }
 
+function recallpointer() {
+  return($(
+    ['AddAddress', 'Recall', '', 0],
+  ))
+}
+
 function loadprotect() {
   return($(
     ['', 'Mem', '32bit', 0x005185a8, '!=', 'Value', '', 0],
@@ -146,6 +152,19 @@ function cheatprotect() {
     ['', 'Mem', 'Bit7', 0x52beb2, '=', 'Value', '', 0],
     ['', 'Mem', 'Bit0', 0x52beb3, '=', 'Value', '', 0],
     ['', 'Mem', 'Bit1', 0x52beb3, '=', 'Value', '', 0],
+  ))
+}
+
+function cheatsactive() {
+  return($(
+    ['AddSource', 'Mem', 'Bit1', 0x52beb0, '*', 'Value', '', 8], //All Cars
+    ['AddSource', 'Mem', 'Bit2', 0x52beb0, '*', 'Value', '', 64], //Super fast start
+    ['AddSource', 'Mem', 'Bit3', 0x52beb0, '*', 'Value', '', 16], //All races
+    ['AddSource', 'Mem', 'Bit7', 0x52beb1, '*', 'Value', '', 32], //All tracks and minigames
+    ['AddSource', 'Mem', 'Bit5', 0x52beb2, '*', 'Value', '', 128], //Unlimited boost
+    ['AddSource', 'Mem', 'Bit7', 0x52beb2, '*', 'Value', '', 2], //All concept art
+    ['AddSource', 'Mem', 'Bit0', 0x52beb3, '*', 'Value', '', 1], //All movies
+    ['Measured', 'Mem', 'Bit1', 0x52beb3, '*', 'Value', '', 4], //All paint jobs
   ))
 }
 
@@ -200,15 +219,8 @@ function resetHit() {
   ))
 }
 
-function glitchProtect() {
+function glitchProtectStrict(reset = 'ResetIf', and = 'AndNext') {
   return($(
-    pointer(0x0048d990),
-    pointer(0x300),
-    pointer(0x4c),
-    pointer(0xc44),
-    pointer(0x54),
-    pointer(0x0),
-    ['AndNext', 'Delta', '32bit', 0x70, '=', 'Value', '', 0x1],
     ['AddSource', 'Value', '', 0x2],
     pointer(0x0048d990),
     pointer(0x300),
@@ -216,7 +228,7 @@ function glitchProtect() {
     pointer(0xc44),
     pointer(0x54),
     pointer(0x0),
-    ['AndNext', 'Delta', '32bit', 0x38, '!=', 'Mem', '32bit', 0x38],
+    [and, 'Delta', '32bit', 0x38, '!=', 'Mem', '32bit', 0x38],
     ['AddSource', 'Value', '', 0x1],
     pointer(0x0048d990),
     pointer(0x300),
@@ -224,25 +236,67 @@ function glitchProtect() {
     pointer(0xc44),
     pointer(0x54),
     pointer(0x0),
-    ['AndNext', 'Delta', '32bit', 0x38, '!=', 'Mem', '32bit', 0x38],
+    [and, 'Delta', '32bit', 0x38, '!=', 'Mem', '32bit', 0x38],
     pointer(0x0048d990),
     pointer(0x300),
     pointer(0x4c),
     pointer(0xc44),
     pointer(0x54),
     pointer(0x0),
-    ['AndNext', 'Delta', '32bit', 0x38, '!=', 'Mem', '32bit', 0x38],
+    [and, 'Delta', '32bit', 0x38, '!=', 'Mem', '32bit', 0x38],
     pointer(0x0048d990),
     pointer(0x300),
     pointer(0x4c),
     pointer(0xc44),
     pointer(0x54),
     pointer(0x0),
-    ['ResetIf', 'Mem', '32bit', 0x38, '!=', 'Value', '', 0x0],
+    [reset, 'Mem', '32bit', 0x38, '!=', 'Value', '', 0x0],
   ))
 }
 
-function glitchProtectSheriffChase() {
+function glitchProtect(reset = 'ResetIf', and = 'AndNext') {
+  return($(
+    pointer(0x0048d990),
+    pointer(0x300),
+    pointer(0x4c),
+    pointer(0xc44),
+    pointer(0x54),
+    pointer(0x0),
+    [and, 'Delta', '32bit', 0x70, '=', 'Value', '', 0x1],
+    ['AddSource', 'Value', '', 0x2],
+    pointer(0x0048d990),
+    pointer(0x300),
+    pointer(0x4c),
+    pointer(0xc44),
+    pointer(0x54),
+    pointer(0x0),
+    [and, 'Delta', '32bit', 0x38, '!=', 'Mem', '32bit', 0x38],
+    ['AddSource', 'Value', '', 0x1],
+    pointer(0x0048d990),
+    pointer(0x300),
+    pointer(0x4c),
+    pointer(0xc44),
+    pointer(0x54),
+    pointer(0x0),
+    [and, 'Delta', '32bit', 0x38, '!=', 'Mem', '32bit', 0x38],
+    pointer(0x0048d990),
+    pointer(0x300),
+    pointer(0x4c),
+    pointer(0xc44),
+    pointer(0x54),
+    pointer(0x0),
+    [and, 'Delta', '32bit', 0x38, '!=', 'Mem', '32bit', 0x38],
+    pointer(0x0048d990),
+    pointer(0x300),
+    pointer(0x4c),
+    pointer(0xc44),
+    pointer(0x54),
+    pointer(0x0),
+    [reset, 'Mem', '32bit', 0x38, '!=', 'Value', '', 0x0],
+  ))
+}
+
+function glitchProtectSheriffChase(reset = 'ResetIf') {
   return($(
     ['AddSource', 'Value', '', 0x2],
     pointer(0x0048d990),
@@ -301,7 +355,7 @@ function glitchProtectSheriffChase() {
     pointer(0xc44),
     pointer(0x54),
     pointer(0x0),
-    ['ResetIf', 'Mem', '32bit', 0x38, '!=', 'Value', '', 0x0],
+    [reset, 'Mem', '32bit', 0x38, '!=', 'Value', '', 0x0],
   ))
 }
 
@@ -335,6 +389,7 @@ function lead(time) {
     pointer(0x300),
     pointer(0x4c),
     pointer(0xc44),
+    pointer(0x54),
     pointer(0x4),
     ['', 'Mem', 'Float', 0x2c, '>', 'Value', '', time],
   ))
@@ -389,6 +444,21 @@ function noPractice() {
     pointer(0x0048d990),
     pointer(0x31c),
     ['', 'Mem', '32bit', 0x18, '!=', 'Value', '', 3],
+  ))
+}
+
+function lap(hits = 0) {
+  return($(
+    ['AddSource', 'Value', '', 1],
+    pointer(0x0048d990),
+    pointer(0x300),
+    pointer(0x4c),
+    pointer(0xc44),
+    pointer(0x54),
+    pointer(0x0),
+    pointer(0xc),
+    pointer(0x80),
+    ['', 'Delta', '32bit', 0x3c, '=', 'Mem', '32bit', 0x3c, hits],
   ))
 }
 
@@ -508,7 +578,7 @@ function trickscore(score) {
   ))
 }
 
-function trick(move) {
+function trick(move, hits = 0) {
   return($(
     pointer(0x0052c590),
     pointer(0x40),
@@ -517,20 +587,449 @@ function trick(move) {
     pointer(0x0),
     pointer(0x1c),
     pointer(0x6a70),
-    ['', 'Mem', '32bitBE', 0x0, '=', 'Value', '', move],
+    ['AndNext', 'Mem', '32bitBE', 0x0, '=', 'Value', '', move],
+    pointer(0x04f7140),
+    pointer(0x50),
+    pointer(0x34),
+    pointer(0x1c),
+    pointer(0x98),
+    pointer(0x110),
+    ['', 'Delta', '32bit', 0x158, '<', 'Mem', '32bit', 0x158, hits],
   ))
 }
 
-function boostUsed() {
+function advancedTrick(move, hits = 0) {
+  return($(
+    pointer(0x04f7140),
+    pointer(0x50),
+    pointer(0x34),
+    pointer(0x1c),
+    pointer(0x98),
+    pointer(0x110),
+    ['Remember', 'Mem', '32bit', 0x158],
+    pointer(0x0052c590),
+    pointer(0x40),
+    pointer(0x34),
+    pointer(0x4),
+    pointer(0x0),
+    pointer(0x1c),
+    pointer(0x6a70),
+    ['AndNext', 'Mem', '32bitBE', 0x0, '=', 'Value', '', move],
+    ['AndNext', 'Recall', '', 0x0, '<', 'Value', '', 10000],
+    pointer(0x0052c590),
+    pointer(0x40),
+    pointer(0x34), 
+    pointer(0x4),
+    pointer(0x0),
+    pointer(0x1c),
+    pointer(0x4540),
+    ['AddSource', 'Delta', 'Lower4', 0x0, '*', 'Value', '', 1000],
+    pointer(0x0052c590),
+    pointer(0x40),
+    pointer(0x34), 
+    pointer(0x4),
+    pointer(0x0),
+    pointer(0x1c),
+    pointer(0x4540),
+    ['AddSource', 'Delta', 'Lower4', 0x1, '*', 'Value', '', 100],
+    pointer(0x0052c590),
+    pointer(0x40),
+    pointer(0x34), 
+    pointer(0x4),
+    pointer(0x0),
+    pointer(0x1c),
+    pointer(0x4540),
+    ['AddSource', 'Delta', 'Lower4', 0x2, '*', 'Value', '', 10],
+    pointer(0x0052c590),
+    pointer(0x40),
+    pointer(0x34), 
+    pointer(0x4),
+    pointer(0x0),
+    pointer(0x1c),
+    pointer(0x4540),
+    ['AndNext', 'Delta', 'Lower4', 0x3, '!=', 'Recall', '', 0],
+    pointer(0x0052c590),
+    pointer(0x40),
+    pointer(0x34), 
+    pointer(0x4),
+    pointer(0x0),
+    pointer(0x1c),
+    pointer(0x4540),
+    ['AddSource', 'Mem', 'Lower4', 0x0, '*', 'Value', '', 1000],
+    pointer(0x0052c590),
+    pointer(0x40),
+    pointer(0x34), 
+    pointer(0x4),
+    pointer(0x0),
+    pointer(0x1c),
+    pointer(0x4540),
+    ['AddSource', 'Mem', 'Lower4', 0x1, '*', 'Value', '', 100],
+    pointer(0x0052c590),
+    pointer(0x40),
+    pointer(0x34), 
+    pointer(0x4),
+    pointer(0x0),
+    pointer(0x1c),
+    pointer(0x4540),
+    ['AddSource', 'Mem', 'Lower4', 0x2, '*', 'Value', '', 10],
+    pointer(0x0052c590),
+    pointer(0x40),
+    pointer(0x34), 
+    pointer(0x4),
+    pointer(0x0),
+    pointer(0x1c),
+    pointer(0x4540),
+    ['AddHits', 'Mem', 'Lower4', 0x3, '=', 'Recall', '', 0],
+    pointer(0x0052c590),
+    pointer(0x40),
+    pointer(0x34),
+    pointer(0x4),
+    pointer(0x0),
+    pointer(0x1c),
+    pointer(0x6a70),
+    ['AndNext', 'Mem', '32bitBE', 0x0, '=', 'Value', '', move],
+    ['AndNext', 'Recall', '', 0x0, '<', 'Value', '', 1000],
+    pointer(0x0052c590),
+    pointer(0x40),
+    pointer(0x34), 
+    pointer(0x4),
+    pointer(0x0),
+    pointer(0x1c),
+    pointer(0x4540),
+    ['AddSource', 'Delta', 'Lower4', 0x0, '*', 'Value', '', 100],
+    pointer(0x0052c590),
+    pointer(0x40),
+    pointer(0x34), 
+    pointer(0x4),
+    pointer(0x0),
+    pointer(0x1c),
+    pointer(0x4540),
+    ['AddSource', 'Delta', 'Lower4', 0x1, '*', 'Value', '', 10],
+    pointer(0x0052c590),
+    pointer(0x40),
+    pointer(0x34), 
+    pointer(0x4),
+    pointer(0x0),
+    pointer(0x1c),
+    pointer(0x4540),
+    ['AndNext', 'Delta', 'Lower4', 0x2, '!=', 'Recall', '', 0],
+    pointer(0x0052c590),
+    pointer(0x40),
+    pointer(0x34), 
+    pointer(0x4),
+    pointer(0x0),
+    pointer(0x1c),
+    pointer(0x4540),
+    ['AddSource', 'Mem', 'Lower4', 0x0, '*', 'Value', '', 100],
+    pointer(0x0052c590),
+    pointer(0x40),
+    pointer(0x34), 
+    pointer(0x4),
+    pointer(0x0),
+    pointer(0x1c),
+    pointer(0x4540),
+    ['AddSource', 'Mem', 'Lower4', 0x1, '*', 'Value', '', 10],
+    pointer(0x0052c590),
+    pointer(0x40),
+    pointer(0x34), 
+    pointer(0x4),
+    pointer(0x0),
+    pointer(0x1c),
+    pointer(0x4540),
+    ['AddHits', 'Mem', 'Lower4', 0x2, '=', 'Recall', '', 0],
+    pointer(0x0052c590),
+    pointer(0x40),
+    pointer(0x34),
+    pointer(0x4),
+    pointer(0x0),
+    pointer(0x1c),
+    pointer(0x6a70),
+    ['AndNext', 'Mem', '32bitBE', 0x0, '=', 'Value', '', move],
+    ['AndNext', 'Recall', '', 0x0, '<', 'Value', '', 100],
+    pointer(0x0052c590),
+    pointer(0x40),
+    pointer(0x34), 
+    pointer(0x4),
+    pointer(0x0),
+    pointer(0x1c),
+    pointer(0x4540),
+    ['AddSource', 'Delta', 'Lower4', 0x0, '*', 'Value', '', 10],
+    pointer(0x0052c590),
+    pointer(0x40),
+    pointer(0x34), 
+    pointer(0x4),
+    pointer(0x0),
+    pointer(0x1c),
+    pointer(0x4540),
+    ['AndNext', 'Delta', 'Lower4', 0x1, '!=', 'Recall', '', 0],
+    pointer(0x0052c590),
+    pointer(0x40),
+    pointer(0x34), 
+    pointer(0x4),
+    pointer(0x0),
+    pointer(0x1c),
+    pointer(0x4540),
+    ['AddSource', 'Mem', 'Lower4', 0x0, '*', 'Value', '', 10],
+    pointer(0x0052c590),
+    pointer(0x40),
+    pointer(0x34), 
+    pointer(0x4),
+    pointer(0x0),
+    pointer(0x1c),
+    pointer(0x4540),
+    ['', 'Mem', 'Lower4', 0x1, '=', 'Recall', '', 0, hits],
+  ))
+}
+
+function advancedTrickCup(move, hits = 0) {
+  return($(
+    pointer(0x0048d990),
+    pointer(0x320),
+    pointer(0x2c),
+    pointer(0x458),
+    pointer(0x74),
+    ['Remember', 'Mem', '32bit', 0x158],
+    pointer(0x0052c590),
+    pointer(0x40),
+    pointer(0x34),
+    pointer(0x4),
+    pointer(0x0),
+    pointer(0x1c),
+    pointer(0x6a70),
+    ['AndNext', 'Mem', '32bitBE', 0x0, '=', 'Value', '', move],
+    ['AndNext', 'Recall', '', 0x0, '<', 'Value', '', 10000],
+    pointer(0x0052c590),
+    pointer(0x40),
+    pointer(0x34), 
+    pointer(0x4),
+    pointer(0x0),
+    pointer(0x1c),
+    pointer(0x4540),
+    ['AddSource', 'Delta', 'Lower4', 0x0, '*', 'Value', '', 1000],
+    pointer(0x0052c590),
+    pointer(0x40),
+    pointer(0x34), 
+    pointer(0x4),
+    pointer(0x0),
+    pointer(0x1c),
+    pointer(0x4540),
+    ['AddSource', 'Delta', 'Lower4', 0x1, '*', 'Value', '', 100],
+    pointer(0x0052c590),
+    pointer(0x40),
+    pointer(0x34), 
+    pointer(0x4),
+    pointer(0x0),
+    pointer(0x1c),
+    pointer(0x4540),
+    ['AddSource', 'Delta', 'Lower4', 0x2, '*', 'Value', '', 10],
+    pointer(0x0052c590),
+    pointer(0x40),
+    pointer(0x34), 
+    pointer(0x4),
+    pointer(0x0),
+    pointer(0x1c),
+    pointer(0x4540),
+    ['AndNext', 'Delta', 'Lower4', 0x3, '!=', 'Recall', '', 0],
+    pointer(0x0052c590),
+    pointer(0x40),
+    pointer(0x34), 
+    pointer(0x4),
+    pointer(0x0),
+    pointer(0x1c),
+    pointer(0x4540),
+    ['AddSource', 'Mem', 'Lower4', 0x0, '*', 'Value', '', 1000],
+    pointer(0x0052c590),
+    pointer(0x40),
+    pointer(0x34), 
+    pointer(0x4),
+    pointer(0x0),
+    pointer(0x1c),
+    pointer(0x4540),
+    ['AddSource', 'Mem', 'Lower4', 0x1, '*', 'Value', '', 100],
+    pointer(0x0052c590),
+    pointer(0x40),
+    pointer(0x34), 
+    pointer(0x4),
+    pointer(0x0),
+    pointer(0x1c),
+    pointer(0x4540),
+    ['AddSource', 'Mem', 'Lower4', 0x2, '*', 'Value', '', 10],
+    pointer(0x0052c590),
+    pointer(0x40),
+    pointer(0x34), 
+    pointer(0x4),
+    pointer(0x0),
+    pointer(0x1c),
+    pointer(0x4540),
+    ['AddHits', 'Mem', 'Lower4', 0x3, '=', 'Recall', '', 0],
+    pointer(0x0052c590),
+    pointer(0x40),
+    pointer(0x34),
+    pointer(0x4),
+    pointer(0x0),
+    pointer(0x1c),
+    pointer(0x6a70),
+    ['AndNext', 'Mem', '32bitBE', 0x0, '=', 'Value', '', move],
+    ['AndNext', 'Recall', '', 0x0, '<', 'Value', '', 1000],
+    pointer(0x0052c590),
+    pointer(0x40),
+    pointer(0x34), 
+    pointer(0x4),
+    pointer(0x0),
+    pointer(0x1c),
+    pointer(0x4540),
+    ['AddSource', 'Delta', 'Lower4', 0x0, '*', 'Value', '', 100],
+    pointer(0x0052c590),
+    pointer(0x40),
+    pointer(0x34), 
+    pointer(0x4),
+    pointer(0x0),
+    pointer(0x1c),
+    pointer(0x4540),
+    ['AddSource', 'Delta', 'Lower4', 0x1, '*', 'Value', '', 10],
+    pointer(0x0052c590),
+    pointer(0x40),
+    pointer(0x34), 
+    pointer(0x4),
+    pointer(0x0),
+    pointer(0x1c),
+    pointer(0x4540),
+    ['AndNext', 'Delta', 'Lower4', 0x2, '!=', 'Recall', '', 0],
+    pointer(0x0052c590),
+    pointer(0x40),
+    pointer(0x34), 
+    pointer(0x4),
+    pointer(0x0),
+    pointer(0x1c),
+    pointer(0x4540),
+    ['AddSource', 'Mem', 'Lower4', 0x0, '*', 'Value', '', 100],
+    pointer(0x0052c590),
+    pointer(0x40),
+    pointer(0x34), 
+    pointer(0x4),
+    pointer(0x0),
+    pointer(0x1c),
+    pointer(0x4540),
+    ['AddSource', 'Mem', 'Lower4', 0x1, '*', 'Value', '', 10],
+    pointer(0x0052c590),
+    pointer(0x40),
+    pointer(0x34), 
+    pointer(0x4),
+    pointer(0x0),
+    pointer(0x1c),
+    pointer(0x4540),
+    ['AddHits', 'Mem', 'Lower4', 0x2, '=', 'Recall', '', 0],
+    pointer(0x0052c590),
+    pointer(0x40),
+    pointer(0x34),
+    pointer(0x4),
+    pointer(0x0),
+    pointer(0x1c),
+    pointer(0x6a70),
+    ['AndNext', 'Mem', '32bitBE', 0x0, '=', 'Value', '', move],
+    ['AndNext', 'Recall', '', 0x0, '<', 'Value', '', 100],
+    pointer(0x0052c590),
+    pointer(0x40),
+    pointer(0x34), 
+    pointer(0x4),
+    pointer(0x0),
+    pointer(0x1c),
+    pointer(0x4540),
+    ['AddSource', 'Delta', 'Lower4', 0x0, '*', 'Value', '', 10],
+    pointer(0x0052c590),
+    pointer(0x40),
+    pointer(0x34), 
+    pointer(0x4),
+    pointer(0x0),
+    pointer(0x1c),
+    pointer(0x4540),
+    ['AndNext', 'Delta', 'Lower4', 0x1, '!=', 'Recall', '', 0],
+    pointer(0x0052c590),
+    pointer(0x40),
+    pointer(0x34), 
+    pointer(0x4),
+    pointer(0x0),
+    pointer(0x1c),
+    pointer(0x4540),
+    ['AddSource', 'Mem', 'Lower4', 0x0, '*', 'Value', '', 10],
+    pointer(0x0052c590),
+    pointer(0x40),
+    pointer(0x34), 
+    pointer(0x4),
+    pointer(0x0),
+    pointer(0x1c),
+    pointer(0x4540),
+    ['', 'Mem', 'Lower4', 0x1, '=', 'Recall', '', 0, hits],
+  ))
+}
+
+function drivingForwards() {
   return($(
     pointer(0x0048d990),
     pointer(0x304),
     pointer(0x38),
     pointer(0x28),
     pointer(0x2c),
-    pointer(0x18),
-    pointer(0x6f0),
-    ['', 'Mem', 'Float', 0x8c, '<', 'Delta', 'Float', 0x8c],
+    pointer(0x14),
+    ['', 'Mem', 'Float', 0xeec, '=', 'Value', '', 0],
+  ))  
+}
+
+function drivingBackwards() {
+  return($(
+    pointer(0x004ee5d0),
+    pointer(0x384),
+    pointer(0x30),
+    pointer(0x10),
+    ['', 'Mem', '32bit', 0x90, '=', 'Value', '', 1],
+  ))
+}
+
+function powersliding() {
+  return($(
+    pointer(0x004ee5d0),
+    pointer(0x384),
+    pointer(0x30),
+    pointer(0x10),
+    ['', 'Mem', '32bit', 0x80, '=', 'Value', '', 1],
+  ))
+}
+
+function tilting() {
+  return($(
+    pointer(0x004ee5d0),
+    pointer(0x384),
+    pointer(0x30),
+    pointer(0x10),
+    ['', 'Mem', '32bit', 0x8c, '=', 'Value', '', 1],
+  ))
+}
+
+function pistonCupCharacter(characterID) {
+  let logic = []
+  characterID.forEach((ID, index) => {
+  logic.push($(
+    pointer(0x0048d990),
+    pointer(0x300),
+    pointer(0x10),
+    pointer(0xc50),
+  ))
+  const isLast = index === characterID.length - 1;
+  if (!isLast) {
+    logic.push($(['OrNext', 'Mem', '32bitBE', 0x60, '=', 'Value', '', ID],))
+  } else {
+    logic.push($(['', 'Mem', '32bitBE', 0x60, '=', 'Value', '', ID],))
+  }
+});
+  return(logic)
+}
+
+function boostUsed() {
+  return($(
+    pointer(0x004ee5d0),
+    pointer(0x498),
+    pointer(0x2d0),
+    ['', 'Mem', 'Float', 0xc, '<', 'Delta', 'Float', 0xc],
   ))
 }
 
@@ -750,11 +1249,71 @@ function SpeedersCaught() {
   ))
 }
 
+function asciitopointsthousand(score) {
+  return($(
+    pointer(0x0052c590),
+    pointer(0x40),
+    pointer(0x34),
+    pointer(0x4),
+    pointer(0x0),
+    pointer(0x1c),
+    ['Remember', 'Mem', '32bit', 0x4540],
+    recallpointer(),
+    ['', 'Mem', '8bit', 0x4, '=', 'Value', '', 0],
+    recallpointer(),
+    ['AddSource', 'Mem', 'Lower4', 0x0, '*', 'Value', '', 1000],
+    recallpointer(),
+    ['AddSource', 'Mem', 'Lower4', 0x1, '*', 'Value', '', 100],
+    recallpointer(),
+    ['AddSource', 'Mem', 'Lower4', 0x2, '*', 'Value', '', 10],
+    recallpointer(),
+    ['', 'Mem', 'Lower4', 0x3, '>=', 'Value', '', score],
+  ))
+}
+
+function asciitopointshundred(score) {
+  return($(
+    pointer(0x0052c590),
+    pointer(0x40),
+    pointer(0x34),
+    pointer(0x4),
+    pointer(0x0),
+    pointer(0x1c),
+    ['Remember', 'Mem', '32bit', 0x4540],
+    recallpointer(),
+    ['AndNext', 'Mem', '8bit', 0x3, '=', 'Value', '', 0],
+    recallpointer(),
+    ['AddSource', 'Mem', 'Lower4', 0x0, '*', 'Value', '', 100],
+    recallpointer(),
+    ['AddSource', 'Mem', 'Lower4', 0x1, '*', 'Value', '', 10],
+    recallpointer(),
+    ['', 'Mem', 'Lower4', 0x2, '>=', 'Value', '', score],
+  ))
+}
+
+function asciitopointsten(score) {
+  return($(
+    pointer(0x0052c590),
+    pointer(0x40),
+    pointer(0x34),
+    pointer(0x4),
+    pointer(0x0),
+    pointer(0x1c),
+    ['Remember', 'Mem', '32bit', 0x4540],
+    recallpointer(),
+    ['AndNext', 'Mem', '8bit', 0x2, '=', 'Value', '', 0],
+    recallpointer(),
+    ['AddSource', 'Mem', 'Lower4', 0x0, '*', 'Value', '', 10],
+    recallpointer(),
+    ['', 'Mem', 'Lower4', 0x1, '>=', 'Value', '', score],
+  ))
+}
+
 set.addAchievement({
   title: "I Am Speed",
-  description: "Finish Radiator Springs Grand Prix in Story Mode",
+  description: 'Finish "Radiator Springs Grand Prix" in Story Mode (Off-Track Reset glitch not allowed for entire set)',
   type: 'progression',
-  points: 0,
+  points: 1,
   conditions: $(
     cheatprotect(),
     level(RadiatorSpringsGrandPrix),
@@ -769,9 +1328,9 @@ set.addAchievement({
 
 set.addAchievement({
   title: "First Stop, First Win",
-  description: "Finish Palm Mile Speedway in Story Mode in third place or higher",
+  description: 'Finish "Palm Mile Speedway" in Story Mode in 3rd place or higher',
   type: 'progression',
-  points: 0,
+  points: 5,
   conditions: $(
     cheatprotect(),
     level(PalmMileSpeedway),
@@ -787,9 +1346,9 @@ set.addAchievement({
 
 set.addAchievement({
   title: "Full Throttle Down South",
-  description: "Finish Motor Speedway of the South in Story Mode in third place or higher",
+  description: 'Finish "Motor Speedway of the South" in Story Mode in 3rd place or higher',
   type: 'progression',
-  points: 0,
+  points: 5,
   conditions: $(
     cheatprotect(),
     level(MotorSpeedwayoftheSouth),
@@ -805,9 +1364,9 @@ set.addAchievement({
 
 set.addAchievement({
   title: "High Noon, High Speed",
-  description: "Finish Sun Valley International Raceway in Story Mode in third place or higher",
+  description: 'Finish "Sun Valley International Raceway" in Story Mode in 3rd place or higher',
   type: 'progression',
-  points: 0,
+  points: 5,
   conditions: $(
     cheatprotect(),
     level(SunValleyInternationalRaceway),
@@ -823,9 +1382,9 @@ set.addAchievement({
 
 set.addAchievement({
   title: "The Smasherville Slugger",
-  description: "Win Smasherville International Raceway in Story Mode",
+  description: 'Win "Smasherville International Raceway" in Story Mode',
   type: 'progression',
-  points: 0,
+  points: 5,
   conditions: $(
     cheatprotect(),
     level(SmashervilleInternationalSpeedway),
@@ -841,9 +1400,9 @@ set.addAchievement({
 
 set.addAchievement({
   title: "Thunder Always Comes After Lightning",
-  description: "Win Los Angeles International Speedway in Story Mode",
+  description: 'Win "Los Angeles International Speedway" in Story Mode',
   type: 'win_condition',
-  points: 0,
+  points: 10,
   conditions: $(
     cheatprotect(),
     level(LosAngelesInternationalSpeedway),
@@ -859,8 +1418,8 @@ set.addAchievement({
 
 set.addAchievement({
   title: "Time for a Little Competitive Excursion",
-  description: "Finish Radiator Cap Circuit in third place or higher",
-  points: 0,
+  description: 'Finish "Radiator Cap Circuit" in 3rd place or higher',
+  points: 2,
   conditions: $(
     cheatprotect(),
     level(RadiatorCapCircuit),
@@ -876,8 +1435,8 @@ set.addAchievement({
 
 set.addAchievement({
   title: "Winner Takes the Drive",
-  description: "Finish Sally's Sunshine Circuit in third place or higher",
-  points: 0,
+  description: 'Finish "Sally\'s Sunshine Circuit" in 3rd place or higher',
+  points: 2,
   conditions: $(
     cheatprotect(),
     level(SallysSunshineCircuit),
@@ -892,14 +1451,14 @@ set.addAchievement({
 })
 
 set.addAchievement({
-  title: "Not Going into the Cactus this Time",
-  description: "Finish Doc's Challenge in third place or higher",
-  points: 0,
+  title: "Not Going Into the Cactus This Time",
+  description: 'Win "Doc\'s Challenge" in Story Mode',
+  points: 2,
   conditions: $(
     cheatprotect(),
     level(DocsChallenge),
-    noPractice(),
-    finish(),
+    story(),
+    win(),
     finishRace(3),
     startHit(),
     resetHit(),
@@ -909,9 +1468,9 @@ set.addAchievement({
 })
 
 set.addAchievement({
-  title: "Just some Special Brew",
-  description: "Finish Boostin' with Fillmore in third place or higher",
-  points: 0,
+  title: "Just Some Special Brew",
+  description: 'Finish "Boostin\' with Fillmore" in 3rd place or higher',
+  points: 3,
   conditions: $(
     cheatprotect(),
     level(BoostinwithFillmore),
@@ -927,8 +1486,8 @@ set.addAchievement({
 
 set.addAchievement({
   title: "You have to Look the Part",
-  description: "Finish North Desert Dash in third place or higher",
-  points: 0,
+  description: 'Finish "North Desert Dash" in 3rd place or higher',
+  points: 3,
   conditions: $(
     cheatprotect(),
     level(NorthDesertDash),
@@ -944,8 +1503,8 @@ set.addAchievement({
 
 set.addAchievement({
   title: "We're Gonna Go for a Little Drive",
-  description: "Finish Sarge's Off-Road Challenge in third place or higher",
-  points: 0,
+  description: 'Finish "Sarge\'s Off-Road Challenge" in 3rd place or higher',
+  points: 3,
   conditions: $(
     cheatprotect(),
     level(SargesOffRoadChallenge),
@@ -960,14 +1519,14 @@ set.addAchievement({
 })
 
 set.addAchievement({
-  title: "No Jail Time for You, if You Win",
-  description: "Finish Sheriff's Chase in third place or higher",
-  points: 0,
+  title: "No Jail Time for You, If You Win",
+  description: 'Win "Sheriff\'s Chase" in Story Mode',
+  points: 3,
   conditions: $(
     cheatprotect(),
     level(SheriffsChase),
-    noPractice(),
-    finish(),
+    story(),
+    win(),
     finishRace(1),
     startHit(),
     glitchProtectPlus(),
@@ -978,9 +1537,9 @@ set.addAchievement({
 })
 
 set.addAchievement({
-  title: "Hey McQueen, We're From Queens!",
-  description: "Finish Ornament Valley Circuit in third place or higher",
-  points: 0,
+  title: "Hey McQueen, We're from Queens!",
+  description: 'Finish "Ornament Valley Circuit" in 3rd place or higher',
+  points: 3,
   conditions: $(
     cheatprotect(),
     level(OrnamentValleyCircuit),
@@ -996,8 +1555,8 @@ set.addAchievement({
 
 set.addAchievement({
   title: "Wow, Mater, That Race Looked Rough",
-  description: "Finish Rustbucket Race-O-Rama in third place or higher",
-  points: 0,
+  description: 'Finish "Rustbucket Race-O-Rama" in 3rd place or higher',
+  points: 3,
   conditions: $(
     cheatprotect(),
     level(RustbucketRaceoRama),
@@ -1012,9 +1571,9 @@ set.addAchievement({
 })
 
 set.addAchievement({
-  title: "Time for That Drive You Owe",
-  description: "Finish Sally's Wheel Well Sprint in third place or higher",
-  points: 0,
+  title: "Time for That Drive You Owe Me",
+  description: 'Finish "Sally\'s Wheel Well Sprint" in 3rd place or higher',
+  points: 4,
   conditions: $(
     cheatprotect(),
     level(SallysWheelWellSprint),
@@ -1029,9 +1588,9 @@ set.addAchievement({
 })
 
 set.addAchievement({
-  title: "Time to Show the Crazy Old Grandpa Car what We've got",
-  description: "Finish Doc's Check-Up in third place or higher",
-  points: 0,
+  title: "Time to Show the Crazy Old Grandpa Car What We've Got",
+  description: 'Finish "Doc\'s Check-Up" in 3rd place or higher',
+  points: 4,
   conditions: $(
     cheatprotect(),
     level(DocsCheckUp),
@@ -1047,8 +1606,8 @@ set.addAchievement({
 
 set.addAchievement({
   title: "Let's Race, Fellow Racing Aficionados",
-  description: "Finish Tailfin Pass Circuit in third place or higher",
-  points: 0,
+  description: 'Finish "Tailfin Pass Circuit" in 3rd place or higher',
+  points: 4,
   conditions: $(
     cheatprotect(),
     level(TailfinPassCircuit),
@@ -1064,8 +1623,8 @@ set.addAchievement({
 
 set.addAchievement({
   title: "I'm Gonna Need Something a Little Bigger",
-  description: "Finish Monster Truck Mayhem in third place or higher",
-  points: 0,
+  description: 'Finish "Monster Truck Mayhem" in 3rd place or higher',
+  points: 4,
   conditions: $(
     cheatprotect(),
     level(MonsterTruckMayhem),
@@ -1081,8 +1640,8 @@ set.addAchievement({
 
 set.addAchievement({
   title: "Road's Open Again",
-  description: "Finish Delinquent Road Hazard in third place or higher",
-  points: 0,
+  description: 'Finish "Delinquent Road Hazard" in 3rd place or higher',
+  points: 4,
   conditions: $(
     cheatprotect(),
     level(DelinquentRoadHazards),
@@ -1098,8 +1657,8 @@ set.addAchievement({
 
 set.addAchievement({
   title: "The Roads Out Here Got Something Called Right Turns",
-  description: "Finish Chick's Challenge in third place or higher",
-  points: 0,
+  description: 'Finish "Chick\'s Challenge" in 3rd place or higher',
+  points: 4,
   conditions: $(
     cheatprotect(),
     level(ChicksChallenge),
@@ -1114,9 +1673,9 @@ set.addAchievement({
 })
 
 set.addAchievement({
-  title: "The Rivalry Between McQueen and Chick is Heating Up",
-  description: "Finish Radiator Springs GP in third place or higher",
-  points: 0,
+  title: "The Rivalry Between McQueen and Chick Is Heating Up",
+  description: 'Finish "Radiator Springs GP" in 3rd place or higher',
+  points: 5,
   conditions: $(
     cheatprotect(),
     level(RadiatorSpringsGP),
@@ -1132,8 +1691,8 @@ set.addAchievement({
 
 set.addAchievement({
   title: "No One Has Fall Offa These Roads in a Long Time, I Think",
-  description: "Finish Tailfin Pass GP in third place or higher",
-  points: 0,
+  description: 'Finish "Tailfin Pass GP" in 3rd place or higher',
+  points: 5,
   conditions: $(
     cheatprotect(),
     level(TailfinPassGP),
@@ -1148,9 +1707,9 @@ set.addAchievement({
 })
 
 set.addAchievement({
-  title: "You's Got To Train With a Real Professional Racer",
-  description: "Finish Ornament Valley GP in third place or higher",
-  points: 0,
+  title: "You's Got to Train with a Real Professional Racer",
+  description: 'Finish "Ornament Valley GP" in 3rd place or higher',
+  points: 5,
   conditions: $(
     cheatprotect(),
     level(OrnamentValleyGP),
@@ -1165,9 +1724,9 @@ set.addAchievement({
 })
 
 set.addAchievement({
-  title: "Look at Me Go!",
-  description: "Finish Mater's Speedy Circuit in third place or higher",
-  points: 0,
+  title: "Look Me Go!",
+  description: 'Finish "Mater\'s Speedy Circuit" in 3rd place or higher (Use code TRGTEXC)',
+  points: 5,
   conditions: $(
     cheatprotect(),
     level(logo),
@@ -1184,8 +1743,8 @@ set.addAchievement({
 
 set.addAchievement({
   title: "Tractors Is So Stupid!",
-  description: "Finish level 3 of Tractor Tipping",
-  points: 0,
+  description: 'Complete Level 3 of "Tractor Tipping"',
+  points: 3,
   conditions: $(
     cheatprotect(),
     levelType(Minigame),
@@ -1197,8 +1756,8 @@ set.addAchievement({
 
 set.addAchievement({
   title: "Now That's Some Good Tippin'!",
-  description: "Finish level 6 of Tractor Tipping",
-  points: 0,
+  description: 'Complete Level 6 of "Tractor Tipping"',
+  points: 5,
   conditions: $(
     cheatprotect(),
     levelType(Minigame),
@@ -1210,8 +1769,8 @@ set.addAchievement({
 
 set.addAchievement({
   title: "We Done Tipped Every Last One of 'em Tractors!",
-  description: "Finish level 8 of Tractor Tipping",
-  points: 0,
+  description: 'Complete Level 8 of "Tractor Tipping"',
+  points: 10,
   conditions: $(
     cheatprotect(),
     levelType(Minigame),
@@ -1223,8 +1782,8 @@ set.addAchievement({
 
 set.addAchievement({
   title: "Mama Mia, We Save-a the Day!",
-  description: "Finish level 3 of Luigi to the Rescue",
-  points: 0,
+  description: 'Complete Level 3 of "Luigi to the Rescue"',
+  points: 3,
   conditions: $(
     cheatprotect(),
     levelType(Minigame),
@@ -1236,8 +1795,8 @@ set.addAchievement({
 
 set.addAchievement({
   title: "Look Out Ferrari, Here Comme Luigi!",
-  description: "Finish level 6 of Luigi to the Rescue",
-  points: 0,
+  description: 'Complete Level 6 of "Luigi to the Rescue"',
+  points: 5,
   conditions: $(
     cheatprotect(),
     levelType(Minigame),
@@ -1249,8 +1808,8 @@ set.addAchievement({
 
 set.addAchievement({
   title: "You Saved Them All! Bellissimo!",
-  description: "Finish level 8 of Luigi to the Rescue",
-  points: 0,
+  description: 'Complete Level 8 of "Luigi to the Rescue"',
+  points: 10,
   conditions: $(
     cheatprotect(),
     levelType(Minigame),
@@ -1262,8 +1821,8 @@ set.addAchievement({
 
 set.addAchievement({
   title: "That's Just Basic Training, Soldier!",
-  description: "Finish level 1 of Sarge's Bootcamp",
-  points: 0,
+  description: 'Complete Level 1 of "Sarge\'s Boot Camp"',
+  points: 1,
   conditions: $(
     cheatprotect(),
     levelType(Minigame2),
@@ -1278,8 +1837,8 @@ set.addAchievement({
 
 set.addAchievement({
   title: "You Call That Discipline? Try Again!",
-  description: "Finish level 2 of Sarge's Bootcamp",
-  points: 0,
+  description: 'Complete Level 2 of "Sarge\'s Boot Camp"',
+  points: 3,
   conditions: $(
     cheatprotect(),
     levelType(Minigame2),
@@ -1294,8 +1853,8 @@ set.addAchievement({
 
 set.addAchievement({
   title: "Now That's What I Call Precision Driving!",
-  description: "Finish level 3 of Sarge's Bootcamp",
-  points: 0,
+  description: 'Complete Level 3 of "Sarge\'s Boot Camp"',
+  points: 5,
   conditions: $(
     cheatprotect(),
     levelType(Minigame2),
@@ -1310,8 +1869,8 @@ set.addAchievement({
 
 set.addAchievement({
   title: "You're Speedin', and I'm Catchin'!",
-  description: "Catch the Speeders in Sheriff's Hot Pursuit",
-  points: 0,
+  description: 'Catch the Speeders in "Sheriff\'s Hot Pursuit"',
+  points: 1,
   conditions: $(
     cheatprotect(),
     levelType(Minigame),
@@ -1323,8 +1882,8 @@ set.addAchievement({
 
 set.addAchievement({
   title: "Not in My Town, You Don't!",
-  description: "Catch the Hooligans in Sheriff's Hot Pursuit",
-  points: 0,
+  description: 'Catch the Hooligans in "Sheriff\'s Hot Pursuit"',
+  points: 3,
   conditions: $(
     cheatprotect(),
     levelType(Minigame),
@@ -1336,8 +1895,8 @@ set.addAchievement({
 
 set.addAchievement({
   title: "Clearin' the Roads, One Troublemaker at a Time!",
-  description: "Catch the Road Hazards in Sheriff's Hot Pursuit",
-  points: 0,
+  description: 'Catch the Road Hazards in "Sheriff\'s Hot Pursuit"',
+  points: 5,
   conditions: $(
     cheatprotect(),
     levelType(Minigame),
@@ -1348,9 +1907,9 @@ set.addAchievement({
 })
 
 set.addAchievement({
-  title: "Radiator Springs Don't Tolerate that Nonsense!",
-  description: "Catch the Delinquents in Sheriff's Hot Pursuit",
-  points: 0,
+  title: "Radiator Springs Don't Tolerate That Nonsense!",
+  description: 'Catch the Delinquents in "Sheriff\'s Hot Pursuit"',
+  points: 5,
   conditions: $(
     cheatprotect(),
     levelType(Minigame),
@@ -1362,8 +1921,8 @@ set.addAchievement({
 
 set.addAchievement({
   title: "I Got My Eye on You, Son!",
-  description: "Catch the Hot-Rodders in Sheriff's Hot Pursuit",
-  points: 0,
+  description: 'Catch the Hot-Rodders in "Sheriff\'s Hot Pursuit"',
+  points: 5,
   conditions: $(
     cheatprotect(),
     levelType(Minigame),
@@ -1374,9 +1933,9 @@ set.addAchievement({
 })
 
 set.addAchievement({
-  title: "Turn Right to go Left",
-  description: "Finish Doc's Lesson: Powerslide",
-  points: 0,
+  title: "Turn Right to Go Left",
+  description: 'Complete "Doc\'s Lesson: Powerslide"',
+  points: 1,
   conditions: $(
     cheatprotect(),
     levelType(Minigame2),
@@ -1392,9 +1951,9 @@ set.addAchievement({
 })
 
 set.addAchievement({
-  title: "Right to go Left, Where Have I Heard That Before?",
-  description: "Finish Mater's Backwards Lesson",
-  points: 0,
+  title: "Right to Go Left, Where Have I Heard That Before?",
+  description: 'Complete "Mater\'s Backwards Lesson"',
+  points: 1,
   conditions: $(
     cheatprotect(),
     levelType(Minigame2),
@@ -1411,8 +1970,8 @@ set.addAchievement({
 
 set.addAchievement({
   title: "Got The Goods, I'm Ghost",
-  description: "Finish High Speed Heist",
-  points: 0,
+  description: 'Complete "High Speed Heist"',
+  points: 4,
   conditions: $(
     cheatprotect(),
     level(HighSpeedHeist),
@@ -1427,9 +1986,9 @@ set.addAchievement({
 })
 
 set.addAchievement({
-  title: "You Don't Mess With My Friends",
-  description: "Finish Lightning Strikes Back",
-  points: 0,
+  title: "You Don't Mess with My Friends",
+  description: 'Complete "Lightning Strikes Back"',
+  points: 4,
   conditions: $(
     cheatprotect(),
     level(LightningStrikesBack),
@@ -1464,8 +2023,8 @@ set.addAchievement({
 
 set.addAchievement({
   title: "Mater's Cleanup Crew",
-  description: "Complete Mater's Countdown Cleanup",
-  points: 0,
+  description: 'Complete "Mater\'s Countdown Cleanup" (Use code TRGTEXC)',
+  points: 5,
   conditions: $(
     cheatprotect(),
     ['', 'Mem', '32bitBE', 0x004ecba4, '=', 'Value', '', 0x4d475f54],
@@ -1484,7 +2043,7 @@ set.addAchievement({
 set.addAchievement({
   title: "Back When This Was a Town Worth Stoppin' In",
   description: "Collect 5 of Lizzie's postcards",
-  points: 0,
+  points: 3,
   conditions: $(
     cheatprotect(),
     story(),
@@ -1496,7 +2055,7 @@ set.addAchievement({
 set.addAchievement({
   title: "Stanley Would've Loved This",
   description: "Collect 10 of Lizzie's postcards",
-  points: 0,
+  points: 5,
   conditions: $(
     cheatprotect(),
     story(),
@@ -1508,7 +2067,7 @@ set.addAchievement({
 set.addAchievement({
   title: "Keeping Stanley's Dream Alive",
   description: "Collect all 20 of Lizzie's postcards",
-  points: 0,
+  points: 10,
   conditions: $(
     cheatprotect(),
     story(),
@@ -1520,17 +2079,17 @@ set.addAchievement({
 set.addAchievement({
   title: "Rookie on the Circuit",
   description: "Collect 50 trophies",
-  points: 0,
+  points: 5,
   conditions: $(
     cheatprotect(),
     loadprotect(),
     ['', 'Mem', '32bit', 0x007ed780, '=', 'Value', '', 0],
-    pointer(0x2ec),
-    pointer(0x28),
-    ['', 'Delta', '32bit', 0x008150a8, '<', 'Value', '', 50],
-    pointer(0x2ec),
-    pointer(0x28),
-    ['', 'Mem', '32bit', 0x008150a8, '>=', 'Value', '', 50],
+    pointer(0x0048d990),
+    pointer(0x2f0),
+    ['', 'Delta', '32bit', 0x28, '<', 'Value', '', 50],
+    pointer(0x0048d990),
+    pointer(0x2f0),
+    ['', 'Mem', '32bit', 0x28, '>=', 'Value', '', 50],
   ),
   id: 606703,
 })
@@ -1538,17 +2097,17 @@ set.addAchievement({
 set.addAchievement({
   title: "Radiator Springs Champion",
   description: "Collect 150 trophies",
-  points: 0,
+  points: 10,
   conditions: $(
     cheatprotect(),
     loadprotect(),
     ['', 'Mem', '32bit', 0x007ed780, '=', 'Value', '', 0],
-    pointer(0x2ec),
-    pointer(0x28),
-    ['', 'Delta', '32bit', 0x008150a8, '<', 'Value', '', 150],
-    pointer(0x2ec),
-    pointer(0x28),
-    ['', 'Mem', '32bit', 0x008150a8, '>=', 'Value', '', 150],
+    pointer(0x0048d990),
+    pointer(0x2f0),
+    ['', 'Delta', '32bit', 0x28, '<', 'Value', '', 150],
+    pointer(0x0048d990),
+    pointer(0x2f0),
+    ['', 'Mem', '32bit', 0x28, '>=', 'Value', '', 150],
   ),
   id: 606704,
 })
@@ -1556,25 +2115,25 @@ set.addAchievement({
 set.addAchievement({
   title: "Piston Cup Legend",
   description: "Collect all 250 trophies",
-  points: 0,
+  points: 25,
   conditions: $(
     cheatprotect(),
     loadprotect(),
     ['', 'Mem', '32bit', 0x007ed780, '=', 'Value', '', 0],
-    pointer(0x2ec),
-    pointer(0x28),
-    ['', 'Delta', '32bit', 0x008150a8, '<', 'Value', '', 250],
-    pointer(0x2ec),
-    pointer(0x28),
-    ['', 'Mem', '32bit', 0x008150a8, '=', 'Value', '', 250],
+    pointer(0x0048d990),
+    pointer(0x2f0),
+    ['', 'Delta', '32bit', 0x28, '<', 'Value', '', 250],
+    pointer(0x0048d990),
+    pointer(0x2f0),
+    ['', 'Mem', '32bit', 0x28, '=', 'Value', '', 250],
   ),
   id: 606705,
 })
 
 set.addAchievement({
-  title: "Race of your Dreams",
-  description: "Win Radiator Springs Grand Prix on Champion difficulty",
-  points: 0,
+  title: "Race of Your Dreams",
+  description: 'Win "Radiator Springs Grand Prix" on Champion difficulty',
+  points: 10,
   conditions: $(
     cheatprotect(),
     level(RadiatorSpringsGrandPrix),
@@ -1590,8 +2149,8 @@ set.addAchievement({
 
 set.addAchievement({
   title: "Esteemed American Racer, Lightning McQueen",
-  description: "Win Radiator Cap Circuit on Champion difficulty",
-  points: 0,
+  description: 'Win "Radiator Cap Circuit" on Champion difficulty',
+  points: 10,
   conditions: $(
     cheatprotect(),
     level(RadiatorCapCircuit),
@@ -1606,9 +2165,9 @@ set.addAchievement({
 })
 
 set.addAchievement({
-  title: "Groupies are no Match for the Real Thing",
-  description: "Win Sally's Sunshine Circuit on Champion difficulty",
-  points: 0,
+  title: "Groupies Are No Match for the Real Thing",
+  description: 'Win "Sally\'s Sunshine Circuit" on Champion difficulty',
+  points: 10,
   conditions: $(
     cheatprotect(),
     level(SallysSunshineCircuit),
@@ -1624,8 +2183,8 @@ set.addAchievement({
 
 set.addAchievement({
   title: "Won from the Fabulous Hudson Hornet",
-  description: "Win Doc's Challenge on Champion difficulty",
-  points: 0,
+  description: 'Win "Doc\'s Challenge" on Champion difficulty',
+  points: 10,
   conditions: $(
     cheatprotect(),
     level(DocsChallenge),
@@ -1640,9 +2199,9 @@ set.addAchievement({
 })
 
 set.addAchievement({
-  title: "Super Octane Boost Juist For the Win",
-  description: "Win Boostin' with Fillmore on Champion difficulty",
-  points: 0,
+  title: "Super Octane Boost Juist for the Win",
+  description: 'Win "Boostin\' with Fillmore" on Champion difficulty',
+  points: 10,
   conditions: $(
     cheatprotect(),
     level(BoostinwithFillmore),
@@ -1657,9 +2216,9 @@ set.addAchievement({
 })
 
 set.addAchievement({
-  title: "Gold beats Silver Every Time",
-  description: "Win North Desert Dash on Champion difficulty",
-  points: 0,
+  title: "Gold Beats Silver Every Time",
+  description: 'Win "North Desert Dash" on Champion difficulty',
+  points: 10,
   conditions: $(
     cheatprotect(),
     level(NorthDesertDash),
@@ -1675,8 +2234,8 @@ set.addAchievement({
 
 set.addAchievement({
   title: "Time for a Hot Car Wash and a Cool Ration",
-  description: "Win Sarge's Off-Road Challenge on Champion difficulty",
-  points: 0,
+  description: 'Win "Sarge\'s Off-Road Challenge" on Champion difficulty',
+  points: 10,
   conditions: $(
     cheatprotect(),
     level(SargesOffRoadChallenge),
@@ -1692,8 +2251,8 @@ set.addAchievement({
 
 set.addAchievement({
   title: "Last Time You Had Help",
-  description: "Win Sheriff's Chase on Champion difficulty",
-  points: 0,
+  description: 'Win "Sheriff\'s Chase" on Champion difficulty',
+  points: 10,
   conditions: $(
     cheatprotect(),
     level(SheriffsChase),
@@ -1710,8 +2269,8 @@ set.addAchievement({
 
 set.addAchievement({
   title: "Gotta Beat the Best to Be the Best",
-  description: "Win Ornament Valley Circuit on Champion difficulty",
-  points: 0,
+  description: 'Win "Ornament Valley Circuit" on Champion difficulty',
+  points: 10,
   conditions: $(
     cheatprotect(),
     level(OrnamentValleyCircuit),
@@ -1727,8 +2286,8 @@ set.addAchievement({
 
 set.addAchievement({
   title: "I'm a Real Racin' Car Now!",
-  description: "Win Rustbucket Race-O-Rama on Champion difficulty",
-  points: 0,
+  description: 'Win "Rustbucket Race-O-Rama" on Champion difficulty',
+  points: 10,
   conditions: $(
     cheatprotect(),
     level(RustbucketRaceoRama),
@@ -1744,8 +2303,8 @@ set.addAchievement({
 
 set.addAchievement({
   title: "Didn't Even Hit Third Gear",
-  description: "Win Sally's Wheel Well Sprint on Champion difficulty",
-  points: 0,
+  description: 'Win "Sally\'s Wheel Well Sprint" on Champion difficulty',
+  points: 10,
   conditions: $(
     cheatprotect(),
     level(SallysWheelWellSprint),
@@ -1761,8 +2320,8 @@ set.addAchievement({
 
 set.addAchievement({
   title: "This New Upgrade Feels Great!",
-  description: "Win Doc's Check-Up on Champion difficulty",
-  points: 0,
+  description: 'Win "Doc\'s Check-Up" on Champion difficulty',
+  points: 10,
   conditions: $(
     cheatprotect(),
     level(DocsCheckUp),
@@ -1777,9 +2336,9 @@ set.addAchievement({
 })
 
 set.addAchievement({
-  title: "The American Landscape is Myriad in its Challenges",
-  description: "Win Tailfin Pass Circuit on Champion difficulty",
-  points: 0,
+  title: "The American Landscape is Myriad in Its Challenges",
+  description: 'Win "Tailfin Pass Circuit" on Champion difficulty',
+  points: 10,
   conditions: $(
     cheatprotect(),
     level(TailfinPassCircuit),
@@ -1795,8 +2354,8 @@ set.addAchievement({
 
 set.addAchievement({
   title: "WHAT DID YOU SAY, PUNY TOW TRUCK?!",
-  description: "Win Monster Truck Mayhem on Champion difficulty",
-  points: 0,
+  description: 'Win "Monster Truck Mayhem" on Champion difficulty',
+  points: 10,
   conditions: $(
     cheatprotect(),
     level(MonsterTruckMayhem),
@@ -1812,8 +2371,8 @@ set.addAchievement({
 
 set.addAchievement({
   title: "Cheer Up Guys, Relax a Little",
-  description: "Win Delinquent Road Hazard on Champion difficulty",
-  points: 0,
+  description: 'Win "Delinquent Road Hazard" on Champion difficulty',
+  points: 10,
   conditions: $(
     cheatprotect(),
     level(DelinquentRoadHazards),
@@ -1829,8 +2388,8 @@ set.addAchievement({
 
 set.addAchievement({
   title: "Right, You Like Losing in Front of a Crowd",
-  description: "Win Chick's Challenge on Champion difficulty",
-  points: 0,
+  description: 'Win "Chick\'s Challenge" on Champion difficulty',
+  points: 10,
   conditions: $(
     cheatprotect(),
     level(ChicksChallenge),
@@ -1846,8 +2405,8 @@ set.addAchievement({
 
 set.addAchievement({
   title: "Beaten the Ugly Green Car with the Mustache",
-  description: "Win Radiator Springs GP on Champion difficulty",
-  points: 0,
+  description: 'Win "Radiator Springs GP" on Champion difficulty',
+  points: 25,
   conditions: $(
     cheatprotect(),
     level(RadiatorSpringsGP),
@@ -1863,8 +2422,8 @@ set.addAchievement({
 
 set.addAchievement({
   title: "You Doing Okay, Chick?",
-  description: "Win Tailfin Pass GP on Champion difficulty",
-  points: 0,
+  description: 'Win "Tailfin Pass GP" on Champion difficulty',
+  points: 25,
   conditions: $(
     cheatprotect(),
     level(TailfinPassGP),
@@ -1879,9 +2438,9 @@ set.addAchievement({
 })
 
 set.addAchievement({
-  title: "Should Have Trained With Lightning",
-  description: "Win Ornament Valley GP on Champion difficulty",
-  points: 0,
+  title: "Should Have Trained with Lightning",
+  description: 'Win "Ornament Valley GP" on Champion difficulty',
+  points: 25,
   conditions: $(
     cheatprotect(),
     level(OrnamentValleyGP),
@@ -1897,8 +2456,8 @@ set.addAchievement({
 
 set.addAchievement({
   title: "Quickest Tow in the West",
-  description: "Win Mater's Speedy Circuit on Champion difficulty",
-  points: 0,
+  description: 'Win "Mater\'s Speedy Circuit" on Champion difficulty (Use code TRGTEXC)',
+  points: 25,
   conditions: $(
     cheatprotect(),
     level(logo),
@@ -1914,9 +2473,9 @@ set.addAchievement({
 })
 
 set.addAchievement({
-  title: "I'm Faster Than Fast, Quicker Than Quick",
-  description: "Win the Palm Mile Speedway on Champion difficulty",
-  points: 0,
+  title: "I'm Faster than Fast, Quicker than Quick",
+  description: 'Win "Palm Mile Speedway" on Champion difficulty',
+  points: 10,
   conditions: $(
     cheatprotect(),
     level(PalmMileSpeedway),
@@ -1931,9 +2490,9 @@ set.addAchievement({
 })
 
 set.addAchievement({
-  title: "Float Like a Cadillac, Sting Like a Beemer",
-  description: "Win the Motor Speedway of the South on Champion difficulty",
-  points: 0,
+  title: "Float like a Cadillac, Sting like a Beemer",
+  description: 'Win "Motor Speedway of the South" on Champion difficulty',
+  points: 10,
   conditions: $(
     cheatprotect(),
     level(MotorSpeedwayoftheSouth),
@@ -1949,8 +2508,8 @@ set.addAchievement({
 
 set.addAchievement({
   title: "I Eat Winners for Breakfast",
-  description: "Win the Sun Valley International Raceway on Champion difficulty",
-  points: 0,
+  description: 'Win "Sun Valley International Raceway" on Champion difficulty',
+  points: 10,
   conditions: $(
     cheatprotect(),
     level(SunValleyInternationalRaceway),
@@ -1965,9 +2524,9 @@ set.addAchievement({
 })
 
 set.addAchievement({
-  title: "One Winner. Nineteen Losers",
-  description: "Win the Smasherville International Raceway on Champion difficulty",
-  points: 0,
+  title: "One Winner. Nineteen Losers.",
+  description: 'Win "Smasherville International Raceway" on Champion difficulty',
+  points: 10,
   conditions: $(
     cheatprotect(),
     level(SmashervilleInternationalSpeedway),
@@ -1983,8 +2542,8 @@ set.addAchievement({
 
 set.addAchievement({
   title: "Ka-Chow! Piston Cup Champion",
-  description: "Win the Los Angeles International Speedway on Champion difficulty",
-  points: 0,
+  description: 'Win "Los Angeles International Speedway" on Champion difficulty',
+  points: 25,
   conditions: $(
     cheatprotect(),
     level(LosAngelesInternationalSpeedway),
@@ -2000,8 +2559,8 @@ set.addAchievement({
 
 set.addAchievement({
   title: "A Car's Gotta Have Style",
-  description: "Buy all 13 Character Art packs",
-  points: 0,
+  description: "Purchase all 13 Character Art packs",
+  points: 4,
   conditions: $(
     cheatprotect(),
     measuredIf(buyProtect()),
@@ -2012,8 +2571,8 @@ set.addAchievement({
 
 set.addAchievement({
   title: "Sights Worth Slowin' For",
-  description: "Buy 11 Environment Art packs",
-  points: 0,
+  description: "Purchase 11 Environment Art packs",
+  points: 5,
   conditions: $(
     cheatprotect(),
     measuredIf(buyProtect()),
@@ -2024,8 +2583,8 @@ set.addAchievement({
 
 set.addAchievement({
   title: "See the Country, Feel the Ride",
-  description: "Buy all 22 Environment Art packs",
-  points: 0,
+  description: "Purchase all 22 Environment Art packs",
+  points: 5,
   conditions: $(
     cheatprotect(),
     measuredIf(buyProtect()),
@@ -2036,8 +2595,8 @@ set.addAchievement({
 
 set.addAchievement({
   title: "Hidden Under the Hood",
-  description: "Buy all 6 Deleted Scenes",
-  points: 0,
+  description: "Purchase all 6 Deleted Scenes",
+  points: 4,
   conditions: $(
     cheatprotect(),
     measuredIf(buyProtect()),
@@ -2048,8 +2607,8 @@ set.addAchievement({
 
 set.addAchievement({
   title: "Lights, Camera, Ka-Chow!",
-  description: "Buy all 9 Movie Clips",
-  points: 0,
+  description: "Purchase all 9 Movie Clips",
+  points: 3,
   conditions: $(
     cheatprotect(),
     measuredIf(buyProtect()),
@@ -2060,8 +2619,8 @@ set.addAchievement({
 
 set.addAchievement({
   title: "All Revved Up, All Accounted For",
-  description: "Buy all characters",
-  points: 0,
+  description: "Purchase all characters",
+  points: 10,
   conditions: $(
     cheatprotect(),
     measuredIf(buyProtect()),
@@ -2072,8 +2631,8 @@ set.addAchievement({
 
 set.addAchievement({
   title: "Ka-Chow! Best Look in Town",
-  description: "Buy all of Lightning McQueens paintjobs",
-  points: 0,
+  description: "Purchase all of Lightning McQueen's paintjobs",
+  points: 3,
   conditions: $(
     cheatprotect(),
     measuredIf(buyProtect()),
@@ -2084,8 +2643,8 @@ set.addAchievement({
 
 set.addAchievement({
   title: "Towin' in Style, Dadgum!",
-  description: "Buy all of Maters paintjobs",
-  points: 0,
+  description: "Purchase all of Mater's paintjobs",
+  points: 2,
   conditions: $(
     cheatprotect(),
     measuredIf(buyProtect()),
@@ -2096,8 +2655,8 @@ set.addAchievement({
 
 set.addAchievement({
   title: "Porsche-ly Perfect",
-  description: "Buy all of Sally's paintjobs",
-  points: 0,
+  description: "Purchase all of Sally's paintjobs",
+  points: 1,
   conditions: $(
     cheatprotect(),
     measuredIf(buyProtect()),
@@ -2107,9 +2666,9 @@ set.addAchievement({
 })
 
 set.addAchievement({
-  title: "Fabulous Hudson Hornet",
-  description: "Buy all of Doc's paintjobs",
-  points: 0,
+  title: "The Fabulous Hudson Hornet",
+  description: "Purchase all of Doc's paintjobs",
+  points: 2,
   conditions: $(
     cheatprotect(),
     measuredIf(buyProtect()),
@@ -2119,9 +2678,9 @@ set.addAchievement({
 })
 
 set.addAchievement({
-  title: "Low and Slow",
-  description: "Buy all of Ramone's paintjobs",
-  points: 0,
+  title: "Oh Honey, Look... Von Dutch",
+  description: "Purchase all of Ramone's paintjobs",
+  points: 2,
   conditions: $(
     cheatprotect(),
     measuredIf(buyProtect()),
@@ -2132,8 +2691,8 @@ set.addAchievement({
 
 set.addAchievement({
   title: "V8 Café Chic",
-  description: "Buy all of Flo's paintjobs",
-  points: 0,
+  description: "Purchase all of Flo's paintjobs",
+  points: 3,
   conditions: $(
     cheatprotect(),
     measuredIf(buyProtect()),
@@ -2144,8 +2703,8 @@ set.addAchievement({
 
 set.addAchievement({
   title: "Law and Order in Every Finish",
-  description: "Buy all of Sheriff's paintjobs",
-  points: 0,
+  description: "Purchase all of Sheriff's paintjobs",
+  points: 3,
   conditions: $(
     cheatprotect(),
     measuredIf(buyProtect()),
@@ -2156,8 +2715,8 @@ set.addAchievement({
 
 set.addAchievement({
   title: "Kachigga!",
-  description: "Buy all of Chick Hicks paintsjobs",
-  points: 0,
+  description: "Purchase all of Chick Hicks's paintsjobs",
+  points: 1,
   conditions: $(
     cheatprotect(),
     measuredIf(buyProtect()),
@@ -2168,8 +2727,8 @@ set.addAchievement({
 
 set.addAchievement({
   title: "Boosted and Customized",
-  description: "Buy all of Wingo's paintjobs",
-  points: 0,
+  description: "Purchase all of Wingo's paintjobs",
+  points: 3,
   conditions: $(
     cheatprotect(),
     measuredIf(buyProtect()),
@@ -2180,8 +2739,8 @@ set.addAchievement({
 
 set.addAchievement({
   title: "Boogity Boogity Boogity Styles!",
-  description: "Buy all of Darrell Cartrips paintjobs",
-  points: 0,
+  description: "Purchase all of Darrell Cartrip's paintjobs",
+  points: 1,
   conditions: $(
     cheatprotect(),
     measuredIf(buyProtect()),
@@ -2192,8 +2751,8 @@ set.addAchievement({
 
 set.addAchievement({
   title: "The King's Full Livery",
-  description: "Buy all of the King's paintjobs",
-  points: 0,
+  description: "Purchase all of The King's paintjobs",
+  points: 2,
   conditions: $(
     cheatprotect(),
     measuredIf(buyProtect()),
@@ -2204,8 +2763,8 @@ set.addAchievement({
 
 set.addAchievement({
   title: "Ka-Chow Goes Ka-Pow!",
-  description: "Buy all of Monster Truck Lightnings paintjobs",
-  points: 0,
+  description: "Purchase all of Monster Truck Lightning's paintjobs",
+  points: 3,
   conditions: $(
     cheatprotect(),
     measuredIf(buyProtect()),
@@ -2216,8 +2775,8 @@ set.addAchievement({
 
 set.addAchievement({
   title: "Terror of the Tarmac",
-  description: "Buy all of Count Spatula's paintjobs",
-  points: 0,
+  description: "Purchase all of Count Spatula's paintjobs",
+  points: 2,
   conditions: $(
     cheatprotect(),
     measuredIf(buyProtect()),
@@ -2227,9 +2786,9 @@ set.addAchievement({
 })
 
 set.addAchievement({
-  title: "With a Little Rust-eze, You Too Can Drive Like Me!",
-  description: "As Lightning McQueen, win Rustbucket Race-o-Rama on Champion difficulty with a lead of 5 seconds or more",
-  points: 0,
+  title: "With a Little Rust-eze, You Too Can Drive like Me!",
+  description: 'As Lightning McQueen, win "Rustbucket Race-o-Rama" on Champion difficulty with a lead of 5 seconds or more',
+  points: 25,
   conditions: $(
     cheatprotect(),
     glitchProtect(),
@@ -2248,96 +2807,44 @@ set.addAchievement({
 //10 points per second
 set.addAchievement({
   title: "I'm the World's Best Backwards Driver!",
-  description: "As Mater, win Boostin' with Fillmore on Champion difficulty while earning 2,000 points from driving backwards",
-  points: 0,
-  conditions: $(
-    measuredIf(cheatprotect()),
-    measuredIf(...character(Mater)),
-    measuredIf(level(BoostinwithFillmore)),
-    measuredIf(difficulty(2)),
-    startHit(),
-    pointer(0x004ee5d0),
-    pointer(0x498),
-    ['AndNext', 'Mem', 'Float', 0xe40, '!=', 'Value', '', 0],
-    pointer(0x004ee5d0),
-    pointer(0x498),
-    ['AddSource', 'Mem', 'Float', 0xe40, '%', 'Value', '', 1],
-    ['AddHits', 'Value', '', 0x0, '=', 'Value', '', 0],
-    pointer(0x004ee5d0),
-    pointer(0x498),
-    ['AndNext', 'Mem', 'Float', 0xe40, '!=', 'Value', '', 0],
-    pointer(0x004ee5d0),
-    pointer(0x498),
-    ['AddSource', 'Mem', 'Float', 0xe40, '%', 'Value', '', 1],
-    ['AddHits', 'Value', '', 0x0, '=', 'Value', '', 0],
-    pointer(0x004ee5d0),
-    pointer(0x498),
-    ['AndNext', 'Mem', 'Float', 0xe40, '!=', 'Value', '', 0],
-    pointer(0x004ee5d0),
-    pointer(0x498),
-    ['AddSource', 'Mem', 'Float', 0xe40, '%', 'Value', '', 1],
-    ['AddHits', 'Value', '', 0x0, '=', 'Value', '', 0],
-    pointer(0x004ee5d0),
-    pointer(0x498),
-    ['AndNext', 'Mem', 'Float', 0xe40, '!=', 'Value', '', 0],
-    pointer(0x004ee5d0),
-    pointer(0x498),
-    ['AddSource', 'Mem', 'Float', 0xe40, '%', 'Value', '', 1],
-    ['AddHits', 'Value', '', 0x0, '=', 'Value', '', 0],
-    pointer(0x004ee5d0),
-    pointer(0x498),
-    ['AndNext', 'Mem', 'Float', 0xe40, '!=', 'Value', '', 0],
-    pointer(0x004ee5d0),
-    pointer(0x498),
-    ['AddSource', 'Mem', 'Float', 0xe40, '%', 'Value', '', 1],
-    ['AddHits', 'Value', '', 0x0, '=', 'Value', '', 0],
-    pointer(0x004ee5d0),
-    pointer(0x498),
-    ['AndNext', 'Mem', 'Float', 0xe40, '!=', 'Value', '', 0],
-    pointer(0x004ee5d0),
-    pointer(0x498),
-    ['AddSource', 'Mem', 'Float', 0xe40, '%', 'Value', '', 1],
-    ['AddHits', 'Value', '', 0x0, '=', 'Value', '', 0],
-    pointer(0x004ee5d0),
-    pointer(0x498),
-    ['AndNext', 'Mem', 'Float', 0xe40, '!=', 'Value', '', 0],
-    pointer(0x004ee5d0),
-    pointer(0x498),
-    ['AddSource', 'Mem', 'Float', 0xe40, '%', 'Value', '', 1],
-    ['AddHits', 'Value', '', 0x0, '=', 'Value', '', 0],
-    pointer(0x004ee5d0),
-    pointer(0x498),
-    ['AndNext', 'Mem', 'Float', 0xe40, '!=', 'Value', '', 0],
-    pointer(0x004ee5d0),
-    pointer(0x498),
-    ['AddSource', 'Mem', 'Float', 0xe40, '%', 'Value', '', 1],
-    ['AddHits', 'Value', '', 0x0, '=', 'Value', '', 0],
-    pointer(0x004ee5d0),
-    pointer(0x498),
-    ['AndNext', 'Mem', 'Float', 0xe40, '!=', 'Value', '', 0],
-    pointer(0x004ee5d0),
-    pointer(0x498),
-    ['AddSource', 'Mem', 'Float', 0xe40, '%', 'Value', '', 1],
-    ['AddHits', 'Value', '', 0x0, '=', 'Value', '', 0],
-    pointer(0x004ee5d0),
-    pointer(0x498),
-    ['AndNext', 'Mem', 'Float', 0xe40, '!=', 'Value', '', 0],
-    pointer(0x004ee5d0),
-    pointer(0x498),
-    ['AddSource', 'Mem', 'Float', 0xe40, '%', 'Value', '', 1],
-    ['Measured', 'Value', '', 0x0, '=', 'Value', '', 0, 2000],
-    trigger(win()),
-    trigger(finishRace(3)),
-    resetHit(),
-    glitchProtect(),
-  ),
+  description: 'As Mater, win "Boostin\' with Fillmore" on Champion difficulty in 1 minute, stopping the clock by driving backwards',
+  points: 25,
+  conditions: {
+    core: $(
+      cheatprotect(),
+      ...character(Mater),
+      level(BoostinwithFillmore),
+      difficulty(2),
+      startHit(),
+      trigger(win()),
+      trigger(finishRace(3)),
+      resetHit(),
+      glitchProtect(),
+    ),
+    alt1: $(
+      ['AndNext', 'Mem', '8bit', 0x001b1ee4, '=', 'Value', '', 0x2],
+      ['AddHits', 'Value', '', 1, '=', 'Value', '', 1],
+      ['ResetIf', 'Value', '', 1, '=', 'Value', '', 1, 3600],
+      pointer(0x0048d990),
+      pointer(0x300),
+      pointer(0x4c),
+      pointer(0xc44),
+      pointer(0x54),
+      pointer(0x0),
+      ['PauseIf', 'Delta', '32bit', 0x28, '=', 'Mem', '32bit', 0x28],
+      pauseIf(drivingBackwards()),
+    ),
+    alt2: $(
+      ['', 'Value', '', 1, '=', 'Value', '', 1]
+    ),
+  },
   id: 606738,
 })
 
 set.addAchievement({
   title: "All Natural, Stickers",
-  description: "As Sally, win Sally's Wheel Well Sprint on Champion difficulty without boosting or taking shortcuts",
-  points: 0,
+  description: 'As Sally, win "Sally\'s Wheel Well Sprint" on Champion difficulty without boosting or taking shortcuts',
+  points: 25,
   conditions: $(
     cheatprotect(),
     ...character(Sally),
@@ -2357,181 +2864,52 @@ set.addAchievement({
 //20 points per second
 set.addAchievement({
   title: "Let Me Show You How It's Done",
-  description: "As Doc Hudson, win Doc's Challenge on Champion difficulty while earning 1,000 points from powersliding",
-  points: 0,
-  conditions: $(
-    measuredIf(cheatprotect()),
-    measuredIf(...character(Doc)),
-    measuredIf(level(DocsChallenge)),
-    measuredIf(difficulty(2)),
-    startHit(),
-    pointer(0x004ee5d0),
-    pointer(0x498),
-    ['AndNext', 'Mem', 'Float', 0xe3c, '!=', 'Value', '', 0],
-    pointer(0x004ee5d0),
-    pointer(0x498),
-    ['AddSource', 'Mem', 'Float', 0xe3c, '%', 'Value', '', 1],
-    ['AddHits', 'Value', '', 0x0, '=', 'Value', '', 0],
-    pointer(0x004ee5d0),
-    pointer(0x498),
-    ['AndNext', 'Mem', 'Float', 0xe3c, '!=', 'Value', '', 0],
-    pointer(0x004ee5d0),
-    pointer(0x498),
-    ['AddSource', 'Mem', 'Float', 0xe3c, '%', 'Value', '', 1],
-    ['AddHits', 'Value', '', 0x0, '=', 'Value', '', 0],
-    pointer(0x004ee5d0),
-    pointer(0x498),
-    ['AndNext', 'Mem', 'Float', 0xe3c, '!=', 'Value', '', 0],
-    pointer(0x004ee5d0),
-    pointer(0x498),
-    ['AddSource', 'Mem', 'Float', 0xe3c, '%', 'Value', '', 1],
-    ['AddHits', 'Value', '', 0x0, '=', 'Value', '', 0],
-    pointer(0x004ee5d0),
-    pointer(0x498),
-    ['AndNext', 'Mem', 'Float', 0xe3c, '!=', 'Value', '', 0],
-    pointer(0x004ee5d0),
-    pointer(0x498),
-    ['AddSource', 'Mem', 'Float', 0xe3c, '%', 'Value', '', 1],
-    ['AddHits', 'Value', '', 0x0, '=', 'Value', '', 0],
-    pointer(0x004ee5d0),
-    pointer(0x498),
-    ['AndNext', 'Mem', 'Float', 0xe3c, '!=', 'Value', '', 0],
-    pointer(0x004ee5d0),
-    pointer(0x498),
-    ['AddSource', 'Mem', 'Float', 0xe3c, '%', 'Value', '', 1],
-    ['AddHits', 'Value', '', 0x0, '=', 'Value', '', 0],
-    pointer(0x004ee5d0),
-    pointer(0x498),
-    ['AndNext', 'Mem', 'Float', 0xe3c, '!=', 'Value', '', 0],
-    pointer(0x004ee5d0),
-    pointer(0x498),
-    ['AddSource', 'Mem', 'Float', 0xe3c, '%', 'Value', '', 1],
-    ['AddHits', 'Value', '', 0x0, '=', 'Value', '', 0],
-    pointer(0x004ee5d0),
-    pointer(0x498),
-    ['AndNext', 'Mem', 'Float', 0xe3c, '!=', 'Value', '', 0],
-    pointer(0x004ee5d0),
-    pointer(0x498),
-    ['AddSource', 'Mem', 'Float', 0xe3c, '%', 'Value', '', 1],
-    ['AddHits', 'Value', '', 0x0, '=', 'Value', '', 0],
-    pointer(0x004ee5d0),
-    pointer(0x498),
-    ['AndNext', 'Mem', 'Float', 0xe3c, '!=', 'Value', '', 0],
-    pointer(0x004ee5d0),
-    pointer(0x498),
-    ['AddSource', 'Mem', 'Float', 0xe3c, '%', 'Value', '', 1],
-    ['AddHits', 'Value', '', 0x0, '=', 'Value', '', 0],
-    pointer(0x004ee5d0),
-    pointer(0x498),
-    ['AndNext', 'Mem', 'Float', 0xe3c, '!=', 'Value', '', 0],
-    pointer(0x004ee5d0),
-    pointer(0x498),
-    ['AddSource', 'Mem', 'Float', 0xe3c, '%', 'Value', '', 1],
-    ['AddHits', 'Value', '', 0x0, '=', 'Value', '', 0],
-    pointer(0x004ee5d0),
-    pointer(0x498),
-    ['AndNext', 'Mem', 'Float', 0xe3c, '!=', 'Value', '', 0],
-    pointer(0x004ee5d0),
-    pointer(0x498),
-    ['AddSource', 'Mem', 'Float', 0xe3c, '%', 'Value', '', 1],
-    ['AddHits', 'Value', '', 0x0, '=', 'Value', '', 0],
-    pointer(0x004ee5d0),
-    pointer(0x498),
-    ['AndNext', 'Mem', 'Float', 0xe3c, '!=', 'Value', '', 0],
-    pointer(0x004ee5d0),
-    pointer(0x498),
-    ['AddSource', 'Mem', 'Float', 0xe3c, '%', 'Value', '', 1],
-    ['AddHits', 'Value', '', 0x0, '=', 'Value', '', 0],
-    pointer(0x004ee5d0),
-    pointer(0x498),
-    ['AndNext', 'Mem', 'Float', 0xe3c, '!=', 'Value', '', 0],
-    pointer(0x004ee5d0),
-    pointer(0x498),
-    ['AddSource', 'Mem', 'Float', 0xe3c, '%', 'Value', '', 1],
-    ['AddHits', 'Value', '', 0x0, '=', 'Value', '', 0],
-    pointer(0x004ee5d0),
-    pointer(0x498),
-    ['AndNext', 'Mem', 'Float', 0xe3c, '!=', 'Value', '', 0],
-    pointer(0x004ee5d0),
-    pointer(0x498),
-    ['AddSource', 'Mem', 'Float', 0xe3c, '%', 'Value', '', 1],
-    ['AddHits', 'Value', '', 0x0, '=', 'Value', '', 0],
-    pointer(0x004ee5d0),
-    pointer(0x498),
-    ['AndNext', 'Mem', 'Float', 0xe3c, '!=', 'Value', '', 0],
-    pointer(0x004ee5d0),
-    pointer(0x498),
-    ['AddSource', 'Mem', 'Float', 0xe3c, '%', 'Value', '', 1],
-    ['AddHits', 'Value', '', 0x0, '=', 'Value', '', 0],
-    pointer(0x004ee5d0),
-    pointer(0x498),
-    ['AndNext', 'Mem', 'Float', 0xe3c, '!=', 'Value', '', 0],
-    pointer(0x004ee5d0),
-    pointer(0x498),
-    ['AddSource', 'Mem', 'Float', 0xe3c, '%', 'Value', '', 1],
-    ['AddHits', 'Value', '', 0x0, '=', 'Value', '', 0],
-    pointer(0x004ee5d0),
-    pointer(0x498),
-    ['AndNext', 'Mem', 'Float', 0xe3c, '!=', 'Value', '', 0],
-    pointer(0x004ee5d0),
-    pointer(0x498),
-    ['AddSource', 'Mem', 'Float', 0xe3c, '%', 'Value', '', 1],
-    ['AddHits', 'Value', '', 0x0, '=', 'Value', '', 0],
-    pointer(0x004ee5d0),
-    pointer(0x498),
-    ['AndNext', 'Mem', 'Float', 0xe3c, '!=', 'Value', '', 0],
-    pointer(0x004ee5d0),
-    pointer(0x498),
-    ['AddSource', 'Mem', 'Float', 0xe3c, '%', 'Value', '', 1],
-    ['AddHits', 'Value', '', 0x0, '=', 'Value', '', 0],
-    pointer(0x004ee5d0),
-    pointer(0x498),
-    ['AndNext', 'Mem', 'Float', 0xe3c, '!=', 'Value', '', 0],
-    pointer(0x004ee5d0),
-    pointer(0x498),
-    ['AddSource', 'Mem', 'Float', 0xe3c, '%', 'Value', '', 1],
-    ['AddHits', 'Value', '', 0x0, '=', 'Value', '', 0],
-    pointer(0x004ee5d0),
-    pointer(0x498),
-    ['AndNext', 'Mem', 'Float', 0xe3c, '!=', 'Value', '', 0],
-    pointer(0x004ee5d0),
-    pointer(0x498),
-    ['AddSource', 'Mem', 'Float', 0xe3c, '%', 'Value', '', 1],
-    ['AddHits', 'Value', '', 0x0, '=', 'Value', '', 0],
-    pointer(0x004ee5d0),
-    pointer(0x498),
-    ['AndNext', 'Mem', 'Float', 0xe3c, '!=', 'Value', '', 0],
-    pointer(0x004ee5d0),
-    pointer(0x498),
-    ['AddSource', 'Mem', 'Float', 0xe3c, '%', 'Value', '', 1],
-    ['Measured', 'Value', '', 0x0, '=', 'Value', '', 0, 1000],
-    trigger(win()),
-    trigger(finishRace(3)),
-    resetHit(),
-    glitchProtect(),
-  ),
+  description: 'As Doc Hudson, win "Doc\'s Challenge" on Champion difficulty in 1 minute and 30 seconds, stopping the clock by powersliding',
+  points: 25,
+  conditions: {
+    core: $(
+      cheatprotect(),
+      ...character(Doc),
+      level(DocsChallenge),
+      difficulty(2),
+      startHit(),
+      trigger(win()),
+      trigger(finishRace(3)),
+      resetHit(),
+      glitchProtect(),
+    ),
+    alt1: $(
+      ['AndNext', 'Mem', '8bit', 0x001b1ee4, '=', 'Value', '', 0x2],
+      ['AddHits', 'Value', '', 1, '=', 'Value', '', 1],
+      ['ResetIf', 'Value', '', 1, '=', 'Value', '', 1, 5400],
+      pointer(0x0048d990),
+      pointer(0x300),
+      pointer(0x4c),
+      pointer(0xc44),
+      pointer(0x54),
+      pointer(0x0),
+      ['PauseIf', 'Delta', '32bit', 0x28, '=', 'Mem', '32bit', 0x28],
+      pauseIf(powersliding()),
+    ),
+    alt2: $(
+      ['', 'Value', '', 1, '=', 'Value', '', 1]
+    ),
+  },
   id: 606740,
 })
 
 //Need a fix...
 set.addAchievement({
-  title: "Low n' Slow",
-  description: "As Ramone, win Delinquent Road Hazards on Champion difficulty while earning the Safe Driver bonus 14 times",
-  points: 0,
+  title: "Low 'n Slow",
+  description: 'As Ramone, win "Delinquent Road Hazards" on Champion difficulty while earning the Safe Driver bonus 14 times',
+  points: 25,
   conditions: $(
     measuredIf(cheatprotect()),
     measuredIf(...character(Ramone)),
     measuredIf(level(DelinquentRoadHazards)),
     measuredIf(difficulty(2)),
     startHit(),
-    pointer(0x0052c590),
-    pointer(0x40),
-    pointer(0x34),
-    pointer(0x4),
-    pointer(0x0),
-    pointer(0x1c),
-    pointer(0x6a70),
-    ['Measured', 'Mem', '32bit', 0x0, '=', 'Value', '', SafeDriver, 14],
+    measured(advancedTrick(SafeDriver, 14)),
     trigger(win()),
     trigger(finishRace(3)),
     resetHit(),
@@ -2542,34 +2920,27 @@ set.addAchievement({
 
 set.addAchievement({
   title: "Showgirl, Even Off-Road",
-  description: "As Flo, win Sarge's Off-Road Challenge on Champion difficulty with at least 4,200 points or more",
-  points: 0,
+  description: 'As Flo, win "Sarge\'s Off-Road Challenge" on Champion difficulty with at least 4,200 points or more',
+  points: 25,
   conditions: $(
-    measuredIf(cheatprotect()),
-    measuredIf(...character(Flo)),
-    measuredIf(level(SargesOffRoadChallenge)),
-    measuredIf(difficulty(2)),
-    startHit(),
-    pointer(0x0052c590),
-    pointer(0x40),
-    pointer(0x34),
-    pointer(0x4),
-    pointer(0x0),
-    pointer(0x1c),
-    pointer(0x4540),
-    ['Measured', 'Mem', '32bit', 0x0, '>=', 'Value', '', 4200],
-    trigger(win()),
-    trigger(finishRace(3)),
-    resetHit(),
-    glitchProtect(),
-  ),
+      cheatprotect(),
+      ...character(Flo),
+      level(SargesOffRoadChallenge),
+      difficulty(2),
+      startHit(),
+      asciitopointsthousand(4200),
+      trigger(win()),
+      trigger(finishRace(3)),
+      resetHit(),
+      glitchProtect(),
+    ),
   id: 606742,
 })
 
 set.addAchievement({
   title: "Through the Eyes of the Law",
-  description: "As Sheriff, win Sheriff's Chase on Champion difficulty in first person mode",
-  points: 0,
+  description: 'As Sheriff, win "Sheriff\'s Chase" on Champion difficulty in the first person view',
+  points: 25,
   conditions: $(
     cheatprotect(),
     ...character(Sheriff),
@@ -2588,8 +2959,8 @@ set.addAchievement({
 
 set.addAchievement({
   title: "Who Needs Drifting?! Kachigga!",
-  description: "As Chick Hicks, win Ornament Valley GP on champion difficulty without Powersliding",
-  points: 0,
+  description: 'As Chick Hicks, win "Ornament Valley GP" on Champion difficulty without powersliding',
+  points: 25,
   conditions: $(
     cheatprotect(),
     ...character(Chick),
@@ -2599,28 +2970,27 @@ set.addAchievement({
     trigger(win()),
     trigger(finishRace(2)),
     resetHit(),
+    pointer(0x004ee5d0),
+    pointer(0x384),
+    pointer(0x30),
+    pointer(0x10),
+    ['ResetIf', 'Mem', '32bit', 0x80, '=', 'Value', '', 1],
     glitchProtect(),
-    resetHit(trick(Powerslide)),
   ),
   id: 606744,
 })
 
 set.addAchievement({
   title: "So Much for Downforce",
-  description: "As Wingo, win Chick's Challenge on Champion difficulty while attaining a Big Air bonus 9 times",
-  points: 0,
+  description: 'As Wingo, win "Chick\'s Challenge" on Champion difficulty while attaining a Big Air bonus 7 times',
+  points: 25,
   conditions: $(
     measuredIf(cheatprotect()),
     measuredIf(...character(Wingo)),
     measuredIf(level(ChicksChallenge)),
     measuredIf(difficulty(2)),
     startHit(),
-    pointer(0x004ee5d0),
-    pointer(0x498),
-    ['AndNext', 'Delta', 'Float', 0xe44, '<', 'Value', '', 1],
-    pointer(0x004ee5d0),
-    pointer(0x498),
-    ['Measured', 'Mem', 'Float', 0xe44, '>=', 'Value', '', 1, 9],
+    measured(trick(BigAir, 7)),
     trigger(win()),
     trigger(finishRace(3)),
     resetHit(),
@@ -2632,122 +3002,65 @@ set.addAchievement({
 //10 points per second
 set.addAchievement({
   title: "You See That Speed Boost?",
-  description: "As Darrell Cartrip, win Palm Mile Speedway while earning 1,000 points from tilting",
-  points: 0,
-  conditions: $(
-    measuredIf(cheatprotect()),
-    measuredIf(...character(Darrell)),
-    measuredIf(level(PalmMileSpeedway)),
-    measuredIf(difficulty(2)),
-    startHit(),
-    pointer(0x004ee5d0),
-    pointer(0x498),
-    ['AndNext', 'Mem', 'Float', 0xe4c, '!=', 'Value', '', 0],
-    pointer(0x004ee5d0),
-    pointer(0x498),
-    ['AddSource', 'Mem', 'Float', 0xe4c, '%', 'Value', '', 1],
-    ['AddHits', 'Value', '', 0x0, '=', 'Value', '', 0],
-    pointer(0x004ee5d0),
-    pointer(0x498),
-    ['AndNext', 'Mem', 'Float', 0xe4c, '!=', 'Value', '', 0],
-    pointer(0x004ee5d0),
-    pointer(0x498),
-    ['AddSource', 'Mem', 'Float', 0xe4c, '%', 'Value', '', 1],
-    ['AddHits', 'Value', '', 0x0, '=', 'Value', '', 0],
-    pointer(0x004ee5d0),
-    pointer(0x498),
-    ['AndNext', 'Mem', 'Float', 0xe4c, '!=', 'Value', '', 0],
-    pointer(0x004ee5d0),
-    pointer(0x498),
-    ['AddSource', 'Mem', 'Float', 0xe4c, '%', 'Value', '', 1],
-    ['AddHits', 'Value', '', 0x0, '=', 'Value', '', 0],
-    pointer(0x004ee5d0),
-    pointer(0x498),
-    ['AndNext', 'Mem', 'Float', 0xe4c, '!=', 'Value', '', 0],
-    pointer(0x004ee5d0),
-    pointer(0x498),
-    ['AddSource', 'Mem', 'Float', 0xe4c, '%', 'Value', '', 1],
-    ['AddHits', 'Value', '', 0x0, '=', 'Value', '', 0],
-    pointer(0x004ee5d0),
-    pointer(0x498),
-    ['AndNext', 'Mem', 'Float', 0xe4c, '!=', 'Value', '', 0],
-    pointer(0x004ee5d0),
-    pointer(0x498),
-    ['AddSource', 'Mem', 'Float', 0xe4c, '%', 'Value', '', 1],
-    ['AddHits', 'Value', '', 0x0, '=', 'Value', '', 0],
-    pointer(0x004ee5d0),
-    pointer(0x498),
-    ['AndNext', 'Mem', 'Float', 0xe4c, '!=', 'Value', '', 0],
-    pointer(0x004ee5d0),
-    pointer(0x498),
-    ['AddSource', 'Mem', 'Float', 0xe4c, '%', 'Value', '', 1],
-    ['AddHits', 'Value', '', 0x0, '=', 'Value', '', 0],
-    pointer(0x004ee5d0),
-    pointer(0x498),
-    ['AndNext', 'Mem', 'Float', 0xe4c, '!=', 'Value', '', 0],
-    pointer(0x004ee5d0),
-    pointer(0x498),
-    ['AddSource', 'Mem', 'Float', 0xe4c, '%', 'Value', '', 1],
-    ['AddHits', 'Value', '', 0x0, '=', 'Value', '', 0],
-    pointer(0x004ee5d0),
-    pointer(0x498),
-    ['AndNext', 'Mem', 'Float', 0xe4c, '!=', 'Value', '', 0],
-    pointer(0x004ee5d0),
-    pointer(0x498),
-    ['AddSource', 'Mem', 'Float', 0xe4c, '%', 'Value', '', 1],
-    ['AddHits', 'Value', '', 0x0, '=', 'Value', '', 0],
-    pointer(0x004ee5d0),
-    pointer(0x498),
-    ['AndNext', 'Mem', 'Float', 0xe4c, '!=', 'Value', '', 0],
-    pointer(0x004ee5d0),
-    pointer(0x498),
-    ['AddSource', 'Mem', 'Float', 0xe4c, '%', 'Value', '', 1],
-    ['AddHits', 'Value', '', 0x0, '=', 'Value', '', 0],
-    pointer(0x004ee5d0),
-    pointer(0x498),
-    ['AndNext', 'Mem', 'Float', 0xe4c, '!=', 'Value', '', 0],
-    pointer(0x004ee5d0),
-    pointer(0x498),
-    ['AddSource', 'Mem', 'Float', 0xe4c, '%', 'Value', '', 1],
-    ['Measured', 'Value', '', 0x0, '=', 'Value', '', 0, 1000],
-    trigger(win()),
-    trigger(finishRace(12)),
-    resetHit(),
-    glitchProtect(),
-  ),
+  description: 'As Darrell Cartrip, win "Motor Speedway of the South" on Champion difficulty in 2 minutes, stopping the clock by tilting,',
+  points: 25,
+  conditions: {
+    core: $(
+      cheatprotect(),
+      ...pistonCupCharacter(Darrell),
+      level(MotorSpeedwayoftheSouth),
+      difficulty(2),
+      startHit(),
+      trigger(win()),
+      trigger(finishRace(12)),
+      resetHit(),
+      glitchProtect(),
+    ),
+    alt1: $(
+      ['AndNext', 'Mem', '8bit', 0x001b1ee4, '=', 'Value', '', 0x2],
+      ['AddHits', 'Value', '', 1, '=', 'Value', '', 1],
+      ['ResetIf', 'Value', '', 1, '=', 'Value', '', 1, 7200],
+      pointer(0x0048d990),
+      pointer(0x300),
+      pointer(0x4c),
+      pointer(0xc44),
+      pointer(0x54),
+      pointer(0x0),
+      ['PauseIf', 'Delta', '32bit', 0x28, '=', 'Mem', '32bit', 0x28],
+      pauseIf(tilting()),
+    ),
+    alt2: $(
+      ['', 'Value', '', 1, '=', 'Value', '', 1]
+    ),
+  },
   id: 606746,
 })
 
 set.addAchievement({
   title: "Return of Dinoco's Legend",
-  description: "As The King, win Smasherville International Speedway on Champion difficulty while earning the Lap Leader bonus 9 times",
-  points: 0,
+  description: 'As The King, win "Smasherville International Speedway" on Champion difficulty, earning 1800 points from Lap Leader bonuses, without tilting or driving backwards',
+  points: 25,
   conditions: $(
-    measuredIf(cheatprotect()),
-    measuredIf(...character(King)),
-    measuredIf(level(SmashervilleInternationalSpeedway)),
-    measuredIf(difficulty(2)),
-    startHit(),
-    pointer(0x0052c590),
-    pointer(0x40),
-    pointer(0x34),
-    pointer(0x4),
-    pointer(0x0),
-    pointer(0x1c),
-    pointer(0x6a70),
-    ['Measured', 'Mem', '32bit', 0x0, '=', 'Value', '', LapLeader, 9],
-    trigger(win()),
-    trigger(finishRace(12)),
-    resetHit(),
-    glitchProtect(),
+      cheatprotect(),
+      ...pistonCupCharacter(King),
+      level(SmashervilleInternationalSpeedway),
+      difficulty(2),
+      startHit(),
+      asciitopointsthousand(1800),
+      trigger(win()),
+      trigger(finishRace(12)),
+      resetHit(),
+      resetIf(tilting()),
+      resetIf(drivingBackwards()),
+       glitchProtect(),
   ),
   id: 606747,
 })
 
 set.addAchievement({
   title: "PUNY CIRCUIT, TOW TRUCK!",
-  description: "As Monster McQueen, win Mater's Speedy Circuit on Champion Difficulty",
-  points: 0,
+  description: 'As Monster McQueen, win "Mater\'s Speedy Circuit" on Champion Difficulty (Use code TRGTEXC)',
+  points: 25,
   conditions: $(
     cheatprotect(),
     ...character(MonsterMcQueen),
@@ -2765,8 +3078,8 @@ set.addAchievement({
 
 set.addAchievement({
   title: "Small Town Bringdown",
-  description: "As Count Spatula, win Radiator Springs GP on Champion difficulty",
-  points: 0,
+  description: 'As Count Spatula, win "Radiator Springs GP" on Champion difficulty',
+  points: 25,
   conditions: $(
     cheatprotect(),
     ...character(Spatula),
@@ -2785,7 +3098,7 @@ set.addAchievement({
 set.addAchievement({
   title: "Pit Stop!",
   description: "Finish a pitstop in 16 seconds or less",
-  points: 0,
+  points: 5,
   conditions: $(
     orNext(level(PalmMileSpeedway), level(MotorSpeedwayoftheSouth), level(SunValleyInternationalRaceway), level(SmashervilleInternationalSpeedway), level(LosAngelesInternationalSpeedway)),
     pointer(0x0048d990),
@@ -2807,7 +3120,7 @@ set.addAchievement({
 set.addLeaderboard({
   title: 'Time Trial - Radiator Springs Grand Prix',
   description:
-    'Complete all three laps in the fastest time you can!',
+    'Complete all three laps in the fastest time you can glitchless!',
   lowerIsBetter: true,
   type: 'MILLISECS',
   conditions: {
@@ -2837,7 +3150,7 @@ set.addLeaderboard({
 set.addLeaderboard({
   title: 'Time Trial - Radiator Cap Circuit',
   description:
-    'Complete all three laps in the fastest time you can!',
+    'Complete all three laps in the fastest time you can glitchless!',
   lowerIsBetter: true,
   type: 'MILLISECS',
   conditions: {
@@ -2867,7 +3180,7 @@ set.addLeaderboard({
 set.addLeaderboard({
   title: `Time Trial - Sally's Sunshine Circuit`,
   description:
-    'Complete all three laps in the fastest time you can!',
+    'Complete all three laps in the fastest time you can glitchless!',
   lowerIsBetter: true,
   type: 'MILLISECS',
   conditions: {
@@ -2897,7 +3210,7 @@ set.addLeaderboard({
 set.addLeaderboard({
   title: `Time Trial - Doc's Challenge`,
   description:
-    'Complete all three laps in the fastest time you can!',
+    'Complete all three laps in the fastest time you can glitchless!',
   lowerIsBetter: true,
   type: 'MILLISECS',
   conditions: {
@@ -2927,7 +3240,7 @@ set.addLeaderboard({
 set.addLeaderboard({
   title: `Time Trial - Boostin' with Fillmore`,
   description:
-    'Complete all three laps in the fastest time you can!',
+    'Complete all three laps in the fastest time you can glitchless!',
   lowerIsBetter: true,
   type: 'MILLISECS',
   conditions: {
@@ -2957,7 +3270,7 @@ set.addLeaderboard({
 set.addLeaderboard({
   title: 'Time Trial - North Desert Dash',
   description:
-    'Complete all three laps in the fastest time you can!',
+    'Complete all three laps in the fastest time you can glitchless!',
   lowerIsBetter: true,
   type: 'MILLISECS',
   conditions: {
@@ -2987,7 +3300,7 @@ set.addLeaderboard({
 set.addLeaderboard({
   title: `Time Trial - Sarge's Off-Road Challenge`,
   description:
-    'Complete all three laps in the fastest time you can!',
+    'Complete all three laps in the fastest time you can glitchless!',
   lowerIsBetter: true,
   type: 'MILLISECS',
   conditions: {
@@ -3017,7 +3330,7 @@ set.addLeaderboard({
 set.addLeaderboard({
   title: `Time Trial - Sheriff's Chase`,
   description:
-    'Complete the race in the fastest time you can!',
+    'Complete the race in the fastest time you can glitchless!',
   lowerIsBetter: true,
   type: 'MILLISECS',
   conditions: {
@@ -3048,7 +3361,7 @@ set.addLeaderboard({
 set.addLeaderboard({
   title: 'Time Trial - Ornament Valley Circuit',
   description:
-    'Complete all three laps in the fastest time you can!',
+    'Complete all three laps in the fastest time you can glitchless!',
   lowerIsBetter: true,
   type: 'MILLISECS',
   conditions: {
@@ -3078,7 +3391,7 @@ set.addLeaderboard({
 set.addLeaderboard({
   title: 'Time Trial - Rustbucket Race-O-Rama',
   description:
-    'Complete all twelve laps in the fastest time you can!',
+    'Complete all twelve laps in the fastest time you can glitchless!',
   lowerIsBetter: true,
   type: 'MILLISECS',
   conditions: {
@@ -3108,7 +3421,7 @@ set.addLeaderboard({
 set.addLeaderboard({
   title: `Time Trial - Sally's Wheel Well Sprint`,
   description:
-    'Complete the race in the fastest time you can!',
+    'Complete the race in the fastest time you can glitchless!',
   lowerIsBetter: true,
   type: 'MILLISECS',
   conditions: {
@@ -3138,7 +3451,7 @@ set.addLeaderboard({
 set.addLeaderboard({
   title: `Time Trial - Doc's Check-Up`,
   description:
-    'Complete all three laps in the fastest time you can!',
+    'Complete all three laps in the fastest time you can glitchless!',
   lowerIsBetter: true,
   type: 'MILLISECS',
   conditions: {
@@ -3168,7 +3481,7 @@ set.addLeaderboard({
 set.addLeaderboard({
   title: 'Time Trial - Tailfin Pass Circuit',
   description:
-    'Complete all three laps in the fastest time you can!',
+    'Complete all three laps in the fastest time you can glitchless!',
   lowerIsBetter: true,
   type: 'MILLISECS',
   conditions: {
@@ -3198,7 +3511,7 @@ set.addLeaderboard({
 set.addLeaderboard({
   title: 'Time Trial - Monster Truck Mayhem',
   description:
-    'Complete all twelve laps in the fastest time you can!',
+    'Complete all twelve laps in the fastest time you can glitchless!',
   lowerIsBetter: true,
   type: 'MILLISECS',
   conditions: {
@@ -3228,7 +3541,7 @@ set.addLeaderboard({
 set.addLeaderboard({
   title: 'Time Trial - Delinquent Road Hazards',
   description:
-    'Complete all three laps in the fastest time you can!',
+    'Complete all three laps in the fastest time you can glitchless!',
   lowerIsBetter: true,
   type: 'MILLISECS',
   conditions: {
@@ -3258,7 +3571,7 @@ set.addLeaderboard({
 set.addLeaderboard({
   title: `Time Trial - Chick's Challenge`,
   description:
-    'Complete all three laps in the fastest time you can!',
+    'Complete all three laps in the fastest time you can glitchless!',
   lowerIsBetter: true,
   type: 'MILLISECS',
   conditions: {
@@ -3288,7 +3601,7 @@ set.addLeaderboard({
 set.addLeaderboard({
   title: 'Time Trial - Radiator Springs GP',
   description:
-    'Complete both laps in the fastest time you can!',
+    'Complete both laps in the fastest time you can glitchless!',
   lowerIsBetter: true,
   type: 'MILLISECS',
   conditions: {
@@ -3318,7 +3631,7 @@ set.addLeaderboard({
 set.addLeaderboard({
   title: 'Time Trial - Tailfin Pass GP',
   description:
-    'Complete the race in the fastest time you can!',
+    'Complete the race in the fastest time you can glitchless!',
   lowerIsBetter: true,
   type: 'MILLISECS',
   conditions: {
@@ -3348,7 +3661,7 @@ set.addLeaderboard({
 set.addLeaderboard({
   title: 'Time Trial - Ornament Valley GP',
   description:
-    'Complete both laps in the fastest time you can!',
+    'Complete both laps in the fastest time you can glitchless!',
   lowerIsBetter: true,
   type: 'MILLISECS',
   conditions: {
@@ -3378,7 +3691,7 @@ set.addLeaderboard({
 set.addLeaderboard({
   title: `Time Trial - Mater's Speedy Circuit`,
   description:
-    'Complete all six laps in the fastest time you can!',
+    'Complete all six laps in the fastest time you can glitchless!',
   lowerIsBetter: true,
   type: 'MILLISECS',
   conditions: {
@@ -3410,7 +3723,7 @@ set.addLeaderboard({
 set.addLeaderboard({
   title: 'Time Trial - Palm Mile Speedway',
   description:
-    'Complete all twelve laps in the fastest time you can!',
+    'Complete all twelve laps in the fastest time you can glitchless!',
   lowerIsBetter: true,
   type: 'MILLISECS',
   conditions: {
@@ -3440,7 +3753,7 @@ set.addLeaderboard({
 set.addLeaderboard({
   title: 'Time Trial - Motor Speedway of the South',
   description:
-    'Complete all twelve laps in the fastest time you can!',
+    'Complete all twelve laps in the fastest time you can glitchless!',
   lowerIsBetter: true,
   type: 'MILLISECS',
   conditions: {
@@ -3470,7 +3783,7 @@ set.addLeaderboard({
 set.addLeaderboard({
   title: 'Time Trial - Sun Valley International Raceway',
   description:
-    'Complete all twelve laps in the fastest time you can!',
+    'Complete all twelve laps in the fastest time you can glitchless!',
   lowerIsBetter: true,
   type: 'MILLISECS',
   conditions: {
@@ -3500,7 +3813,7 @@ set.addLeaderboard({
 set.addLeaderboard({
   title: 'Time Trial - Smasherville International Speedway',
   description:
-    'Complete all twelve laps in the fastest time you can!',
+    'Complete all twelve laps in the fastest time you can glitchless!',
   lowerIsBetter: true,
   type: 'MILLISECS',
   conditions: {
@@ -3530,7 +3843,7 @@ set.addLeaderboard({
 set.addLeaderboard({
   title: 'Time Trial - Los Angeles International Speedway',
   description:
-    'Complete all twelve laps in the fastest time you can!',
+    'Complete all twelve laps in the fastest time you can glitchless!',
   lowerIsBetter: true,
   type: 'MILLISECS',
   conditions: {
@@ -3560,7 +3873,7 @@ set.addLeaderboard({
 set.addLeaderboard({
   title: 'Time Trial - Pit Stop',
   description:
-    'Finish McQueens pitstop in the fastest time you can!',
+    'Finish McQueen\'s pitstop in the fastest time you can!',
     lowerIsBetter: true,
     type: 'MILLISECS',
     conditions: {
@@ -3837,7 +4150,7 @@ set.addLeaderboard({
 
 set.addLeaderboard({
   title: "Time Trial - Doc's Lesson: Powerslide",
-  description: 'Complete all three laps in the fastest time you can!',
+  description: 'Complete all three laps in the fastest time you can glitchless!',
   lowerIsBetter: true,
   type: 'MILLISECS',
   conditions: {
@@ -4114,7 +4427,7 @@ set.addLeaderboard({
 
 set.addLeaderboard({
   title: "Time Trial - Sarge's Boot Camp - Level 1",
-  description: 'Complete all three laps in the fastest time you can!',
+  description: 'Complete all three laps in the fastest time you can glitchless!',
   lowerIsBetter: true,
   type: 'MILLISECS',
   conditions: {
@@ -4145,7 +4458,7 @@ set.addLeaderboard({
 
 set.addLeaderboard({
   title: "Time Trial - Sarge's Boot Camp - Level 2",
-  description: 'Complete all three laps in the fastest time you can!',
+  description: 'Complete all three laps in the fastest time you can glitchless!',
   lowerIsBetter: true,
   type: 'MILLISECS',
   conditions: {
@@ -4176,7 +4489,7 @@ set.addLeaderboard({
 
 set.addLeaderboard({
   title: "Time Trial - Sarge's Boot Camp - Level 3",
-  description: 'Complete all three laps in the fastest time you can!',
+  description: 'Complete all three laps in the fastest time you can glitchless!',
   lowerIsBetter: true,
   type: 'MILLISECS',
   conditions: {
@@ -4207,7 +4520,7 @@ set.addLeaderboard({
 
 set.addLeaderboard({
   title: "Time Trial - Mater's Backwards Lesson",
-  description: 'Complete both laps in the fastest time you can!',
+  description: 'Complete both laps in the fastest time you can glitchless!',
   lowerIsBetter: true,
   type: 'MILLISECS',
   conditions: {
@@ -4594,6 +4907,875 @@ set.addLeaderboard({
     ),
   },
   id: 163475,
+})
+
+set.addLeaderboard({
+  title: "Stop Clock Challenge - Boostin' with Fillmore - Backwards Driving",
+  description: 'Stop the clock by driving backwards. Beat the race in as little time as possible!',
+  lowerIsBetter: true,
+  type: 'FRAMES',
+  conditions: {
+    start: $(
+      cheatprotect(),
+      level(BoostinwithFillmore),
+      pointer(0x0048d990),
+      pointer(0x300),
+      pointer(0x4c),
+      pointer(0xc44),
+      pointer(0x54),
+      pointer(0x0),
+      ['', 'Delta', '32bit', 0x28, '=', 'Value', '', 0],
+      pointer(0x0048d990),
+      pointer(0x300),
+      pointer(0x4c),
+      pointer(0xc44),
+      pointer(0x54),
+      pointer(0x0),
+      ['', 'Mem', '32bit', 0x28, '!=', 'Value', '', 0],
+    ),
+    cancel: {
+      core: $(
+        ['', 'Value', '', 1, '=', 'Value', '', 1],
+      ),
+      alt1: $(
+        levelQuit(),
+      ),
+      alt2: $(
+        glitchProtect('', ''),
+      ),
+      alt3: $(
+        pointer(0x0048d990),
+        pointer(0x300),
+        pointer(0x4c),
+        pointer(0xc44),
+        pointer(0x54),
+        pointer(0x0),
+        ['', 'Mem', '32bit', 0x28, '=', 'Value', '', 0],
+      )
+    },
+    submit: $(
+      finishRace(3),
+    ),
+    value: $(
+      ['AndNext', 'Mem', '8bit', 0x001b1ee4, '=', 'Value', '', 0x2],
+      ['AddHits', 'Value', '', 1, '=', 'Value', '', 1],
+      ['Measured', 'Value', '', 1, '=', 'Value', '', 1],
+      pointer(0x0048d990),
+      pointer(0x300),
+      pointer(0x4c),
+      pointer(0xc44),
+      pointer(0x54),
+      pointer(0x0),
+      ['PauseIf', 'Delta', '32bit', 0x28, '=', 'Mem', '32bit', 0x28],
+      pauseIf(drivingBackwards()),
+    ),
+  },
+  id: 164620,
+})
+
+set.addLeaderboard({
+  title: "Stop Clock Challenge - Doc's Challenge - Powersliding",
+  description: 'Stop the clock by powersliding. Beat the race in as little time as possible!',
+  lowerIsBetter: true,
+  type: 'FRAMES',
+  conditions: {
+    start: $(
+      cheatprotect(),
+      level(DocsChallenge),
+      pointer(0x0048d990),
+      pointer(0x300),
+      pointer(0x4c),
+      pointer(0xc44),
+      pointer(0x54),
+      pointer(0x0),
+      ['', 'Delta', '32bit', 0x28, '=', 'Value', '', 0],
+      pointer(0x0048d990),
+      pointer(0x300),
+      pointer(0x4c),
+      pointer(0xc44),
+      pointer(0x54),
+      pointer(0x0),
+      ['', 'Mem', '32bit', 0x28, '!=', 'Value', '', 0],
+    ),
+    cancel: {
+      core: $(
+        ['', 'Value', '', 1, '=', 'Value', '', 1],
+      ),
+      alt1: $(
+        levelQuit(),
+      ),
+      alt2: $(
+        glitchProtect('', ''),
+      ),
+      alt3: $(
+        pointer(0x0048d990),
+        pointer(0x300),
+        pointer(0x4c),
+        pointer(0xc44),
+        pointer(0x54),
+        pointer(0x0),
+        ['', 'Mem', '32bit', 0x28, '=', 'Value', '', 0],
+      )
+    },
+    submit: $(
+      finishRace(3),
+    ),
+    value: $(
+      ['AndNext', 'Mem', '8bit', 0x001b1ee4, '=', 'Value', '', 0x2],
+      ['AddHits', 'Value', '', 1, '=', 'Value', '', 1],
+      ['Measured', 'Value', '', 1, '=', 'Value', '', 1],
+      pointer(0x0048d990),
+      pointer(0x300),
+      pointer(0x4c),
+      pointer(0xc44),
+      pointer(0x54),
+      pointer(0x0),
+      ['PauseIf', 'Delta', '32bit', 0x28, '=', 'Mem', '32bit', 0x28],
+      pauseIf(powersliding()),
+    ),
+  },
+  id: 164621,
+})
+
+set.addLeaderboard({
+  title: "Stop Clock Challenge - Motor Speedway of the South - Tilting",
+  description: 'Stop the clock by tilting. Beat the race in as little time as possible!',
+  lowerIsBetter: true,
+  type: 'FRAMES',
+  conditions: {
+    start: $(
+      cheatprotect(),
+      level(MotorSpeedwayoftheSouth),
+      pointer(0x0048d990),
+      pointer(0x300),
+      pointer(0x4c),
+      pointer(0xc44),
+      pointer(0x54),
+      pointer(0x0),
+      ['', 'Delta', '32bit', 0x28, '=', 'Value', '', 0],
+      pointer(0x0048d990),
+      pointer(0x300),
+      pointer(0x4c),
+      pointer(0xc44),
+      pointer(0x54),
+      pointer(0x0),
+      ['', 'Mem', '32bit', 0x28, '!=', 'Value', '', 0],
+    ),
+    cancel: {
+      core: $(
+        ['', 'Value', '', 1, '=', 'Value', '', 1],
+      ),
+      alt1: $(
+        levelQuit(),
+      ),
+      alt2: $(
+        glitchProtect('', ''),
+      ),
+      alt3: $(
+        pointer(0x0048d990),
+        pointer(0x300),
+        pointer(0x4c),
+        pointer(0xc44),
+        pointer(0x54),
+        pointer(0x0),
+        ['', 'Mem', '32bit', 0x28, '=', 'Value', '', 0],
+      )
+    },
+    submit: $(
+      finishRace(12),
+    ),
+    value: $(
+      ['AndNext', 'Mem', '8bit', 0x001b1ee4, '=', 'Value', '', 0x2],
+      ['AddHits', 'Value', '', 1, '=', 'Value', '', 1],
+      ['Measured', 'Value', '', 1, '=', 'Value', '', 1],
+      pointer(0x0048d990),
+      pointer(0x300),
+      pointer(0x4c),
+      pointer(0xc44),
+      pointer(0x54),
+      pointer(0x0),
+      ['PauseIf', 'Delta', '32bit', 0x28, '=', 'Mem', '32bit', 0x28],
+      pauseIf(tilting()),
+    ),
+  },
+  id: 164622,
+})
+
+set.addLeaderboard({
+  title: "Cheat protection",
+  description: "You entered an unautorized cheat code! All achievements are locked for the remainder of this session",
+  lowerIsBetter: false,
+  type: 'UNSIGNED',
+  conditions: {
+    start: {
+      core: $(
+        ['', 'Value', '', 1, '=', 'Value', '', 1],
+      ),
+      alt1: $(
+        ['', 'Delta', 'Bit1', 0x52beb0, '=', 'Value', '', 0],
+        ['', 'Mem', 'Bit1', 0x52beb0, '=', 'Value', '', 1],
+      ),
+      alt2: $(
+        ['', 'Delta', 'Bit2', 0x52beb0, '=', 'Value', '', 0],
+        ['', 'Mem', 'Bit2', 0x52beb0, '=', 'Value', '', 1],
+      ),
+      alt3: $(
+        ['', 'Delta', 'Bit3', 0x52beb0, '=', 'Value', '', 0],
+        ['', 'Mem', 'Bit3', 0x52beb0, '=', 'Value', '', 1],
+      ),
+      alt4: $(
+        ['', 'Delta', 'Bit7', 0x52beb1, '=', 'Value', '', 0],
+        ['', 'Mem', 'Bit7', 0x52beb1, '=', 'Value', '', 1],
+      ),
+      alt5: $(
+        ['', 'Delta', 'Bit5', 0x52beb2, '=', 'Value', '', 0],
+        ['', 'Mem', 'Bit5', 0x52beb2, '=', 'Value', '', 1],
+      ),
+      alt6: $(
+        ['', 'Delta', 'Bit7', 0x52beb2, '=', 'Value', '', 0],
+        ['', 'Mem', 'Bit7', 0x52beb2, '=', 'Value', '', 1],
+      ),
+      alt7: $(
+        ['', 'Delta', 'Bit0', 0x52beb3, '=', 'Value', '', 0],
+        ['', 'Mem', 'Bit0', 0x52beb3, '=', 'Value', '', 1],
+      ),
+      alt8: $(
+        ['', 'Delta', 'Bit1', 0x52beb3, '=', 'Value', '', 0],
+        ['', 'Mem', 'Bit1', 0x52beb3, '=', 'Value', '', 1],
+      ),
+    },
+    cancel: $(
+      ['', 'Value', '', 0, '=', 'Value', '', 1],
+    ),
+    submit: $(
+      ['', 'Value', '', 1, '=', 'Value', '', 1],
+    ),
+    value: $(
+      cheatsactive(),
+    )
+  }
+})
+
+set.addLeaderboard({
+  title: "Radiator Springs Grand Prix - Glitch Protection",
+  description: "You triggered the glitch protection, all achievements are locked for this race",
+  lowerIsBetter: true,
+  type: 'MILLISECS',
+  conditions: {
+    start: $(
+      cheatprotect(),
+      level(RadiatorSpringsGrandPrix),
+      glitchProtect(''),
+    ),
+    cancel: $(
+      ['', 'Value', '', 0, '=', 'Value', '', 1],
+    ),
+    submit: $(
+      ['', 'Value', '', 1, '=', 'Value', '', 1],
+    ),
+    value: $(
+      raceTimer(),
+    ),
+  },
+})
+
+set.addLeaderboard({
+  title: "Radiator Cap Circuit - Glitch Protection",
+  description: "You triggered the glitch protection, all achievements are locked for this race",
+  lowerIsBetter: true,
+  type: 'MILLISECS',
+  conditions: {
+    start: $(
+      cheatprotect(),
+      level(RadiatorCapCircuit),
+      glitchProtect(''),
+    ),
+    cancel: $(
+      ['', 'Value', '', 0, '=', 'Value', '', 1],
+    ),
+    submit: $(
+      ['', 'Value', '', 1, '=', 'Value', '', 1],
+    ),
+    value: $(
+      raceTimer(),
+    ),
+  },
+})
+
+set.addLeaderboard({
+  title: "Sally's Sunshine Circuit - Glitch Protection",
+  description: "You triggered the glitch protection, all achievements are locked for this race",
+  lowerIsBetter: true,
+  type: 'MILLISECS',
+  conditions: {
+    start: $(
+      cheatprotect(),
+      level(SallysSunshineCircuit),
+      glitchProtect(''),
+    ),
+    cancel: $(
+      ['', 'Value', '', 0, '=', 'Value', '', 1],
+    ),
+    submit: $(
+      ['', 'Value', '', 1, '=', 'Value', '', 1],
+    ),
+    value: $(
+      raceTimer(),
+    ),
+  },
+})
+
+set.addLeaderboard({
+  title: "Doc's Lesson: Powerslide - Glitch Protection",
+  description: "You triggered the glitch protection, all achievements are locked for this race",
+  lowerIsBetter: true,
+  type: 'MILLISECS',
+  conditions: {
+    start: $(
+      cheatprotect(),
+      level(DocsLessonPowerslide),
+      glitchProtect(''),
+    ),
+    cancel: $(
+      ['', 'Value', '', 0, '=', 'Value', '', 1],
+    ),
+    submit: $(
+      ['', 'Value', '', 1, '=', 'Value', '', 1],
+    ),
+    value: $(
+      raceTimer(),
+    ),
+  },
+})
+
+set.addLeaderboard({
+  title: "Doc's Challenge - Glitch Protection",
+  description: "You triggered the glitch protection, all achievements are locked for this race",
+  lowerIsBetter: true,
+  type: 'MILLISECS',
+  conditions: {
+    start: $(
+      cheatprotect(),
+      level(DocsChallenge),
+      glitchProtect(''),
+    ),
+    cancel: $(
+      ['', 'Value', '', 0, '=', 'Value', '', 1],
+    ),
+    submit: $(
+      ['', 'Value', '', 1, '=', 'Value', '', 1],
+    ),
+    value: $(
+      raceTimer(),
+    ),
+  },
+})
+
+set.addLeaderboard({
+  title: "Palm Mile Speedway - Glitch Protection",
+  description: "You triggered the glitch protection, all achievements are locked for this race",
+  lowerIsBetter: true,
+  type: 'MILLISECS',
+  conditions: {
+    start: $(
+      cheatprotect(),
+      level(PalmMileSpeedway),
+      glitchProtect(''),
+    ),
+    cancel: $(
+      ['', 'Value', '', 0, '=', 'Value', '', 1],
+    ),
+    submit: $(
+      ['', 'Value', '', 1, '=', 'Value', '', 1],
+    ),
+    value: $(
+      raceTimer(),
+    ),
+  },
+})
+
+set.addLeaderboard({
+  title: "Boostin' with Fillmore - Glitch Protection",
+  description: "You triggered the glitch protection, all achievements are locked for this race",
+  lowerIsBetter: true,
+  type: 'MILLISECS',
+  conditions: {
+    start: $(
+      cheatprotect(),
+      level(BoostinwithFillmore),
+      glitchProtect(''),
+    ),
+    cancel: $(
+      ['', 'Value', '', 0, '=', 'Value', '', 1],
+    ),
+    submit: $(
+      ['', 'Value', '', 1, '=', 'Value', '', 1],
+    ),
+    value: $(
+      raceTimer(),
+    ),
+  },
+})
+
+set.addLeaderboard({
+  title: "North Desert Dash - Glitch Protection",
+  description: "You triggered the glitch protection, all achievements are locked for this race",
+  lowerIsBetter: true,
+  type: 'MILLISECS',
+  conditions: {
+    start: $(
+      cheatprotect(),
+      level(NorthDesertDash),
+      glitchProtect(''),
+    ),
+    cancel: $(
+      ['', 'Value', '', 0, '=', 'Value', '', 1],
+    ),
+    submit: $(
+      ['', 'Value', '', 1, '=', 'Value', '', 1],
+    ),
+    value: $(
+      raceTimer(),
+    ),
+  },
+})
+
+set.addLeaderboard({
+  title: "Sarge's Off-Road Challenge - Glitch Protection",
+  description: "You triggered the glitch protection, all achievements are locked for this race",
+  lowerIsBetter: true,
+  type: 'MILLISECS',
+  conditions: {
+    start: $(
+      cheatprotect(),
+      level(SargesOffRoadChallenge),
+      glitchProtect(''),
+    ),
+    cancel: $(
+      ['', 'Value', '', 0, '=', 'Value', '', 1],
+    ),
+    submit: $(
+      ['', 'Value', '', 1, '=', 'Value', '', 1],
+    ),
+    value: $(
+      raceTimer(),
+    ),
+  },
+})
+
+set.addLeaderboard({
+  title: "Motor Speedway of the South - Glitch Protection",
+  description: "You triggered the glitch protection, all achievements are locked for this race",
+  lowerIsBetter: true,
+  type: 'MILLISECS',
+  conditions: {
+    start: $(
+      cheatprotect(),
+      level(MotorSpeedwayoftheSouth),
+      glitchProtect(''),
+    ),
+    cancel: $(
+      ['', 'Value', '', 0, '=', 'Value', '', 1],
+    ),
+    submit: $(
+      ['', 'Value', '', 1, '=', 'Value', '', 1],
+    ),
+    value: $(
+      raceTimer(),
+    ),
+  },
+})
+
+set.addLeaderboard({
+  title: "Mater's Backwards Lesson - Glitch Protection",
+  description: "You triggered the glitch protection, all achievements are locked for this race",
+  lowerIsBetter: true,
+  type: 'MILLISECS',
+  conditions: {
+    start: $(
+      cheatprotect(),
+      level(MatersBackwardsLesson),
+      glitchProtect(''),
+    ),
+    cancel: $(
+      ['', 'Value', '', 0, '=', 'Value', '', 1],
+    ),
+    submit: $(
+      ['', 'Value', '', 1, '=', 'Value', '', 1],
+    ),
+    value: $(
+      raceTimer(),
+    ),
+  },
+})
+
+set.addLeaderboard({
+  title: "Sheriff's Chase - Glitch Protection",
+  description: "You triggered the glitch protection, all achievements are locked for this race",
+  lowerIsBetter: true,
+  type: 'MILLISECS',
+  conditions: {
+    start: $(
+      cheatprotect(),
+      level(SheriffsChase),
+      glitchProtectSheriffChase(''),
+    ),
+    cancel: $(
+      ['', 'Value', '', 0, '=', 'Value', '', 1],
+    ),
+    submit: $(
+      ['', 'Value', '', 1, '=', 'Value', '', 1],
+    ),
+    value: $(
+      raceTimer(),
+    ),
+  },
+})
+
+set.addLeaderboard({
+  title: "Rustbucket Race-O-Rama - Glitch Protection",
+  description: "You triggered the glitch protection, all achievements are locked for this race",
+  lowerIsBetter: true,
+  type: 'MILLISECS',
+  conditions: {
+    start: $(
+      cheatprotect(),
+      level(RustbucketRaceoRama),
+      glitchProtect(''),
+    ),
+    cancel: $(
+      ['', 'Value', '', 0, '=', 'Value', '', 1],
+    ),
+    submit: $(
+      ['', 'Value', '', 1, '=', 'Value', '', 1],
+    ),
+    value: $(
+      raceTimer(),
+    ),
+  },
+})
+
+set.addLeaderboard({
+  title: "Ornament Valley Circuit - Glitch Protection",
+  description: "You triggered the glitch protection, all achievements are locked for this race",
+  lowerIsBetter: true,
+  type: 'MILLISECS',
+  conditions: {
+    start: $(
+      cheatprotect(),
+      level(OrnamentValleyCircuit),
+      glitchProtect(''),
+    ),
+    cancel: $(
+      ['', 'Value', '', 0, '=', 'Value', '', 1],
+    ),
+    submit: $(
+      ['', 'Value', '', 1, '=', 'Value', '', 1],
+    ),
+    value: $(
+      raceTimer(),
+    ),
+  },
+})
+
+set.addLeaderboard({
+  title: "Sun Valley International Raceway - Glitch Protection",
+  description: "You triggered the glitch protection, all achievements are locked for this race",
+  lowerIsBetter: true,
+  type: 'MILLISECS',
+  conditions: {
+    start: $(
+      cheatprotect(),
+      level(SunValleyInternationalRaceway),
+      glitchProtect(''),
+    ),
+    cancel: $(
+      ['', 'Value', '', 0, '=', 'Value', '', 1],
+    ),
+    submit: $(
+      ['', 'Value', '', 1, '=', 'Value', '', 1],
+    ),
+    value: $(
+      raceTimer(),
+    ),
+  },
+})
+
+set.addLeaderboard({
+  title: "Sally's Wheel Well Sprint - Glitch Protection",
+  description: "You triggered the glitch protection, all achievements are locked for this race",
+  lowerIsBetter: true,
+  type: 'MILLISECS',
+  conditions: {
+    start: $(
+      cheatprotect(),
+      level(SallysWheelWellSprint),
+      glitchProtect(''),
+    ),
+    cancel: $(
+      ['', 'Value', '', 0, '=', 'Value', '', 1],
+    ),
+    submit: $(
+      ['', 'Value', '', 1, '=', 'Value', '', 1],
+    ),
+    value: $(
+      raceTimer(),
+    ),
+  },
+})
+
+set.addLeaderboard({
+  title: "Doc's Check-Up - Glitch Protection",
+  description: "You triggered the glitch protection, all achievements are locked for this race",
+  lowerIsBetter: true,
+  type: 'MILLISECS',
+  conditions: {
+    start: $(
+      cheatprotect(),
+      level(DocsCheckUp),
+      glitchProtect(''),
+    ),
+    cancel: $(
+      ['', 'Value', '', 0, '=', 'Value', '', 1],
+    ),
+    submit: $(
+      ['', 'Value', '', 1, '=', 'Value', '', 1],
+    ),
+    value: $(
+      raceTimer(),
+    ),
+  },
+})
+
+set.addLeaderboard({
+  title: "Tailfin Pass Circuit - Glitch Protection",
+  description: "You triggered the glitch protection, all achievements are locked for this race",
+  lowerIsBetter: true,
+  type: 'MILLISECS',
+  conditions: {
+    start: $(
+      cheatprotect(),
+      level(TailfinPassCircuit),
+      glitchProtect(''),
+    ),
+    cancel: $(
+      ['', 'Value', '', 0, '=', 'Value', '', 1],
+    ),
+    submit: $(
+      ['', 'Value', '', 1, '=', 'Value', '', 1],
+    ),
+    value: $(
+      raceTimer(),
+    ),
+  },
+})
+
+set.addLeaderboard({
+  title: "Delinquent Road Hazard - Glitch Protection",
+  description: "You triggered the glitch protection, all achievements are locked for this race",
+  lowerIsBetter: true,
+  type: 'MILLISECS',
+  conditions: {
+    start: $(
+      cheatprotect(),
+      level(DelinquentRoadHazards),
+      glitchProtect(''),
+    ),
+    cancel: $(
+      ['', 'Value', '', 0, '=', 'Value', '', 1],
+    ),
+    submit: $(
+      ['', 'Value', '', 1, '=', 'Value', '', 1],
+    ),
+    value: $(
+      raceTimer(),
+    ),
+  },
+})
+
+set.addLeaderboard({
+  title: "Monster Truck Mayhem - Glitch Protection",
+  description: "You triggered the glitch protection, all achievements are locked for this race",
+  lowerIsBetter: true,
+  type: 'MILLISECS',
+  conditions: {
+    start: $(
+      cheatprotect(),
+      level(MonsterTruckMayhem),
+      glitchProtect(''),
+    ),
+    cancel: $(
+      ['', 'Value', '', 0, '=', 'Value', '', 1],
+    ),
+    submit: $(
+      ['', 'Value', '', 1, '=', 'Value', '', 1],
+    ),
+    value: $(
+      raceTimer(),
+    ),
+  },
+})
+
+set.addLeaderboard({
+  title: "Chick's Challenge - Glitch Protection",
+  description: "You triggered the glitch protection, all achievements are locked for this race",
+  lowerIsBetter: true,
+  type: 'MILLISECS',
+  conditions: {
+    start: $(
+      cheatprotect(),
+      level(ChicksChallenge),
+      glitchProtect(''),
+    ),
+    cancel: $(
+      ['', 'Value', '', 0, '=', 'Value', '', 1],
+    ),
+    submit: $(
+      ['', 'Value', '', 1, '=', 'Value', '', 1],
+    ),
+    value: $(
+      raceTimer(),
+    ),
+  },
+})
+
+set.addLeaderboard({
+  title: "Smasherville International Raceway - Glitch Protection",
+  description: "You triggered the glitch protection, all achievements are locked for this race",
+  lowerIsBetter: true,
+  type: 'MILLISECS',
+  conditions: {
+    start: $(
+      cheatprotect(),
+      level(SmashervilleInternationalSpeedway),
+      glitchProtect(''),
+    ),
+    cancel: $(
+      ['', 'Value', '', 0, '=', 'Value', '', 1],
+    ),
+    submit: $(
+      ['', 'Value', '', 1, '=', 'Value', '', 1],
+    ),
+    value: $(
+      raceTimer(),
+    ),
+  },
+})
+
+set.addLeaderboard({
+  title: "Radiator Springs GP - Glitch Protection",
+  description: "You triggered the glitch protection, all achievements are locked for this race",
+  lowerIsBetter: true,
+  type: 'MILLISECS',
+  conditions: {
+    start: $(
+      cheatprotect(),
+      level(RadiatorSpringsGP),
+      glitchProtect(''),
+    ),
+    cancel: $(
+      ['', 'Value', '', 0, '=', 'Value', '', 1],
+    ),
+    submit: $(
+      ['', 'Value', '', 1, '=', 'Value', '', 1],
+    ),
+    value: $(
+      raceTimer(),
+    ),
+  },
+})
+
+set.addLeaderboard({
+  title: "Tailfin Pass GP - Glitch Protection",
+  description: "You triggered the glitch protection, all achievements are locked for this race",
+  lowerIsBetter: true,
+  type: 'MILLISECS',
+  conditions: {
+    start: $(
+      cheatprotect(),
+      level(TailfinPassGP),
+      glitchProtect(''),
+    ),
+    cancel: $(
+      ['', 'Value', '', 0, '=', 'Value', '', 1],
+    ),
+    submit: $(
+      ['', 'Value', '', 1, '=', 'Value', '', 1],
+    ),
+    value: $(
+      raceTimer(),
+    ),
+  },
+})
+
+set.addLeaderboard({
+  title: "Ornament Valley GP - Glitch Protection",
+  description: "You triggered the glitch protection, all achievements are locked for this race",
+  lowerIsBetter: true,
+  type: 'MILLISECS',
+  conditions: {
+    start: $(
+      cheatprotect(),
+      level(OrnamentValleyGP),
+      glitchProtect(''),
+    ),
+    cancel: $(
+      ['', 'Value', '', 0, '=', 'Value', '', 1],
+    ),
+    submit: $(
+      ['', 'Value', '', 1, '=', 'Value', '', 1],
+    ),
+    value: $(
+      raceTimer(),
+    ),
+  },
+})
+
+set.addLeaderboard({
+  title: "Los Angeles International Speedway - Glitch Protection",
+  description: "You triggered the glitch protection, all achievements are locked for this race",
+  lowerIsBetter: true,
+  type: 'MILLISECS',
+  conditions: {
+    start: $(
+      cheatprotect(),
+      level(LosAngelesInternationalSpeedway),
+      glitchProtect(''),
+    ),
+    cancel: $(
+      ['', 'Value', '', 0, '=', 'Value', '', 1],
+    ),
+    submit: $(
+      ['', 'Value', '', 1, '=', 'Value', '', 1],
+    ),
+    value: $(
+      raceTimer(),
+    ),
+  },
+})
+
+set.addLeaderboard({
+  title: "Mater's Speedy Circuit - Glitch Protection",
+  description: "You triggered the glitch protection, all achievements are locked for this race",
+  lowerIsBetter: true,
+  type: 'MILLISECS',
+  conditions: {
+    start: $(
+      cheatprotect(),
+      level(logo),
+      ['', 'Mem', '32bitBE', 0x004ecba4, '=', 'Value', '', 0x52525f54],
+      glitchProtect(''),
+    ),
+    cancel: $(
+      ['', 'Value', '', 0, '=', 'Value', '', 1],
+    ),
+    submit: $(
+      ['', 'Value', '', 1, '=', 'Value', '', 1],
+    ),
+    value: $(
+      raceTimer(),
+    ),
+  },
 })
 
 export default set
