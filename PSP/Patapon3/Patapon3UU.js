@@ -5,7 +5,7 @@ let Yarida = 0x9644
 let Taterazay = 0x96c8
 let Yumiyacha = 0x974c
 let Kibadda = 0x97d0
-let Destrobo = 0x99dc
+let Destrobo = 0x99e0
 let Piekron = 0x9b6c
 let Wooyari = 0x9bf0
 let Pyokorider = 0x9c74
@@ -93,7 +93,7 @@ let classSkill = [
   ['Trampling Force', 'Assault Hits 1', 1, 2, KibaddaSkill],
   ['Iron Stampede', 'Assault Hits 2', 2, 3, KibaddaSkill],
   ['Avalanche of Hooves', 'Assault Hits 3', 3, 5, KibaddaSkill],
-  ['Cataclysmic Stampede', 'Assault Hits 4', 4, 10, KibaddaSkill],
+  ['Cataclysmic Rush', 'Assault Hits 4', 4, 10, KibaddaSkill],
   ['Hidden Potential', 'Set Skills 1', 1, 2, TondengaSkill],
   ['Untapped Power', 'Set Skills 2', 2, 3, TondengaSkill],
   ['Endless Possibilities', 'Set Skills 3', 3, 5, TondengaSkill],
@@ -336,55 +336,47 @@ function pointer(offset) {
 }
 
 function weaponCheck(weaponID, index = 0) {
-  let base = 0x2
-  let offset = 0x28
+  let base = 0x218
+  let offset = 0x48
   return($(
-    pointer(0x00aabd94),
-    pointer(0x78),
-    pointer(0x34),
-    pointer(0x1958),
-    ['', 'Delta', '16bit', base + offset * index, '=', 'Value', '', 0xffff],
-    pointer(0x00aabd94),
-    pointer(0x78),
-    pointer(0x34),
-    pointer(0x1958),
-    ['', 'Mem', '16bit', base + offset * index, '=', 'Value', '', weaponID],
+    pointer(0xaabe4c),
+    pointer(0x0),
+    pointer(0x0),
+    pointer(0x20),
+    pointer(0x20),
+    pointer(0x368),
+    pointer(0x2b8),
+    pointer(0x3c),
+    pointer(0x530),
+    pointer(0x0),
+    pointer(0x2b8),
+    pointer(0x64),
+    pointer(0x25a8),
+    ['', 'Delta', '16bit', base + offset * index, '=', 'Value', '', weaponID],
   ))
 }
 
-function ultimateCheck(weaponIDs, slotIndex = 0) {
-  const base = 0x2
-  const offset = 0x28
-  const logic = []
+function weaponCheck2(weaponID, alt = 1) {
+  let logic = []
+  logic.push($(pointer(0xfebdd0)))
+  for (let i = 0; i < alt; i++) {
+    logic.push($(pointer(0x4)))
+  }
+  logic.push($(['', 'Mem', '32bit', 0x14, '=', 'Value', '', weaponID]))
+  return(logic)
+}
 
-  logic.push(
-    pointer(0x00aabd94),
-    pointer(0x78),
-    pointer(0x34),
-    pointer(0x1958),
-    ['', 'Delta', '16bit', base + offset * slotIndex, '=', 'Value', '', 0xffff],
-  )
+function ultimateCheck(weaponIDs, alt = 1) {
+  let logic = []
 
   for (const [weaponIndex, ID] of weaponIDs.entries()) {
-    logic.push(
-      pointer(0x00aabd94),
-      pointer(0x78),
-      pointer(0x34),
-      pointer(0x1958),
-      [
-        weaponIndex !== weaponIDs.length - 1 ? 'OrNext' : '',
-        'Mem',
-        '16bit',
-        base + offset * slotIndex,
-        '=',
-        'Value',
-        '',
-        ID,
-      ],
-    )
+    logic.push($(pointer(0xfebdd0)))
+    for (let i = 0; i < alt; i++) {
+      logic.push($(pointer(0x4)))
+    }
+    logic.push($([weaponIndex !== weaponIDs.length - 1 ? 'OrNext' : '', 'Mem', '32bit', 0x14, '=', 'Value', '', ID]))
   }
-
-  return $(...logic)
+  return(logic)
 }
 
 for(const [ID, character] of peerless.entries()) {
@@ -458,9 +450,13 @@ function weaponBuilder(weaponID) {
     ['', 'Mem', '32bit', 0x9520, '<=', 'Value', '', 34],
     ['AddAddress', 'Mem', '32bit', 0xab9020, '&', 'Value', '', 0x1ffffff],
     ['', 'Delta', '32bit', 0x2310, '!=', 'Value', '', 0],
+    ['AddAddress', 'Mem', '32bit', 0x00ab9020, '&', 'Value', '', 0x1ffffff],
+    ['', 'Delta', '32bit', 0x22fc, '=', 'Value', '', 1],
+    ['AddAddress', 'Mem', '32bit', 0x00ab9020, '&', 'Value', '', 0x1ffffff],
+    ['', 'Mem', '32bit', 0x22fc, '=', 'Value', '', 2],
   )
   for (let i = 0; i < 20; i++) {
-    logic['alt' + (i + 1)] = weaponCheck(weaponID, i)
+    logic['alt' + (i + 1)] = weaponCheck2(weaponID, i)
   }
   return(logic)
 }
@@ -495,8 +491,12 @@ function ultimateBuilder(UltimateWeapons) {
     ['', 'Mem', '32bit', 0x9520, '<=', 'Value', '', 34],
     ['AddAddress', 'Mem', '32bit', 0xab9020, '&', 'Value', '', 0x1ffffff],
     ['', 'Delta', '32bit', 0x2310, '!=', 'Value', '', 0],
+    ['AddAddress', 'Mem', '32bit', 0x00ab9020, '&', 'Value', '', 0x1ffffff],
+    ['', 'Delta', '32bit', 0x22fc, '=', 'Value', '', 1],
+    ['AddAddress', 'Mem', '32bit', 0x00ab9020, '&', 'Value', '', 0x1ffffff],
+    ['', 'Mem', '32bit', 0x22fc, '=', 'Value', '', 2],
   )
-  for (let i = 0; i < 20; i++) {
+  for (let i = 0; i < 10; i++) {
     logic['alt' + (i + 1)] = ultimateCheck(UltimateWeapons, i)
   }
   return(logic)
