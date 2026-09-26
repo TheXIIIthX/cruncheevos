@@ -1,4 +1,4 @@
-import { AchievementSet, define as $ } from '@cruncheevos/core'
+import { AchievementSet, define as $, orNext } from '@cruncheevos/core'
 const set = new AchievementSet({ gameId: 3507, id:38680, title: 'Patapon 3' })
 
 let Yarida = 0x2
@@ -39,6 +39,17 @@ function characterPointer() {
     return (pointer)
 }
 
+function multicheck() {
+  return($(
+    characterPointer(),
+    ['OrNext', 'Mem', '32bit', 0x2b4e8, '=', 'Value', '', 1],
+    characterPointer(),
+    ['OrNext', 'Mem', '32bit', 0x2b528, '=', 'Value', '', 1],
+    characterPointer(),
+    ['', 'Mem', '32bit', 0x2b568, '=', 'Value', '', 1],
+  ))
+}
+
 function allowedClasses(classes = [], player = 1) {
   let offset
   let logic = []
@@ -57,12 +68,6 @@ function allowedClasses(classes = [], player = 1) {
   else {
     return("Error, only 4 players available")
   }
-  if(player != 1) {
-    logic.push($(
-      characterPointer(),
-      ['OrNext', 'Mem', '32bit', offset, '=', 'Value', '', 0x0],
-    ))
-  }
   for(const [index, unit] of classes.entries()) {
     if (index != classes.length - 1) {
       logic.push(
@@ -73,12 +78,24 @@ function allowedClasses(classes = [], player = 1) {
       )
     }
     else {
-      logic.push(
-        $(
-          characterPointer(),
-          ['', 'Mem', '32bit', offset, '=', 'Value', '', unit],
-        )
-      )
+          if(player != 1) {
+            logic.push($(
+              characterPointer(),
+              ['AndNext', 'Mem', '32bit', offset, '=', 'Value', '', unit],
+              characterPointer(),
+              ['OrNext', 'Mem', '32bit', offset - 4, '=', 'Value', '', 0x1],
+              characterPointer(),
+              ['', 'Mem', '32bit', offset - 4, '=', 'Value', '', 0x0],
+            ))
+          }
+          else {
+            logic.push(
+              $(
+                characterPointer(),
+                ['', 'Mem', '32bit', offset, '=', 'Value', '', unit],
+              )
+            )
+          }
     }
   }
   return(logic)
@@ -86,7 +103,7 @@ function allowedClasses(classes = [], player = 1) {
 
 set.addAchievement({
   title: 'Dragon Hunting Party',
-  description: 'Defeat Fire Dragon Valo in multiplayer with only Yarida, Taterazay and Yumiyacha class Uberheroes in your party',
+  description: 'Defeat Fire Dragon Valo with at least two people with only Yarida, Taterazay or Yumiyacha class Uberheroes in your party',
   points: 5,
   conditions: $(
     ['AddAddress', 'Mem', '32bit', 0xaabd94, '&', 'Value', '', 0x1ffffff],
@@ -95,6 +112,7 @@ set.addAchievement({
     ['AddAddress', 'Mem', '32bit', 0xaabd94, '&', 'Value', '', 0x1ffffff],
     ['AddAddress', 'Mem', '32bit', 0x50, '&', 'Value', '', 0x1ffffff],
     ['', 'Mem', '32bit', 0x9520, '<=', 'Value', '', 34],
+    multicheck(),
     ['AddAddress', 'Mem', '32bit', 0xab9020, '&', 'Value', '', 0x1ffffff],
     ['', 'Delta', '32bit', 0x2310, '!=', 'Value', '', 0],
     ['AddAddress', 'Mem', '32bit', 0xab9020, '&', 'Value', '', 0x1ffffff],
@@ -106,12 +124,9 @@ set.addAchievement({
     ['AddAddress', 'Mem', '32bit', 0xab9020, '&', 'Value', '', 0x1ffffff],
     ['OrNext', 'Delta', '32bit', 0x22f4, '=', 'Value', '', 0],
     ['AddAddress', 'Mem', '32bit', 0xab9020, '&', 'Value', '', 0x1ffffff],
-    ['', 'Delta', '32bit', 0x22f4, '=', 'Value', '', 1],
+    ['Trigger', 'Delta', '32bit', 0x22f4, '=', 'Value', '', 1],
     ['AddAddress', 'Mem', '32bit', 0xab9020, '&', 'Value', '', 0x1ffffff],
-    ['', 'Mem', '32bit', 0x22f4, '=', 'Value', '', 2],
-    ['AddAddress', 'Mem', '32bit', 0xaabd94, '&', 'Value', '', 0x1ffffff],
-    ['AddAddress', 'Mem', '32bit', 0x50, '&', 'Value', '', 0x1ffffff],
-    ['', 'Mem', 'Bit0', 0x2b4e8, '=', 'Value', '', 1],
+    ['Trigger', 'Mem', '32bit', 0x22f4, '=', 'Value', '', 2],
     ['AddAddress', 'Mem', '32bit', 0xab9020, '&', 'Value', '', 0x1ffffff],
     ['', 'Mem', '32bit', 0x22f8, '!=', 'Value', '', 5],
     ['AddAddress', 'Mem', '32bit', 0xab9020, '&', 'Value', '', 0x1ffffff],
@@ -123,7 +138,7 @@ set.addAchievement({
 
 set.addAchievement({
   title: 'Cold Front Coalition',
-  description: 'Defeat Ice Dragon Inosen in multiplayer with only Kibadda, Tondenga and Wondabarappa class Uberheroes in your party',
+  description: 'Defeat Ice Dragon Inosen with at least two people with only Kibadda, Tondenga or Wondabarappa class Uberheroes in your party',
   points: 5,
   conditions: $(
     ['AddAddress', 'Mem', '32bit', 0xaabd94, '&', 'Value', '', 0x1ffffff],
@@ -132,6 +147,7 @@ set.addAchievement({
     ['AddAddress', 'Mem', '32bit', 0xaabd94, '&', 'Value', '', 0x1ffffff],
     ['AddAddress', 'Mem', '32bit', 0x50, '&', 'Value', '', 0x1ffffff],
     ['', 'Mem', '32bit', 0x9520, '<=', 'Value', '', 34],
+    multicheck(),
     ['AddAddress', 'Mem', '32bit', 0xab9020, '&', 'Value', '', 0x1ffffff],
     ['', 'Delta', '32bit', 0x2310, '!=', 'Value', '', 0],
     ['AddAddress', 'Mem', '32bit', 0xab9020, '&', 'Value', '', 0x1ffffff],
@@ -143,12 +159,9 @@ set.addAchievement({
     ['AddAddress', 'Mem', '32bit', 0xab9020, '&', 'Value', '', 0x1ffffff],
     ['OrNext', 'Delta', '32bit', 0x22f4, '=', 'Value', '', 0],
     ['AddAddress', 'Mem', '32bit', 0xab9020, '&', 'Value', '', 0x1ffffff],
-    ['', 'Delta', '32bit', 0x22f4, '=', 'Value', '', 1],
+    ['Trigger', 'Delta', '32bit', 0x22f4, '=', 'Value', '', 1],
     ['AddAddress', 'Mem', '32bit', 0xab9020, '&', 'Value', '', 0x1ffffff],
-    ['', 'Mem', '32bit', 0x22f4, '=', 'Value', '', 2],
-    ['AddAddress', 'Mem', '32bit', 0xaabd94, '&', 'Value', '', 0x1ffffff],
-    ['AddAddress', 'Mem', '32bit', 0x50, '&', 'Value', '', 0x1ffffff],
-    ['', 'Mem', 'Bit0', 0x2b4e8, '=', 'Value', '', 1],
+    ['Trigger', 'Mem', '32bit', 0x22f4, '=', 'Value', '', 2],
     ['AddAddress', 'Mem', '32bit', 0xab9020, '&', 'Value', '', 0x1ffffff],
     ['', 'Mem', '32bit', 0x22f8, '!=', 'Value', '', 5],
     ['AddAddress', 'Mem', '32bit', 0xab9020, '&', 'Value', '', 0x1ffffff],
@@ -160,7 +173,7 @@ set.addAchievement({
 
 set.addAchievement({
   title: 'Task Force Tempest',
-  description: 'Defeat Thunder Beast Justi in multiplayer with only Cannasault, Destrobo and Pingrek class Uberheroes in your party',
+  description: 'Defeat Thunder Beast Justi with at least two people with only Cannasault, Destrobo or Pingrek class Uberheroes in your party',
   points: 5,
   conditions: $(
     ['AddAddress', 'Mem', '32bit', 0xaabd94, '&', 'Value', '', 0x1ffffff],
@@ -169,6 +182,7 @@ set.addAchievement({
     ['AddAddress', 'Mem', '32bit', 0xaabd94, '&', 'Value', '', 0x1ffffff],
     ['AddAddress', 'Mem', '32bit', 0x50, '&', 'Value', '', 0x1ffffff],
     ['', 'Mem', '32bit', 0x9520, '<=', 'Value', '', 34],
+    multicheck(),
     ['AddAddress', 'Mem', '32bit', 0xab9020, '&', 'Value', '', 0x1ffffff],
     ['', 'Delta', '32bit', 0x2310, '!=', 'Value', '', 0],
     ['AddAddress', 'Mem', '32bit', 0xab9020, '&', 'Value', '', 0x1ffffff],
@@ -180,12 +194,9 @@ set.addAchievement({
     ['AddAddress', 'Mem', '32bit', 0xab9020, '&', 'Value', '', 0x1ffffff],
     ['OrNext', 'Delta', '32bit', 0x22f4, '=', 'Value', '', 0],
     ['AddAddress', 'Mem', '32bit', 0xab9020, '&', 'Value', '', 0x1ffffff],
-    ['', 'Delta', '32bit', 0x22f4, '=', 'Value', '', 1],
+    ['Trigger', 'Delta', '32bit', 0x22f4, '=', 'Value', '', 1],
     ['AddAddress', 'Mem', '32bit', 0xab9020, '&', 'Value', '', 0x1ffffff],
-    ['', 'Mem', '32bit', 0x22f4, '=', 'Value', '', 2],
-    ['AddAddress', 'Mem', '32bit', 0xaabd94, '&', 'Value', '', 0x1ffffff],
-    ['AddAddress', 'Mem', '32bit', 0x50, '&', 'Value', '', 0x1ffffff],
-    ['', 'Mem', 'Bit0', 0x2b4e8, '=', 'Value', '', 1],
+    ['Trigger', 'Mem', '32bit', 0x22f4, '=', 'Value', '', 2],
     ['AddAddress', 'Mem', '32bit', 0xab9020, '&', 'Value', '', 0x1ffffff],
     ['', 'Mem', '32bit', 0x22f8, '!=', 'Value', '', 5],
     ['AddAddress', 'Mem', '32bit', 0xab9020, '&', 'Value', '', 0x1ffffff],
@@ -197,7 +208,7 @@ set.addAchievement({
 
 set.addAchievement({
   title: 'Forest Rangers',
-  description: 'Defeat Godtree Feisu in multiplayer with only Piekron, Guardira and Alosson class Uberheroes',
+  description: 'Defeat Godtree Feisu with at least two people with only Piekron, Guardira or Alosson class Uberheroes',
   points: 10,
   conditions: $(
     ['AddAddress', 'Mem', '32bit', 0xaabd94, '&', 'Value', '', 0x1ffffff],
@@ -206,6 +217,7 @@ set.addAchievement({
     ['AddAddress', 'Mem', '32bit', 0xaabd94, '&', 'Value', '', 0x1ffffff],
     ['AddAddress', 'Mem', '32bit', 0x50, '&', 'Value', '', 0x1ffffff],
     ['', 'Mem', '32bit', 0x9520, '<=', 'Value', '', 34],
+    multicheck(),
     ['AddAddress', 'Mem', '32bit', 0xab9020, '&', 'Value', '', 0x1ffffff],
     ['', 'Delta', '32bit', 0x2310, '!=', 'Value', '', 0],
     ['AddAddress', 'Mem', '32bit', 0xab9020, '&', 'Value', '', 0x1ffffff],
@@ -217,12 +229,9 @@ set.addAchievement({
     ['AddAddress', 'Mem', '32bit', 0xab9020, '&', 'Value', '', 0x1ffffff],
     ['OrNext', 'Delta', '32bit', 0x22f4, '=', 'Value', '', 0],
     ['AddAddress', 'Mem', '32bit', 0xab9020, '&', 'Value', '', 0x1ffffff],
-    ['', 'Delta', '32bit', 0x22f4, '=', 'Value', '', 1],
+    ['Trigger', 'Delta', '32bit', 0x22f4, '=', 'Value', '', 1],
     ['AddAddress', 'Mem', '32bit', 0xab9020, '&', 'Value', '', 0x1ffffff],
-    ['', 'Mem', '32bit', 0x22f4, '=', 'Value', '', 2],
-    ['AddAddress', 'Mem', '32bit', 0xaabd94, '&', 'Value', '', 0x1ffffff],
-    ['AddAddress', 'Mem', '32bit', 0x50, '&', 'Value', '', 0x1ffffff],
-    ['', 'Mem', 'Bit0', 0x2b4e8, '=', 'Value', '', 1],
+    ['Trigger', 'Mem', '32bit', 0x22f4, '=', 'Value', '', 2],
     ['AddAddress', 'Mem', '32bit', 0xab9020, '&', 'Value', '', 0x1ffffff],
     ['', 'Mem', '32bit', 0x22f8, '!=', 'Value', '', 5],
     ['AddAddress', 'Mem', '32bit', 0xab9020, '&', 'Value', '', 0x1ffffff],
@@ -234,7 +243,7 @@ set.addAchievement({
 
 set.addAchievement({
   title: 'The Babysitting Brigade',
-  description: 'Defeat Hyumitto the Baby Dragon in multiplayer with only Pyokorider, Myamsar and Jamsch class Uberheroes in your party',
+  description: 'Defeat Hyumitto the Baby Dragon with at least two people with only Pyokorider, Myamsar or Jamsch class Uberheroes in your party',
   points: 10,
   conditions: $(
     ['AddAddress', 'Mem', '32bit', 0xaabd94, '&', 'Value', '', 0x1ffffff],
@@ -243,6 +252,7 @@ set.addAchievement({
     ['AddAddress', 'Mem', '32bit', 0xaabd94, '&', 'Value', '', 0x1ffffff],
     ['AddAddress', 'Mem', '32bit', 0x50, '&', 'Value', '', 0x1ffffff],
     ['', 'Mem', '32bit', 0x9520, '<=', 'Value', '', 34],
+    multicheck(),
     ['AddAddress', 'Mem', '32bit', 0xab9020, '&', 'Value', '', 0x1ffffff],
     ['', 'Delta', '32bit', 0x2310, '!=', 'Value', '', 0],
     ['AddAddress', 'Mem', '32bit', 0xab9020, '&', 'Value', '', 0x1ffffff],
@@ -254,12 +264,9 @@ set.addAchievement({
     ['AddAddress', 'Mem', '32bit', 0xab9020, '&', 'Value', '', 0x1ffffff],
     ['OrNext', 'Delta', '32bit', 0x22f4, '=', 'Value', '', 0],
     ['AddAddress', 'Mem', '32bit', 0xab9020, '&', 'Value', '', 0x1ffffff],
-    ['', 'Delta', '32bit', 0x22f4, '=', 'Value', '', 1],
+    ['Trigger', 'Delta', '32bit', 0x22f4, '=', 'Value', '', 1],
     ['AddAddress', 'Mem', '32bit', 0xab9020, '&', 'Value', '', 0x1ffffff],
-    ['', 'Mem', '32bit', 0x22f4, '=', 'Value', '', 2],
-    ['AddAddress', 'Mem', '32bit', 0xaabd94, '&', 'Value', '', 0x1ffffff],
-    ['AddAddress', 'Mem', '32bit', 0x50, '&', 'Value', '', 0x1ffffff],
-    ['', 'Mem', 'Bit0', 0x2b4e8, '=', 'Value', '', 1],
+    ['Trigger', 'Mem', '32bit', 0x22f4, '=', 'Value', '', 2],
     ['AddAddress', 'Mem', '32bit', 0xab9020, '&', 'Value', '', 0x1ffffff],
     ['', 'Mem', '32bit', 0x22f8, '!=', 'Value', '', 5],
     ['AddAddress', 'Mem', '32bit', 0xab9020, '&', 'Value', '', 0x1ffffff],
@@ -271,7 +278,7 @@ set.addAchievement({
 
 set.addAchievement({
   title: "Hell's Hit Squad",
-  description: 'Defeat Demon Forudo in multiplayer with only Wooyari, Bowmunk and Oohoroc class Uberheroes in your party',
+  description: 'Defeat Demon Forudo with at least two people with only Wooyari, Bowmunk or Oohoroc class Uberheroes in your party',
   points: 10,
   conditions: $(
     ['AddAddress', 'Mem', '32bit', 0xaabd94, '&', 'Value', '', 0x1ffffff],
@@ -280,6 +287,7 @@ set.addAchievement({
     ['AddAddress', 'Mem', '32bit', 0xaabd94, '&', 'Value', '', 0x1ffffff],
     ['AddAddress', 'Mem', '32bit', 0x50, '&', 'Value', '', 0x1ffffff],
     ['', 'Mem', '32bit', 0x9520, '<=', 'Value', '', 34],
+    multicheck(),
     ['AddAddress', 'Mem', '32bit', 0xab9020, '&', 'Value', '', 0x1ffffff],
     ['', 'Delta', '32bit', 0x2310, '!=', 'Value', '', 0],
     ['AddAddress', 'Mem', '32bit', 0xab9020, '&', 'Value', '', 0x1ffffff],
@@ -291,12 +299,9 @@ set.addAchievement({
     ['AddAddress', 'Mem', '32bit', 0xab9020, '&', 'Value', '', 0x1ffffff],
     ['OrNext', 'Delta', '32bit', 0x22f4, '=', 'Value', '', 0],
     ['AddAddress', 'Mem', '32bit', 0xab9020, '&', 'Value', '', 0x1ffffff],
-    ['', 'Delta', '32bit', 0x22f4, '=', 'Value', '', 1],
+    ['Trigger', 'Delta', '32bit', 0x22f4, '=', 'Value', '', 1],
     ['AddAddress', 'Mem', '32bit', 0xab9020, '&', 'Value', '', 0x1ffffff],
-    ['', 'Mem', '32bit', 0x22f4, '=', 'Value', '', 2],
-    ['AddAddress', 'Mem', '32bit', 0xaabd94, '&', 'Value', '', 0x1ffffff],
-    ['AddAddress', 'Mem', '32bit', 0x50, '&', 'Value', '', 0x1ffffff],
-    ['', 'Mem', 'Bit0', 0x2b4e8, '=', 'Value', '', 1],
+    ['Trigger', 'Mem', '32bit', 0x22f4, '=', 'Value', '', 2],
     ['AddAddress', 'Mem', '32bit', 0xab9020, '&', 'Value', '', 0x1ffffff],
     ['', 'Mem', '32bit', 0x22f8, '!=', 'Value', '', 5],
     ['AddAddress', 'Mem', '32bit', 0xab9020, '&', 'Value', '', 0x1ffffff],
@@ -308,7 +313,7 @@ set.addAchievement({
 
 set.addAchievement({
   title: 'Elite Strike Force',
-  description: 'Defeat Black Dragon Libera in multiplayer with only Charibassa, Grenburr and Cannogabang class Uberheroes in your party',
+  description: 'Defeat Black Dragon Libera with at least two people with only Charibassa, Grenburr or Cannogabang class Uberheroes in your party',
   points: 25,
   conditions: $(
     ['AddAddress', 'Mem', '32bit', 0xaabd94, '&', 'Value', '', 0x1ffffff],
@@ -317,6 +322,7 @@ set.addAchievement({
     ['AddAddress', 'Mem', '32bit', 0xaabd94, '&', 'Value', '', 0x1ffffff],
     ['AddAddress', 'Mem', '32bit', 0x50, '&', 'Value', '', 0x1ffffff],
     ['', 'Mem', '32bit', 0x9520, '<=', 'Value', '', 34],
+    multicheck(),
     ['AddAddress', 'Mem', '32bit', 0xab9020, '&', 'Value', '', 0x1ffffff],
     ['', 'Delta', '32bit', 0x2310, '!=', 'Value', '', 0],
     ['AddAddress', 'Mem', '32bit', 0xab9020, '&', 'Value', '', 0x1ffffff],
@@ -328,12 +334,9 @@ set.addAchievement({
     ['AddAddress', 'Mem', '32bit', 0xab9020, '&', 'Value', '', 0x1ffffff],
     ['OrNext', 'Delta', '32bit', 0x22f4, '=', 'Value', '', 0],
     ['AddAddress', 'Mem', '32bit', 0xab9020, '&', 'Value', '', 0x1ffffff],
-    ['', 'Delta', '32bit', 0x22f4, '=', 'Value', '', 1],
+    ['Trigger', 'Delta', '32bit', 0x22f4, '=', 'Value', '', 1],
     ['AddAddress', 'Mem', '32bit', 0xab9020, '&', 'Value', '', 0x1ffffff],
-    ['', 'Mem', '32bit', 0x22f4, '=', 'Value', '', 2],
-    ['AddAddress', 'Mem', '32bit', 0xaabd94, '&', 'Value', '', 0x1ffffff],
-    ['AddAddress', 'Mem', '32bit', 0x50, '&', 'Value', '', 0x1ffffff],
-    ['', 'Mem', 'Bit0', 0x2b4e8, '=', 'Value', '', 1],
+    ['Trigger', 'Mem', '32bit', 0x22f4, '=', 'Value', '', 2],
     ['AddAddress', 'Mem', '32bit', 0xab9020, '&', 'Value', '', 0x1ffffff],
     ['', 'Mem', '32bit', 0x22f8, '!=', 'Value', '', 5],
     ['AddAddress', 'Mem', '32bit', 0xab9020, '&', 'Value', '', 0x1ffffff],
